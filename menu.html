@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sabores Ancestrales | Menú</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!--Iconos de FontAwesome-->
+  <style>
+    /* Estilos generales */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f8f5f0;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header */
+    header {
+      background-color: #6B4C3B;
+      color: #fff;
+      padding: 15px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 10px;
+      object-fit: cover;
+    }
+    
+    .logo span {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .nav-links {
+      display: flex;
+      list-style: none;
+    }
+    
+    .nav-links li {
+      margin-left: 20px;
+    }
+    
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .nav-links a:hover, .nav-links a.active {
+      color: #f4a460;
+    }
+    
+    .user-panel{display:flex;align-items:center;gap:10px;margin-left:20px}
+    .user-panel a,.user-panel button{color:white;font-weight:600;text-decoration:none;border-radius:999px;padding:8px 12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.08);cursor:pointer}
+    .user-panel button{background:transparent}
+    .user-panel .user-box{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18)}
+    .user-panel .user-box img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.4)}
+    .user-panel .user-box span{
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.1;
+      cursor: pointer;
+    }
+    .user-panel .user-box small {
+      color: #f5f5f5;
+      font-size: 0.75rem;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* Sección principal */
+    section {
+      padding: 40px 0;
+    }
+    
+    h2 {
+      text-align: center;
+      color: #8b4513;
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+    }
+    
+    .lead {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-bottom: 40px;
+      color: #666;
+    }
+    
+    /* Categorías del menú */
+    .menu-categories {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+    
+    .category-btn {
+      padding: 10px 20px;
+      background-color: #f5ede4;
+      border: 2px solid #6B4C3B;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: bold;
+      color: #6B4C3B;
+    }
+    
+    .category-btn.active, .category-btn:hover {
+      background-color: #6B4C3B;
+      color: white;
+      border-color: #6B4C3B;
+    }
+    
+    /* Grid de elementos del menú */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+    
+    .menu-item {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    
+    .menu-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .menu-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    
+    .menu-item .content {
+      padding: 20px;
+    }
+    
+    .menu-item h4 {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      color: #6B4C3B;
+    }
+    
+    .menu-item .price {
+      color: #6B4C3B;
+      font-weight: bold;
+    }
+    
+    .menu-item p {
+      color: #5a5a5a;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+    }
+    
+    .add-btn {
+      background-color: #6B4C3B;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .add-btn:hover {
+      background-color: #a0522d;
+    }
+
+    #cart-ball {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #C17A56, #6B4C3B);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: grab;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+      z-index: 1000;
+      transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+      user-select: none;
+    }
+
+    #cart-ball::before {
+      content: '🏬';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    #cart-ball.cart-active {
+      animation: cartGlow 1s infinite alternate;
+      box-shadow: 0 0 24px 10px rgba(193,122,86,0.75), 0 6px 24px rgba(0,0,0,0.28);
+    }
+
+    #cart-ball.cart-active:hover {
+      animation: cartGlow 1s infinite alternate-reverse;
+    }
+
+    #cart-ball:active {
+      cursor: grabbing;
+      transform: scale(0.96);
+    }
+
+    #cart-ball:hover {
+      background: linear-gradient(135deg, #c17a56, #6b4c3b);
+    }
+
+    #cart-ball span {
+      pointer-events: none;
+    }
+
+    @keyframes cartGlow {
+      from { box-shadow: 0 0 16px 6px rgba(193,122,86,0.55), 0 6px 20px rgba(0,0,0,0.25); }
+      to { box-shadow: 0 0 30px 14px rgba(193,122,86,0.95), 0 6px 28px rgba(0,0,0,0.30); }
+    }
+
+    /* Sección de pedido */
+    .pedido {
+      background-color: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin-top: 40px;
+    }
+    
+    .pedido h3 {
+      color: #8b4513;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f4a460;
+    }
+    
+    #pedido-list {
+      list-style: none;
+      margin-bottom: 20px;
+    }
+    
+    #pedido-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .remove-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    
+    .remove-btn:hover {
+      background-color: #c0392b;
+    }
+    
+    #total {
+      font-size: 1.2rem;
+      color: #8b4513;
+      font-weight: bold;
+    }
+    
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+    }
+    
+    select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+    
+    .btn {
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+    }
+    
+    #download-pdf {
+      margin-top: 18px;
+    }
+    
+    .btn:hover {
+      background-color: #219955;
+    }
+    
+    .ticket {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+      border-left: 4px solid #27ae60;
+    }
+    
+    .ticket h4 {
+      color: #27ae60;
+      margin-bottom: 10px;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: #8b4513;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      margin-top: 40px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      #menu-toggle {
+        display: block;
+      }
+      
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 80px;
+        left: 0;
+        width: 100%;
+        background-color: #8b4513;
+        padding: 20px;
+      }
+      
+      .nav-links.active {
+        display: flex;
+      }
+      
+      .nav-links li {
+        margin: 10px 0;
+      }
+      
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container navbar">
+      <div class="logo">
+        <img src="imagenes/Logo.jpg" alt="Logo Sabores Ancestrales">
+        <span>Sabores Ancestrales</span>
+      </div>
+      <button id="menu-toggle">☰</button>
+      <ul id="nav-links" class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="informacion.html">Información</a></li>
+        <li><a href="menu.html" class="active">Platillos</a></li>
+        <li><a href="reservas.html">Reservas</a></li>
+        <li><a href="valoracion.html">Valoración</a></li>
+        <li><a href="opiniones.html">Opiniones</a></li>
+      </ul>
+      <div id="user-panel" class="user-panel"></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <h2>Nuestros Platillos</h2>
+      <p class="lead">Explora nuestras categorías y descubre los sabores que preparamos con pasión y tradición.</p>
+
+      <div class="menu-categories">
+        <button class="category-btn active" data-category="entradas">Entradas</button>
+        <button class="category-btn" data-category="platos">Platos Principales</button>
+        <button class="category-btn" data-category="postres">Postres</button>
+        <button class="category-btn" data-category="bebidas">Bebidas</button>
+        <button class="category-btn" data-category="cervezas">Cervezas</button>
+      </div>
+
+      <div class="menu-grid" id="menu-items"></div>
+
+      <div class="pedido" id="pedido">
+        <h3>Resumen del Pedido</h3>
+        <ul id="pedido-list"></ul>
+        <p><strong>Total:</strong> $<span id="total">0.00</span></p>
+
+        <label for="pago">Método de pago:</label>
+        <select id="pago">
+          <option value="efectivo">Efectivo</option>
+          <option value="tarjeta">Tarjeta</option>
+        </select>
+
+        <div id="card-details" style="display:none; margin-top:10px;">
+          <label for="card_number">Número de tarjeta</label>
+          <input id="card_number" type="text" placeholder="xxxx xxxx xxxx xxxx" maxlength="19" />
+          <label for="cvv">CVV</label>
+          <input id="cvv" type="text" placeholder="123" maxlength="4" />
+          <label for="exp_date">Expiración (MM/AA)</label>
+          <input id="exp_date" type="text" placeholder="MM/AA" maxlength="5" />
+        </div>
+
+        <button class="btn" id="finalizar">Finalizar Pedido</button>
+        <button class="btn" id="download-pdf" type="button">Descargar PDF</button>
+
+        <div class="ticket" id="ticket" style="display:none;"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
+  </footer>
+
+  <div id="cart-ball" title="Ir al resumen del pedido"><span id="cart-count">0</span></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const categoryButtons = document.querySelectorAll('.category-btn');
+    const menuItemsContainer = document.getElementById('menu-items');
+    const pedidoList = document.getElementById('pedido-list');
+    const totalEl = document.getElementById('total');
+    const ticketEl = document.getElementById('ticket');
+    const menuToggle = document.getElementById('menu-toggle');
+    const navLinks = document.getElementById('nav-links');
+
+    let total = 0;
+    const pedido = [];
+
+    function mostrarCardDetails() {
+      const pago = document.getElementById('pago').value;
+      const cardDetails = document.getElementById('card-details');
+      cardDetails.style.display = pago === 'tarjeta' ? 'block' : 'none';
+    }
+
+    function validarTarjeta(cardNumber, cvv, expDate) {
+      const normalized = cardNumber.replace(/\s+/g, '');
+      if (!/^[0-9]{13,19}$/.test(normalized)) return 'Número de tarjeta inválido.';
+      if (!/^[0-9]{3,4}$/.test(cvv)) return 'CVV inválido.';
+      if (!/^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(expDate)) return 'Fecha de expiración inválida.';
+      const [m, a] = expDate.split('/').map(Number);
+      const [year, month] = [2000 + a, m];
+      const now = new Date();
+      const expiry = new Date(year, month - 1, 1);
+      if (expiry < new Date(now.getFullYear(), now.getMonth(), 1)) return 'Tarjeta expirada.';
+      return null;
+    }
+
+    function obtenerUltimos4(cardNumber) {
+      const normalized = cardNumber.replace(/\D/g, '');
+      return normalized.slice(-4);
+    }
+
+    // Menú actualizado con nombres y descripciones locales proporcionadas
+    const menuData = {
+      'entradas': [
+        { name: 'Combo Familiar', description: 'Pan crujiente con tomate confitado, aceite de oliva y albahaca fresca. Perfecta para compartir.', price: 150.00, currency: 'C$', image: 'imagenes/entrada-1.jpg' },
+        { name: 'Indio Viejo', description: 'Guiso espeso y sustancioso a base de carne desmenuzada, masa de maíz (tortillas), chiltoma y naranja agria. Es un plato principal, no una entrada.', price: 100.00, currency: 'C$', image: 'imagenes/entrada-2.jpg' },
+        { name: 'Ensalada Caprese', description: 'Mozzarella cremosa con tomate heirloom, reducción de balsámico y hojas de albahaca.', price: 100.00, currency: 'C$', image: 'imagenes/entrada3.png' },
+        { name: 'Queso Frito con Tajadas', description: 'Queso frito acompañado de plátano maduro frito, una combinación clásica nicaragüense.', price: 80.00, currency: 'C$', image: 'imagenes/queso-frito-con-tajadas.png' },
+        { name: 'Tostones con Guacamole', description: 'Plátano verde frito acompañado de guacamole fresco y cremoso.', price: 100.00, currency: 'C$', image: 'imagenes/Tostones con Guacamole.png' },
+        { name: 'Nacatamalito', description: 'Versión pequeña del tradicional nacatamal, perfecta como entrada.', price: 60.00, currency: 'C$', image: 'imagenes/Nacatamalito.png' },
+        { name: 'Empanadas de Queso', description: 'Empanadas rellenas de queso derretido, fritas hasta quedar doradas.', price: 50.00, currency: 'C$', image: 'imagenes/Empanadas de Queso.png' },
+        { name: 'Sopa de Albóndigas', description: 'Sopa tradicional con albóndigas de carne y verduras frescas.', price: 100.00, currency: 'C$', image: 'imagenes/Sopa de Albóndigas.png' }
+      ],
+      'platos': [
+        { name: 'Risotto de Champiñones', description: 'Arroz cremoso cocido a fuego lento con setas silvestres y parmesano rallado.', price: 90.00, currency: 'C$', image: 'imagenes/risotto-de-champinones.png' },
+        { name: 'Salmón a la Parrilla', description: 'Salmón sellado con corte perfecto, acompañado de verduras asadas y reducción cítrica.', price: 95.00, currency: 'C$', image: 'imagenes/salmon-a-la-parrilla.png' },
+        { name: 'Pasta Carbonara', description: 'Pasta al dente con salsa cremosa de huevo, pancetta crocante y un toque de pimienta negra.', price: 105.00, currency: 'C$', image: 'imagenes/pasta-carbonara.png' },
+        { name: 'Gallo Pinto', description: 'Frijoles y arroz revueltos y sazonados, servidos con plátano maduro frito (tajadas), queso frito y huevo frito.', price: 105.00, currency: 'C$', image: 'imagenes/3.jpg' },
+        { name: 'Nacatamal', description: 'Tamal tradicional nicaragüense relleno de carne de cerdo, arroz, papas y verduras, envuelto en hojas de plátano.', price: 135.00, currency: 'C$', image: 'imagenes/Nacatama.png' },
+        { name: 'Vigorón', description: 'Plato típico de Granada: yuca cocida con chicharrón y ensalada de repollo.', price: 100.00, currency: 'C$', image: 'imagenes/Vigorón.png' },
+        { name: 'Carne Asada', description: 'Corte de res a la parrilla acompañado de gallo pinto, plátano maduro y ensalada.', price: 122.00, currency: 'C$', image: 'imagenes/arne Asada.png' },
+        { name: 'Pescado a la Tipitapa', description: 'Pescado entero frito acompañado de cebolla, chiltoma y tomate en salsa.', price: 111.00, currency: 'C$', image: 'imagenes/Pescado a la Tipitapa.png' }
+      ],
+      'postres': [
+        { name: 'Buñuelos', description: 'Bolitas fritas hechas a base de yuca o harina de maíz, bañadas en una miel de azúcar o panela.', price: 70.00, currency: 'C$', image: 'imagenes/postre-1.jpg' },
+        { name: 'Raspados y Viejitas', description: 'Variedad de dulces tradicionales. El dulce rosado y oscuro (raspados de coco) son caramelos crujientes y los de en medio son Viejitas (galletas de almidón).', price: 80.00, currency: 'C$', image: 'imagenes/postre-2.jpg' },
+        { name: 'Cajeta de Leche', description: 'Dulce espeso y cremoso, similar al dulce de leche, hecho a base de leche, azúcar y especias, cocinado hasta alcanzar una consistencia untuosa.', price: 80.00, currency: 'C$', image: 'imagenes/postre-3.jpg' },
+        { name: 'Tres Leches', description: 'Pastel esponjoso bañado en una mezcla de tres leches y cubierto con merengue.', price: 80.00, currency: 'C$', image: 'imagenes/Tres Leches.png' },
+        { name: 'Leche Poleada', description: 'Postre cremoso a base de leche, canela y azúcar, similar a un pudín ligero.', price: 75.00, currency: 'C$', image: 'imagenes/Leche Poleada.png' },
+        { name: 'Arroz con Leche', description: 'Arroz cocido en leche con canela y pasas, servido frío.', price: 90.00, currency: 'C$', image: 'imagenes/Arroz con Leche.png' },
+        { name: 'Pio Quinto', description: 'Pastel de ron con natilla, típico de Nicaragua.', price: 60.00, currency: 'C$', image: 'imagenes/Pio Quinto.png' },
+        { name: 'Atolillo', description: 'Bebida espesa y dulce a base de maíz, leche y especias, servida caliente.', price: 60.00, currency: 'C$', image: 'imagenes/Atolillo.png' }
+      ],
+      'bebidas': [
+        { name: 'Vino Tinto de la Casa', description: 'Copa de nuestro tinto seleccionado por el sommelier.', price: 150.00, currency: 'C$', image: 'imagenes/vino-tinto-de-la-casa.png' },
+        { name: 'Cóctel Margarita', description: 'Mezcla clásica de tequila, triple sec y jugo de limón con sal en el borde.', price: 80.00, currency: 'C$', image: 'imagenes/limon.png' },
+        { name: 'Café Espresso', description: 'Café espresso italiano, corto e intenso, servido en taza pequeña.', price: 40.00, currency: 'C$', image: 'imagenes/cafe-espresso-italiano.png' },
+        { name: 'Jugo de Tamarindo', description: 'Refrescante jugo natural de tamarindo, dulce y ligeramente ácido.', price: 40.00, currency: 'C$', image: 'imagenes/Jugo de Tamarindo.png' },
+        { name: 'Cacao Caliente', description: 'Bebida caliente de cacao puro, espesa y aromática.', price: 40.00, currency: 'C$', image: 'imagenes/Cacao Caliente.png' },
+        { name: 'Limonada con Menta', description: 'Limonada refrescante con hojas de menta y un toque de dulce.', price: 30.00, currency: 'C$', image: 'imagenes/Limonada con Menta.png' },
+        { name: 'Batido de Guanábana', description: 'Batido cremoso de guanábana, dulce y refrescante.', price: 90.00, currency: 'C$', image: 'imagenes/Batido de Guanábana.png' },
+        { name: 'Té de Jamaica', description: 'Infusión de flor de jamaica, refrescante y ligeramente ácida.', price: 50.00, currency: 'C$', image: 'imagenes/Té de Jamaica.png' }
+      ],
+      'cervezas': [
+        { name: 'Toña', description: 'Cerveza lager nicaragüense, suave y refrescante, la más popular del país.', price: 70.00, currency: 'C$', image: 'imagenes/Toña.png' },
+        { name: 'Victoria', description: 'Cerveza lager con más cuerpo que Toña, con un sabor más marcado y amargo.', price: 75.00, currency: 'C$', image: 'imagenes/victoria.png' },
+        { name: 'Premium', description: 'Cerveza lager premium de Nicaragua, con un sabor equilibrado y suave.', price: 70.00, currency: 'C$', image: 'imagenes/Premium.png' },
+        { name: 'Brahva', description: 'Cerveza lager ligera y refrescante, ideal para climas cálidos.', price: 80.00, currency: 'C$', image: 'imagenes/Brahva.png' },
+        { name: 'Flor de Caña Ron & Cola', description: 'Refresco preparado con el famoso ron Flor de Caña y cola.', price: 85.00, currency: 'C$', image: 'imagenes/flor de Caña Ron & Cola.png' },
+        { name: 'Victoria Frost', description: 'Cerveza Victoria con un toque de limón, refrescante y cítrica.', price: 75.00, currency: 'C$', image: 'imagenes/Victoria Frost.png' },
+        { name: 'Cerveza Artesanal Nica', description: 'Cerveza artesanal nicaragüense, con sabores únicos y cuerpo completo.', price: 90.00, currency: 'C$', image: 'imagenes/Cerveza Artesanal Nica.png' }
+      ]
+    };
+
+    function loadMenuItems(category) {
+      menuItemsContainer.innerHTML = '';
+      if (!menuData[category] || !Array.isArray(menuData[category])) {
+        console.warn('Categoría no encontrada:', category);
+        return;
+      }
+      menuData[category].forEach(item => {
+        // Seguridad: asegurar que price sea número
+        item.price = Number(item.price) || 0;
+        const div = document.createElement('div');
+        div.className = 'menu-item';
+        const priceDisplay = item.currency ? `${item.currency}${item.price.toFixed(2)}` : `$${item.price.toFixed(2)}`;
+        // Añadir fallback visual si la imagen no carga
+        const imgSrc = item.image || 'imagenes/descarga.png';
+        div.innerHTML = `
+          <img src="${imgSrc}" alt="${item.name}" loading="lazy" onerror="this.onerror=null;this.src='imagenes/descarga.png'">
+          <div class="content">
+            <h4>${item.name} <span class="price">${priceDisplay}</span></h4>
+            <p>${item.description}</p>
+            <button class="add-btn">Agregar</button>
+          </div>
+        `;
+        div.querySelector('.add-btn').addEventListener('click', () => agregarAlPedido(item));
+        menuItemsContainer.appendChild(div);
+      });
+    }
+
+    function agregarAlPedido(item) {
+      pedido.push(item);
+      total += item.price;
+      actualizarPedido();
+    }
+
+    function eliminarDelPedido(index) {
+      if (index >= 0 && index < pedido.length) {
+        total -= pedido[index].price;
+        pedido.splice(index, 1);
+        actualizarPedido();
+      }
+    }
+
+    function actualizarPedido() {
+      pedidoList.innerHTML = '';
+      pedido.forEach((p, index) => {
+        const li = document.createElement('li');
+        const currency = p.currency ? p.currency : 'C$';
+        li.innerHTML = `
+          <span>${p.name} - ${currency}${p.price.toFixed(2)}</span>
+          <button class="remove-btn" data-index="${index}">Eliminar</button>
+        `;
+        pedidoList.appendChild(li);
+      });
+      
+      // Agregar eventos a los botones de eliminar
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const index = parseInt(e.target.getAttribute('data-index'));
+          eliminarDelPedido(index);
+        });
+      });
+      
+      // Mostrar la moneda usando el currency del primer item del pedido si existe
+      const displayCurrency = pedido.length > 0 && pedido[0].currency ? pedido[0].currency : 'C$';
+      // Si el pedido está vacío, mostrar C$0.00
+      totalEl.textContent = `${displayCurrency}${(pedido.length > 0 ? total : 0).toFixed(2)}`;
+      actualizarContadorCarrito();
+    }
+
+    function actualizarContadorCarrito() {
+      const cartCount = document.getElementById('cart-count');
+      const cartBall = document.getElementById('cart-ball');
+      cartCount.textContent = pedido.length;
+
+      if (pedido.length > 0) {
+        cartBall.classList.add('cart-active');
+      } else {
+        cartBall.classList.remove('cart-active');
+      }
+    }
+
+    function getSessionUser() {
+      const stored = localStorage.getItem('saboresUser');
+      if (!stored) return null;
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return null;
+      }
+    }
+
+    function updateUserPanelDisplay(user) {
+      const panel = document.getElementById('user-panel');
+      if (!panel || !user) return;
+      panel.innerHTML = `
+        <div class="user-box">
+          <img src="${user.imageUrl || 'imagenes/Logo.jpg'}" alt="Avatar de ${user.name}">
+          <div>
+            <span>${user.name}</span>
+            <small>Mesa ${user.tableNumber}</small>
+          </div>
+        </div>
+        <button id="logout-btn" type="button">Cerrar sesión</button>
+      `;
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+          localStorage.removeItem('saboresUser');
+          location.reload();
+        });
+      }
+    }
+
+    function cargarLogoPDF(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/jpeg'));
+        };
+        img.onerror = () => reject(new Error('No se pudo cargar la imagen'));
+        img.src = src;
+      });
+    }
+
+    function descargarPDF() {
+      if (pedido.length === 0) {
+        alert('Agrega al menos un producto antes de descargar el PDF.');
+        return;
+      }
+
+      if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert('No se pudo cargar la librería para generar PDF.');
+        return;
+      }
+
+      const sessionUser = getSessionUser();
+      const logoSrc = 'imagenes/Logo.jpg';
+      const userSrc = sessionUser && sessionUser.imageUrl ? sessionUser.imageUrl : null;
+      const promises = [cargarLogoPDF(logoSrc)];
+      if (userSrc) promises.push(cargarLogoPDF(userSrc));
+
+      Promise.allSettled(promises).then(results => {
+        const logoDataUrl = results[0].status === 'fulfilled' ? results[0].value : null;
+        const userDataUrl = results[1] && results[1].status === 'fulfilled' ? results[1].value : null;
+        generarPDF(logoDataUrl, userDataUrl, sessionUser);
+      });
+    }
+
+    function generarPDF(logoDataUrl, userDataUrl, sessionUser) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const user = sessionUser || { name: 'Cliente', tableNumber: Math.floor(Math.random() * 20) + 1, imageUrl: 'imagenes/Logo.jpg' };
+      const displayName = user.name || 'Cliente';
+      const tableNumber = user.tableNumber || (Math.floor(Math.random() * 20) + 1);
+
+      if (logoDataUrl) {
+        doc.addImage(logoDataUrl, 'JPEG', 14, 14, 45, 45);
+      }
+      if (userDataUrl) {
+        doc.addImage(userDataUrl, 'JPEG', 154, 16, 40, 40);
+      }
+
+      doc.setFontSize(16);
+      doc.setTextColor('#6B4C3B');
+      doc.text('Sabores Ancestrales', 70, 24);
+      doc.setFontSize(10);
+      doc.setTextColor('#4d4d4d');
+      const fechaTexto = new Date().toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
+      doc.text(`Fecha: ${fechaTexto}`, 70, 32);
+      doc.setFontSize(11);
+      doc.text(`Cliente: ${displayName}`, 14, 70);
+      doc.text(`Mesa: ${tableNumber}`, 14, 78);
+      doc.setDrawColor(107, 76, 59);
+      doc.setLineWidth(0.8);
+      doc.line(14, 84, 196, 84);
+
+      let y = 96;
+      doc.setFontSize(12);
+      pedido.forEach((item, index) => {
+        const line = `${index + 1}. ${item.name} - ${item.currency || 'C$'}${item.price.toFixed(2)}`;
+        doc.text(line, 14, y);
+        y += 8;
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+      });
+
+      const metodoPago = document.getElementById('pago').value || 'No especificado';
+      const displayCurrency = pedido[0].currency ? pedido[0].currency : 'C$';
+      y += 12;
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.setFontSize(14);
+      doc.text(`Total: ${displayCurrency}${total.toFixed(2)}`, 14, y);
+      y += 8;
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.setFontSize(11);
+      doc.text(`Método de pago: ${metodoPago}`, 14, y);
+      doc.save('pedido-sabores-ancestrales.pdf');
+    }
+
+    const cartBall = document.getElementById('cart-ball');
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+    let pointerMoved = false;
+
+    cartBall.addEventListener('pointerdown', (event) => {
+      isDragging = true;
+      pointerMoved = false;
+      dragOffsetX = event.clientX - cartBall.offsetLeft;
+      dragOffsetY = event.clientY - cartBall.offsetTop;
+      cartBall.setPointerCapture(event.pointerId);
+    });
+
+    window.addEventListener('pointermove', (event) => {
+      if (!isDragging) return;
+      const deltaX = Math.abs(event.clientX - (dragOffsetX + cartBall.offsetLeft));
+      const deltaY = Math.abs(event.clientY - (dragOffsetY + cartBall.offsetTop));
+      if (deltaX > 4 || deltaY > 4) {
+        pointerMoved = true;
+      }
+
+      let x = event.clientX - dragOffsetX;
+      let y = event.clientY - dragOffsetY;
+      const maxX = window.innerWidth - cartBall.offsetWidth - 10;
+      const maxY = window.innerHeight - cartBall.offsetHeight - 10;
+      x = Math.min(Math.max(10, x), maxX);
+      y = Math.min(Math.max(10, y), maxY);
+
+      cartBall.style.left = `${x}px`;
+      cartBall.style.top = `${y}px`;
+      cartBall.style.bottom = 'auto';
+      cartBall.style.right = 'auto';
+    });
+
+    window.addEventListener('pointerup', (event) => {
+      if (!isDragging) return;
+      isDragging = false;
+      cartBall.releasePointerCapture(event.pointerId);
+      if (!pointerMoved) {
+        document.getElementById('pedido').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    cartBall.addEventListener('click', () => {
+      document.getElementById('pedido').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('download-pdf').addEventListener('click', descargarPDF);
+
+    const pagoSelect = document.getElementById('pago');
+    pagoSelect.addEventListener('change', mostrarCardDetails);
+    mostrarCardDetails();
+
+    document.getElementById('finalizar').addEventListener('click', () => {
+      if (pedido.length === 0) {
+        alert('Agrega al menos un producto al pedido.');
+        return;
+      }
+
+      const pago = pagoSelect.value;
+      if (!['efectivo', 'tarjeta'].includes(pago)) {
+        alert('Selecciona un método de pago válido.');
+        return;
+      }
+
+      let cardLast4 = '';
+      let cardExp = '';
+      let cardBrand = '';
+
+      if (pago === 'tarjeta') {
+        const cardNumber = document.getElementById('card_number').value.trim();
+        const cvv = document.getElementById('cvv').value.trim();
+        const expDate = document.getElementById('exp_date').value.trim();
+
+        const validationError = validarTarjeta(cardNumber, cvv, expDate);
+        if (validationError) {
+          alert(validationError);
+          return;
+        }
+
+        cardLast4 = obtenerUltimos4(cardNumber);
+        cardExp = expDate;
+        cardBrand = 'Desconocido';
+      }
+
+      const sessionUser = getSessionUser();
+      if (sessionUser) {
+        updateUserPanelDisplay(sessionUser);
+      }
+
+      const id = Math.floor(Math.random() * 1000000);
+      const pedidoTexto = pedido.map(p => `${p.name} - $${p.price.toFixed(2)}`).join(', ');
+
+    // Guardar pedido en la base de datos vía PHP
+      const postBody = `pedido=${encodeURIComponent(pedidoTexto)}&total=${total.toFixed(2)}&pago=${pago}` +
+                      `&card_last4=${encodeURIComponent(cardLast4)}` +
+                      `&card_exp=${encodeURIComponent(cardExp)}` +
+                      `&card_brand=${encodeURIComponent(cardBrand)}`;
+
+      fetch("php/guardar_pedido.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: postBody
+      })
+      .then(res => res.text())
+      .then(data => {
+        alert(data);
+      });
+
+      // Mostrar ticket
+      ticketEl.style.display = 'block';
+      const displayCurrency = pedido.length > 0 && pedido[0].currency ? pedido[0].currency : 'C$';
+      ticketEl.innerHTML = `
+        <h4>✅ Pedido confirmado</h4>
+        <p><strong>ID Pedido:</strong> ${id}</p>
+        <ul>${pedido.map(p => `<li>${p.name} - ${p.currency ? p.currency : 'C$'}${p.price.toFixed(2)}</li>`).join('')}</ul>
+        <p><strong>Total:</strong> ${displayCurrency}${total.toFixed(2)}</p>
+        <p><strong>Método de pago:</strong> ${pago}</p>
+        ${pago === 'tarjeta' ? `<p><strong>Tarjeta:</strong> **** **** **** ${cardLast4} (exp: ${cardExp})</p>` : ''}
+        <p>¡Gracias por tu compra en <strong>Sabores Ancestrales</strong>!</p>
+      `;
+
+      pedido.length = 0;
+      total = 0;
+      actualizarPedido();
+    });
+
+    categoryButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        categoryButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadMenuItems(btn.dataset.category);
+      });
+    });
+
+    // Menú móvil
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+    });
+
+    // Cargar la categoría inicial
+    loadMenuItems('entradas');
+  </script>
+  <script src="js/login.js"></script>
+</body>
+</html>
+```
+

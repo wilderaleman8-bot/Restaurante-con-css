@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sabores Ancestrales | Opiniones</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container navbar">
+      <div class="logo">
+        <img src="imagenes/Logo.jpg" alt="Logo Sabores Ancestrales">
+        <span>Sabores Ancestrales</span>
+      </div>
+      <button id="menu-toggle">☰</button>
+      <ul id="nav-links" class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="informacion.html">Información</a></li>
+        <li><a href="menu.html">Platillos</a></li>
+        <li><a href="reservas.html">Reservas</a></li>
+        <li><a href="valoracion.html">Valoración</a></li>
+        <li><a href="opiniones.html" class="active">Opiniones</a></li>
+      </ul>
+      <div id="user-panel" class="user-panel"></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <h2>Opiniones de Nuestros Clientes</h2>
+      <p class="lead">Tu voz importa. Deja tu comentario sobre tu experiencia.</p>
+
+      <!-- FORMULARIO MODIFICADO PARA PHP -->
+      <form action="php/guardar_opinion.php" method="POST" class="form-card">
+        <div class="form-row">
+          <div>
+            <label for="nombre">Nombre</label>
+            <input type="text" name="nombre" id="nombre" required>
+          </div>
+          <div>
+            <label for="apellido">Apellidos</label>
+            <input type="text" name="apellido" id="apellido" required>
+          </div>
+        </div>
+        <div class="form-row full">
+          <label for="comentario">Comentario</label>
+          <textarea name="comentario" id="comentario" rows="3" maxlength="300" placeholder="Máximo 300 caracteres" required></textarea>
+        </div>
+        <button type="submit" class="btn">Enviar Opinión</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

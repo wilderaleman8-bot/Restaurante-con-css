@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sabores Ancestrales | Login</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .auth-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:35px; }
+    .auth-card { background:#fff; padding:28px; border-radius:18px; box-shadow:0 18px 40px rgba(0,0,0,0.08); text-align:left; }
+    .auth-card h3 { color:#6B4C3B; margin-bottom:18px; }
+    .auth-card p { color:#5a5a5a; margin-bottom:22px; }
+    .auth-card label { display:block; font-weight:700; margin-bottom:8px; color:#6B4C3B; }
+    .auth-card input[type="text"], .auth-card input[type="email"], .auth-card input[type="password"], .auth-card input[type="file"], .auth-card button { width:100%; }
+    .auth-card input[type="text"], .auth-card input[type="email"], .auth-card input[type="password"], .auth-card select { padding:12px 14px; border-radius:12px; border:1px solid #ddd; margin-bottom:16px; outline:none; }
+    .auth-card input[type="file"] { padding:6px; margin-bottom:16px; }
+    .auth-card button { background:#6B4C3B; color:#fff; border:none; padding:12px 16px; border-radius:12px; cursor:pointer; font-weight:700; transition:background .25s ease; }
+    .auth-card button:hover { background:#553b2d; }
+    .auth-card small { color:#777; display:block; margin-top:8px; }
+    .auth-message { min-height:22px; margin-bottom:6px; font-weight:600; }
+    #register-image-preview { width:100%; min-height:140px; border:1px dashed #ccc; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#777; margin-bottom:18px; background:#faf7f2; }
+    .auth-hint { display:flex; gap:16px; flex-wrap:wrap; align-items:center; margin-top:14px; }
+    .auth-hint span { background:#f3ece4; color:#6B4C3B; padding:10px 14px; border-radius:999px; font-size:.95rem; }
+    @media (max-width:900px) { .auth-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container navbar">
+      <div class="logo">
+        <img src="imagenes/Logo.jpg" alt="Logo Sabores Ancestrales">
+        <span>Sabores Ancestrales</span>
+      </div>
+      <button id="menu-toggle">☰</button>
+      <ul id="nav-links" class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="informacion.html">Información</a></li>
+        <li><a href="menu.html">Platillos</a></li>
+        <li><a href="reservas.html">Reservas</a></li>
+        <li><a href="valoracion.html">Valoración</a></li>
+        <li><a href="opiniones.html">Opiniones</a></li>
+      </ul>
+      <div id="user-panel" class="user-panel"></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <h2>Login y crear cuenta</h2>
+      <p class="lead">Inicia sesión o regístrate para guardar tu perfil, ver tu nombre y tu imagen en todas las secciones.</p>
+
+      <div class="auth-grid">
+        <div class="auth-card">
+          <h3>Iniciar sesión</h3>
+          <form id="login-form">
+            <div class="auth-message" id="login-message"></div>
+            <label for="login-email">Correo electrónico</label>
+            <input type="email" id="login-email" name="email" placeholder="correo@ejemplo.com" required>
+
+            <label for="login-password">Contraseña</label>
+            <input type="password" id="login-password" name="password" placeholder="Tu contraseña" required>
+
+            <button type="submit">Entrar a mi cuenta</button>
+          </form>
+          <div class="auth-hint">
+            <span>Accede rápido</span>
+            <span>Tu información se recuerda en esta sesión.</span>
+          </div>
+        </div>
+
+        <div class="auth-card">
+          <h3>Crear cuenta nueva</h3>
+          <form id="register-form" enctype="multipart/form-data" novalidate>
+            <div class="auth-message" id="register-message"></div>
+            <label for="register-name">Nombre completo</label>
+            <input type="text" id="register-name" name="nombre" placeholder="Tu nombre completo" required>
+
+            <label for="register-email">Correo electrónico</label>
+            <input type="email" id="register-email" name="email" placeholder="correo@ejemplo.com" required>
+
+            <label for="register-password">Contraseña</label>
+            <input type="password" id="register-password" name="password" placeholder="Crea una contraseña" required>
+
+            <label for="register-confirm-password">Confirmar contraseña</label>
+            <input type="password" id="register-confirm-password" name="confirm_password" placeholder="Repite la contraseña" required>
+
+            <label for="register-image">Foto de perfil</label>
+            <input type="file" id="register-image" name="imagen" accept="image/png, image/jpeg">
+            <div id="register-image-preview">Tu foto aparecerá aquí</div>
+
+            <button type="submit">Crear cuenta</button>
+          </form>
+          <div class="auth-hint">
+            <span>Vista previa de tu imagen</span>
+            <span>Elige una foto para tu perfil.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

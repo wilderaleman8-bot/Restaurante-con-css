@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sabores Ancestrales | Reservas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container navbar">
+      <div class="logo">
+        <img src="imagenes/Logo.jpg" alt="Logo Sabores Ancestrales">
+        <span>Sabores Ancestrales</span>
+      </div>
+      <button id="menu-toggle">☰</button>
+      <ul id="nav-links" class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="informacion.html">Información</a></li>
+        <li><a href="menu.html">Platillos</a></li>
+        <li><a href="reservas.html" class="active">Reservas</a></li>
+        <li><a href="valoracion.html">Valoración</a></li>
+        <li><a href="opiniones.html">Opiniones</a></li>
+      </ul>
+      <div id="user-panel" class="user-panel"></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <h2>Haz tu Reserva</h2>
+      <p class="lead">Reserva tu mesa en pocos pasos y disfruta una experiencia única en Sabores Ancestrales.</p>
+
+      <!-- FORMULARIO MODIFICADO PARA ENVIAR A PHP -->
+      <form action="php/guardar_reserva.php" method="POST" class="form-card">
+        <div class="form-row">
+          <div>
+            <label for="nombre">Nombre</label>
+            <input type="text" name="nombre" id="nombre" required>
+          </div>
+          <div>
+            <label for="apellido">Apellidos</label>
+            <input type="text" name="apellido" id="apellido" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label for="personas">Número de Personas</label>
+            <input type="number" name="personas" id="personas" min="1" max="20" required>
+          </div>
+          <div>
+            <label for="fecha">Fecha</label>
+            <input type="date" name="fecha" id="fecha" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="full">
+            <label for="mensaje">Comentario (opcional)</label>
+            <textarea name="mensaje" id="mensaje" rows="3" maxlength="500" placeholder="Máximo 500 caracteres"></textarea>
+          </div>
+        </div>
+        <button type="submit" class="btn">Reservar</button>
+      </form>
+
+      <div id="confirmacion" class="ticket" style="display:none;">
+        <h4>✅ Reserva Confirmada</h4>
+        <p id="resumen"></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const fechaInput = document.getElementById('fecha');
+      if (fechaInput) {
+        const hoy = new Date();
+        const yyyy = hoy.getFullYear();
+        const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+        const dd = String(hoy.getDate()).padStart(2, '0');
+        fechaInput.min = `${yyyy}-${mm}-${dd}`;
+      }
+
+      const mensajeInput = document.getElementById('mensaje');
+      if (mensajeInput) {
+        mensajeInput.maxLength = 500;
+        mensajeInput.placeholder = 'Máximo 500 caracteres';
+      }
+    });
+  </script>
+  <script src="js/main.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

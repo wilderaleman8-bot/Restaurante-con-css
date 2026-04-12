@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sabores Ancestrales | Valoración</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container navbar">
+      <div class="logo">
+        <img src="imagenes/Logo.jpg" alt="Logo Sabores Ancestrales">
+        <span>Sabores Ancestrales</span>
+      </div>
+      <button id="menu-toggle">☰</button>
+      <ul id="nav-links" class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="informacion.html">Información</a></li>
+        <li><a href="menu.html">Platillos</a></li>
+        <li><a href="reservas.html">Reservas</a></li>
+        <li><a href="valoracion.html" class="active">Valoración</a></li>
+        <li><a href="opiniones.html">Opiniones</a></li>
+      </ul>
+      <div id="user-panel" class="user-panel"></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <h2>Tu Valoración</h2>
+      <p class="lead">Cuéntanos qué te pareció tu experiencia en Sabores Ancestrales.</p>
+
+      <!-- FORMULARIO CON PHP -->
+      <form action="php/guardar_valoracion.php" method="POST" class="form-card">
+        <div class="form-row">
+          <div>
+            <label for="nombre">Nombre</label>
+            <input type="text" name="nombre" id="nombre" required>
+          </div>
+          <div>
+            <label for="apellido">Apellidos</label>
+            <input type="text" name="apellido" id="apellido" required>
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <label for="estrellas">Calificación</label>
+          <select name="estrellas" id="estrellas" required>
+            <option value="">Selecciona...</option>
+            <option value="1">⭐</option>
+            <option value="2">⭐⭐</option>
+            <option value="3">⭐⭐⭐</option>
+            <option value="4">⭐⭐⭐⭐</option>
+            <option value="5">⭐⭐⭐⭐⭐</option>
+          </select>
+        </div>
+
+        <div class="form-row full">
+          <label for="comentario">Comentario</label>
+          <textarea name="comentario" id="comentario" rows="3" maxlength="300" placeholder="Máximo 300 caracteres" required></textarea>
+        </div>
+
+        <button type="submit" class="btn">Enviar Valoración</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>
