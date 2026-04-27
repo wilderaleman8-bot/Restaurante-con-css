@@ -1,42 +1,30 @@
 const express = require('express');
 const path = require('path');
-const mysql = require('mysql2');
 
 const app = express();
 
-// Configuración de la conexión a MySQL (XAMPP)
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',  // usuario de XAMPP
-  password: '',  // contraseña (vacía por defecto)
-  database: 'restaurante_db'  // nombre de la DB en XAMPP
-});
-
-connection.connect((err) => {
-  if (err) throw err;
-  console.log('Conectado a MySQL');
-});
-
-// Middleware para servir archivos estáticos (HTML, CSS, imágenes)
+// Middleware
 app.use(express.static(path.join(__dirname)));
-
-// Middleware para parsear JSON
 app.use(express.json());
 
-// Ejemplo de consulta
+// Datos falsos (simulando menú)
+const menu = [
+  { id: 1, nombre: "Hamburguesa", precio: 5 },
+  { id: 2, nombre: "Pizza", precio: 8 },
+  { id: 3, nombre: "Refresco", precio: 2 }
+];
+
+// Ruta API sin base de datos
 app.get('/api/menu', (req, res) => {
-  connection.query('SELECT * FROM menu', (err, results) => {
-    if (err) throw err;
-    res.json(results);
-  });
+  res.json(menu);
 });
 
-// Ruta raíz para servir index.html
+// Ruta principal
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Puerto
+// Servidor
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
