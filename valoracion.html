@@ -32,8 +32,7 @@
       <h2>Tu Valoración</h2>
       <p class="lead">Cuéntanos qué te pareció tu experiencia en Sabores Ancestrales.</p>
 
-      <!-- FORMULARIO CON PHP -->
-      <form action="php/guardar_valoracion.php" method="POST" class="form-card">
+      <form id="valoracion-form" class="form-card">
         <div class="form-row">
           <div>
             <label for="nombre">Nombre</label>
@@ -63,6 +62,7 @@
         </div>
 
         <button type="submit" class="btn">Enviar Valoración</button>
+        <div id="valoracion-message" class="form-message"></div>
       </form>
     </div>
   </section>
@@ -72,6 +72,10 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <!-- JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase.js"></script>
   <script src="js/login.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

@@ -32,8 +32,7 @@
       <h2>Haz tu Reserva</h2>
       <p class="lead">Reserva tu mesa en pocos pasos y disfruta una experiencia única en Sabores Ancestrales.</p>
 
-      <!-- FORMULARIO MODIFICADO PARA ENVIAR A PHP -->
-      <form action="php/guardar_reserva.php" method="POST" class="form-card">
+      <form id="reserva-form" class="form-card">
         <div class="form-row">
           <div>
             <label for="nombre">Nombre</label>
@@ -61,6 +60,7 @@
           </div>
         </div>
         <button type="submit" class="btn">Reservar</button>
+        <div id="reserva-message" class="form-message"></div>
       </form>
 
       <div id="confirmacion" class="ticket" style="display:none;">
@@ -92,7 +92,10 @@
       }
     });
   </script>
-  <script src="js/main.js"></script>
+  <!-- JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase.js"></script>
   <script src="js/login.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

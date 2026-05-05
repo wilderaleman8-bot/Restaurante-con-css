@@ -32,8 +32,7 @@
       <h2>Opiniones de Nuestros Clientes</h2>
       <p class="lead">Tu voz importa. Deja tu comentario sobre tu experiencia.</p>
 
-      <!-- FORMULARIO MODIFICADO PARA PHP -->
-      <form action="php/guardar_opinion.php" method="POST" class="form-card">
+      <form id="opinion-form" class="form-card">
         <div class="form-row">
           <div>
             <label for="nombre">Nombre</label>
@@ -49,6 +48,7 @@
           <textarea name="comentario" id="comentario" rows="3" maxlength="300" placeholder="Máximo 300 caracteres" required></textarea>
         </div>
         <button type="submit" class="btn">Enviar Opinión</button>
+        <div id="opinion-message" class="form-message"></div>
       </form>
     </div>
   </section>
@@ -57,7 +57,10 @@
     <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
   </footer>
 
-  <script src="js/main.js"></script>
+  <!-- JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase.js"></script>
   <script src="js/login.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

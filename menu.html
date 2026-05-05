@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sabores Ancestrales | Menú</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!--Iconos de FontAwesome-->
+  <link rel="stylesheet" href="css/style.css"> <!--Enlaza el archivo CSS interno-->
   <style>
     /* Estilos generales */
     * {
@@ -18,6 +19,7 @@
       background-color: #f8f5f0;
       color: #333;
       line-height: 1.6;
+      padding-top: 110px;
     }
     
     .container {
@@ -28,34 +30,51 @@
     
     /* Header */
     header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
       background-color: #6B4C3B;
       color: #fff;
       padding: 15px 0;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
     }
     
     .navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
     }
     
     .logo {
       display: flex;
       align-items: center;
+      order: 3;
     }
     
     .logo img {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       margin-right: 10px;
       object-fit: cover;
+      max-width: 100%;
     }
     
     .logo span {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: bold;
+    }
+
+    .nav-links {
+      order: 1;
+    }
+
+    .user-panel {
+      order: 2;
     }
     
     .nav-links {
@@ -77,17 +96,20 @@
       color: #f4a460;
     }
     
-    .user-panel{display:flex;align-items:center;gap:10px;margin-left:20px}
+    .user-panel{display:flex;align-items:center;gap:10px;margin-left:auto}
     .user-panel a,.user-panel button{color:white;font-weight:600;text-decoration:none;border-radius:999px;padding:8px 12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.08);cursor:pointer}
     .user-panel button{background:transparent}
-    .user-panel .user-box{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18)}
-    .user-panel .user-box img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.4)}
+    .user-panel .user-box{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);max-width:180px;min-width:0;overflow:hidden}
+    .user-panel .user-box img{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.4)}
     .user-panel .user-box span{
       color: white;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 600;
       line-height: 1.1;
       cursor: pointer;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     .user-panel .user-box small {
       color: #f5f5f5;
@@ -368,7 +390,17 @@
       margin-top: 40px;
     }
     
-    /* Responsive */
+    /* Responsive - Optimizado para todos los dispositivos móviles */
+    @media (max-width: 1024px) {
+      .menu-grid { gap: 24px; }
+      .menu-item img { height: 190px; }
+    }
+    
+    @media (max-width: 900px) {
+      .menu-categories { gap: 8px; }
+      .category-btn { padding: 9px 16px; font-size: 0.9rem; }
+    }
+    
     @media (max-width: 768px) {
       #menu-toggle {
         display: block;
@@ -393,8 +425,123 @@
         margin: 10px 0;
       }
       
+      .logo img {
+        width: 38px;
+        height: 38px;
+      }
+      
+      .logo span {
+        font-size: 1.1rem;
+      }
+      
       .menu-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .menu-item img {
+        height: 180px;
+      }
+      
+      .pedido {
+        padding: 20px;
+      }
+      
+      .ticket {
+        padding: 16px;
+      }
+      
+      #cart-ball {
+        width: 50px;
+        height: 50px;
+        bottom: 16px;
+        right: 16px;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .menu-categories {
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      
+      .category-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        border-width: 1.5px;
+      }
+      
+      .menu-item .content {
+        padding: 16px;
+      }
+      
+      .menu-item h4 {
+        font-size: 1rem;
+        flex-direction: column;
+        gap: 4px;
+      }
+      
+      .menu-item img {
+        height: 160px;
+      }
+      
+      .add-btn {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+      }
+      
+      .pedido {
+        padding: 16px;
+      }
+      
+      #pedido-list li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      
+      .remove-btn {
+        align-self: flex-end;
+      }
+      
+      #total {
+        font-size: 1.1rem;
+      }
+      
+      .btn {
+        padding: 10px 16px;
+        font-size: 0.95rem;
+      }
+      
+      .ticket {
+        padding: 14px;
+      }
+      
+      .ticket h4 {
+        font-size: 1rem;
+      }
+    }
+    
+    @media (max-width: 400px) {
+      .menu-item img {
+        height: 140px;
+      }
+      
+      .menu-item .content {
+        padding: 14px;
+      }
+      
+      .menu-item h4 {
+        font-size: 0.95rem;
+      }
+      
+      .category-btn {
+        padding: 7px 10px;
+        font-size: 0.8rem;
+      }
+      
+      .pedido {
+        padding: 14px;
       }
     }
   </style>
@@ -863,20 +1010,29 @@
       const id = Math.floor(Math.random() * 1000000);
       const pedidoTexto = pedido.map(p => `${p.name} - $${p.price.toFixed(2)}`).join(', ');
 
-    // Guardar pedido en la base de datos vía PHP
-      const postBody = `pedido=${encodeURIComponent(pedidoTexto)}&total=${total.toFixed(2)}&pago=${pago}` +
-                      `&card_last4=${encodeURIComponent(cardLast4)}` +
-                      `&card_exp=${encodeURIComponent(cardExp)}` +
-                      `&card_brand=${encodeURIComponent(cardBrand)}`;
-
-      fetch("php/guardar_pedido.php", {
+      // Guardar pedido en la base de datos vía backend Node.js
+      fetch("http://127.0.0.1:3000/api/pedidos", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: postBody
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          detalle: pedidoTexto,
+          total: total.toFixed(2),
+          metodo_pago: pago,
+          card_last4: cardLast4,
+          card_exp: cardExp,
+          card_brand: cardBrand
+        })
       })
-      .then(res => res.text())
+      .then(res => res.json())
       .then(data => {
-        alert(data);
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        alert(data.message || 'Pedido guardado correctamente');
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        alert('Error al guardar el pedido');
       });
 
       // Mostrar ticket
@@ -888,7 +1044,6 @@
         <ul>${pedido.map(p => `<li>${p.name} - ${p.currency ? p.currency : 'C$'}${p.price.toFixed(2)}</li>`).join('')}</ul>
         <p><strong>Total:</strong> ${displayCurrency}${total.toFixed(2)}</p>
         <p><strong>Método de pago:</strong> ${pago}</p>
-        ${pago === 'tarjeta' ? `<p><strong>Tarjeta:</strong> **** **** **** ${cardLast4} (exp: ${cardExp})</p>` : ''}
         <p>¡Gracias por tu compra en <strong>Sabores Ancestrales</strong>!</p>
       `;
 
@@ -913,8 +1068,9 @@
     // Cargar la categoría inicial
     loadMenuItems('entradas');
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase.js"></script>
   <script src="js/login.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
-```
-

@@ -1,4 +1,4 @@
-:root{ /* Varibles de color y estilos */
+﻿:root{ /* Varibles de color y estilos */
   --bg:#F7F3ED;
   --card:#FFFFFF;
   --wood:#7C543F;
@@ -35,8 +35,9 @@ header{
 .navbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0;flex-wrap:wrap;gap:12px}
 #menu-toggle{display:none;background:transparent;border:none;color:white;font-size:28px;cursor:pointer;padding:8px;line-height:1}
 .logo{display:flex;align-items:center;gap:10px;font-weight:700;color:#fff;flex-shrink:0}
-.logo img{width:42px;height:42px;border-radius:8px;object-fit:cover;background:#fff;padding:4px}
+.logo img{width:42px;height:42px;border-radius:8px;object-fit:cover;background:#fff;padding:4px;max-width:100%}
 .nav-links{display:flex;gap:22px;list-style:none;align-items:center;flex:1 1 auto;min-width:0;justify-content:center;flex-wrap:wrap;max-width:calc(100% - 380px)}
+.user-panel{display:flex;align-items:center;gap:10px;margin-left:auto;flex:0 0 auto;min-width:0;justify-content:flex-end}
 .nav-links a,
 .nav-links a:visited,
 .nav-links a:focus,
@@ -106,6 +107,7 @@ section{padding:70px 0;text-align:center}
 
 /* Formularios */
 .form-card{max-width:720px;margin:0 auto;background:var(--card);padding:28px 32px;border-radius:var(--radius);box-shadow:0 8px 20px var(--shadow);text-align:left}
+.form-message{margin-top:14px;padding:12px 14px;border-radius:12px;border:1px solid rgba(0,0,0,0.08);background:#f9f7f1;color:#3a2c20;font-weight:600}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .form-row .full{grid-column:1/-1}
 label{display:block;font-weight:600;margin-bottom:6px;color:var(--wood)}
@@ -137,9 +139,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--olive);box-shadow:0 0
 #total{font-size:1.2rem;color:#8b4513;font-weight:bold}
 label{display:block;margin:15px 0 5px;font-weight:bold}
 select{width:100%;padding:8px;border-radius:5px;border:1px solid #ddd;margin-bottom:20px}
-.btn{background-color:var(--wood);color:white;border:none;padding:12px 25px;border-radius:5px;cursor:pointer;font-size:1rem;transition:background-color 0.3s;display:block;width:100%;margin-top:12px}
 #download-pdf{margin-top:18px}
-.btn:hover{background-color:#563b2d}
 #cart-ball{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg, var(--accent), var(--wood));color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;cursor:grab;box-shadow:0 6px 18px rgba(0,0,0,0.35);z-index:1000;transition:transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;user-select:none}
 #cart-ball::before{content:'🏬';position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:1rem;line-height:1;}
 #cart-ball.cart-active{animation:cartGlow 1.2s infinite alternate;box-shadow:0 0 22px 10px rgba(193,122,86,0.7),0 6px 24px rgba(0,0,0,0.30);}
@@ -175,12 +175,19 @@ footer p{color:white}
   #menu-toggle{display:block}
   .nav-links{display:none;position:absolute;top:60px;right:10px;left:10px;background:rgba(107,76,59,0.98);padding:14px;box-shadow:0 10px 25px rgba(0,0,0,0.2);border-radius:12px;flex-direction:column;gap:12px;z-index:1001}
   .nav-links a{display:block;padding:10px 8px}
+  .logo img{width:34px;height:34px}
+  .logo span{font-size:1rem}
   .user-panel{width:100%;justify-content:flex-end;margin-left:0;flex-wrap:wrap;gap:8px}
   .user-panel a,.user-panel button{padding:6px 10px;font-size:.88rem}
-  .user-panel .user-box{gap:8px;padding:4px 8px;max-width:170px}
-  .user-panel .user-box img{width:26px;height:26px}
-  .user-panel .user-box span{font-size:.9rem;max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .user-panel .user-box small{display:none}
+  .user-panel .user-box,
+  .user-panel .user-info{gap:8px;padding:4px 8px;max-width:180px}
+  .user-panel .user-box img,
+  .user-panel .user-info img{width:28px;height:28px}
+  .user-panel .user-box span,
+  .user-panel .user-info span{font-size:.9rem;max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .user-panel .user-box small,
+  .user-panel .user-info small{display:none}
+  .user-labels{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .hero{min-height:240px}
   .hero-content{padding:60px 16px}
   .hero h1{font-size:30px}
@@ -203,4 +210,27 @@ footer p{color:white}
   .form-card{padding:18px}
   section{padding:55px 0}
   .menu-item img{height:160px}
+}
+@media (max-width:400px){
+  .hero h1{font-size:22px}
+  .hero p{font-size:13px}
+  .hero-content{padding:40px 12px}
+  .card{padding:14px}
+  .card h3{font-size:1rem}
+  .card p{font-size:0.9rem}
+  .form-card{padding:14px}
+  .navbar{padding:8px 0}
+  .logo span{font-size:0.9rem}
+  .nav-links a{font-size:0.85rem;padding:8px 6px}
+  section{padding:45px 0}
+  .menu-item img{height:140px}
+  .features,.menu-grid{gap:14px}
+}
+@media (max-width:360px){
+  .hero h1{font-size:20px}
+  .hero p{font-size:12px}
+  .container{width:95%}
+  .card{padding:12px}
+  .form-card{padding:12px}
+  input,select,textarea{padding:8px;font-size:0.9rem}
 }
