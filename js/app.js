@@ -2,21 +2,40 @@
  // LOGIN
  // ===============================
  async function login(email, password) {
-   const { data, error } = await supabase
-     .from('usuarios')
-     .select('*')
-     .eq('email', email)
-     .eq('password', password)
-     .single();
+   const backendUrl = window.location.protocol.startsWith('http')
+     ? `${window.location.protocol}//${window.location.hostname}:3000`
+     : 'http://127.0.0.1:3000';
 
-   if (error) {
-     console.error('Login error:', error);
-     alert("Correo o contraseña incorrectos o no se pudo conectar a la base de datos.");
-   } else {
-     localStorage.setItem("usuario", JSON.stringify(data));
-     alert("Bienvenido " + data.nombre);
-     window.location.href = "menu.html";
+   const response = await fetch(`${backendUrl}/api/usuarios/login`, {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({ email, password })
+   });
+
+   const result = await response.json();
+
+   if (!response.ok) {
+     alert(result.error || 'Correo o contraseña incorrectos');
+     return null;
    }
+
+   const usuario = result.usuario;
+   const imageUrl = usuario.image_path
+     ? `${backendUrl}/uploads/${usuario.image_path}`
+     : '../imagenes/Logo.jpg';
+   const sessionUser = {
+     id: usuario.id,
+     nombre: usuario.nombre,
+     email: usuario.email,
+     image_path: usuario.image_path || null,
+     imageUrl
+   };
+
+   localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
+   localStorage.setItem('usuario', JSON.stringify(sessionUser));
+   alert('Bienvenido ' + usuario.nombre);
+   window.location.href = 'menu.html';
+   return sessionUser;
  }
 
  // Evento login
@@ -35,31 +54,76 @@
  // ===============================
  // REGISTRO
  // ===============================
- async function registrar(nombre, email, password) {
-   const { error } = await supabase
-     .from('usuarios')
-     .insert([{ nombre, email, password }]);
+ async function registrar(formData) {
+   const backendUrl = window.location.protocol.startsWith('http')
+     ? `${window.location.protocol}//${window.location.hostname}:3000`
+     : 'http://127.0.0.1:3000';
 
-   if (error) {
-     console.error('Registro error:', error);
-     alert("Error al registrar en la base de datos. Revisa la consola.");
-   } else {
-     alert("Usuario creado");
-     window.location.href = "login.html";
+   const response = await fetch(`${backendUrl}/api/usuarios/registro`, {
+     method: 'POST',
+     body: formData
+   });
+
+   const result = await response.json();
+
+   if (!response.ok) {
+     alert(result.error || 'Error al registrar');
+     return null;
    }
+
+   return result.usuario;
+ }
+
+ // Preview de imagen de registro
+ const registerImageInput = document.getElementById('register-image');
+ const registerImagePreview = document.getElementById('register-image-preview');
+ if (registerImageInput && registerImagePreview) {
+   registerImageInput.addEventListener('change', function() {
+     const file = this.files[0];
+     if (!file) {
+       registerImagePreview.textContent = 'Tu foto aparecerá aquí';
+       registerImagePreview.style.backgroundImage = '';
+       return;
+     }
+     const reader = new FileReader();
+     reader.onload = () => {
+       registerImagePreview.style.backgroundImage = `url('${reader.result}')`;
+       registerImagePreview.style.backgroundSize = 'cover';
+       registerImagePreview.style.backgroundPosition = 'center';
+       registerImagePreview.textContent = '';
+     };
+     reader.readAsDataURL(file);
+   });
  }
 
  // Evento registro
  const formRegistro = document.querySelector("#register-form");
  if (formRegistro) {
-   formRegistro.addEventListener("submit", e => {
+   formRegistro.addEventListener("submit", async e => {
      e.preventDefault();
 
-     const nombre = e.target.nombre.value;
-     const email = e.target.email.value;
-     const password = e.target.password.value;
+     const formData = new FormData(e.target);
+     const usuario = await registrar(formData);
 
-     registrar(nombre, email, password);
+     if (usuario) {
+       const backendUrl = window.location.protocol.startsWith('http')
+         ? `${window.location.protocol}//${window.location.hostname}:3000`
+         : 'http://127.0.0.1:3000';
+       const imageUrl = usuario.image_path
+         ? `${backendUrl}/uploads/${usuario.image_path}`
+         : '../imagenes/Logo.jpg';
+       const sessionUser = {
+         id: usuario.id,
+         nombre: usuario.nombre,
+         email: usuario.email,
+         image_path: usuario.image_path || null,
+         imageUrl
+       };
+       localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
+       localStorage.setItem('usuario', JSON.stringify(sessionUser));
+       alert('Usuario creado');
+       window.location.href = 'menu.html';
+     }
    });
  }
 

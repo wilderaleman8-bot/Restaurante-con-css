@@ -1,6 +1,10 @@
 // Mostrar panel de usuario si está logueado
 document.addEventListener('DOMContentLoaded', function() {
-  const usuario = JSON.parse(localStorage.getItem('usuario'));
+  const storedUser = localStorage.getItem('saboresUser') || localStorage.getItem('usuario');
+  const usuario = storedUser ? JSON.parse(storedUser) : null;
+  const backendUrl = window.location.protocol.startsWith('http')
+    ? `${window.location.protocol}//${window.location.hostname}:3000`
+    : 'http://127.0.0.1:3000';
 
   if (usuario) {
     // Usuario logueado - mostrar panel

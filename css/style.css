@@ -35,7 +35,7 @@ header{
 .navbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0;flex-wrap:wrap;gap:12px}
 #menu-toggle{display:none;background:transparent;border:none;color:white;font-size:28px;cursor:pointer;padding:8px;line-height:1}
 .logo{display:flex;align-items:center;gap:10px;font-weight:700;color:#fff;flex-shrink:0}
-.logo img{width:42px;height:42px;border-radius:8px;object-fit:cover;background:#fff;padding:4px;max-width:100%}
+.logo img{width:34px;height:34px;border-radius:8px;object-fit:cover;background:#fff;padding:4px;max-width:100%}
 .nav-links{display:flex;gap:22px;list-style:none;align-items:center;flex:1 1 auto;min-width:0;justify-content:center;flex-wrap:wrap;max-width:calc(100% - 380px)}
 .user-panel{display:flex;align-items:center;gap:10px;margin-left:auto;flex:0 0 auto;min-width:0;justify-content:flex-end}
 .nav-links a,
@@ -53,9 +53,9 @@ header{
 .user-panel{display:flex;align-items:center;gap:10px;margin-left:auto;flex:0 0 auto;min-width:0;justify-content:flex-end}
   .user-panel a,.user-panel button{color:white;font-weight:600;text-decoration:none;border-radius:999px;padding:8px 12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.08);cursor:pointer}
   .user-panel button{background:transparent}
-  .user-panel .user-box{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);max-width:200px;min-width:0;overflow:hidden}
-  .user-panel .user-box img{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.4)}
-  .user-panel .user-box span{color:white;font-weight:700;font-size:0.9rem;line-height:1.1;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .user-panel .user-box{display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);max-width:200px;min-width:0;overflow:hidden}
+  .user-panel .user-box img{width:18px;height:18px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.4)}
+  .user-panel .user-box span{color:white;font-weight:700;font-size:0.82rem;line-height:1.1;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .user-panel .user-box small{display:none}
 .hero{
   margin-top:72px;
@@ -182,7 +182,7 @@ footer p{color:white}
   .user-panel .user-box,
   .user-panel .user-info{gap:8px;padding:4px 8px;max-width:180px}
   .user-panel .user-box img,
-  .user-panel .user-info img{width:28px;height:28px}
+  .user-panel .user-info img{width:18px;height:18px}
   .user-panel .user-box span,
   .user-panel .user-info span{font-size:.9rem;max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .user-panel .user-box small,
