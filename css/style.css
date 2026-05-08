@@ -37,26 +37,20 @@ header{
 .logo{display:flex;align-items:center;gap:10px;font-weight:700;color:#fff;flex-shrink:0}
 .logo img{width:34px;height:34px;border-radius:8px;object-fit:cover;background:#fff;padding:4px;max-width:100%}
 .nav-links{display:flex;gap:22px;list-style:none;align-items:center;flex:1 1 auto;min-width:0;justify-content:center;flex-wrap:wrap;max-width:calc(100% - 380px)}
-.user-panel{display:flex;align-items:center;gap:10px;margin-left:auto;flex:0 0 auto;min-width:0;justify-content:flex-end}
-.nav-links a,
-.nav-links a:visited,
-.nav-links a:focus,
-.nav-links a:active {
-  color:white;
-  text-decoration:none;
-  font-weight:600;
-  transition:var(--transition);
-  white-space:nowrap;
-}
+.nav-links a{color:white;text-decoration:none;font-weight:600;transition:var(--transition);white-space:nowrap}
 .nav-links a:hover{color:var(--olive)}
 .nav-links a.active{color:var(--accent);text-decoration:underline}
-.user-panel{display:flex;align-items:center;gap:10px;margin-left:auto;flex:0 0 auto;min-width:0;justify-content:flex-end}
-  .user-panel a,.user-panel button{color:white;font-weight:600;text-decoration:none;border-radius:999px;padding:8px 12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.08);cursor:pointer}
-  .user-panel button{background:transparent}
-  .user-panel .user-box{display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);max-width:200px;min-width:0;overflow:hidden}
-  .user-panel .user-box img{width:18px;height:18px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.4)}
-  .user-panel .user-box span{color:white;font-weight:700;font-size:0.82rem;line-height:1.1;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .user-panel .user-box small{display:none}
+
+.user-panel{display:flex;align-items:center;gap:12px;margin-left:auto;flex-shrink:0}
+.user-panel a{color:white;text-decoration:none;font-size:0.85rem;font-weight:600;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);transition:var(--transition)}
+.user-panel a:hover{background:var(--accent);border-color:var(--accent)}
+
+.user-box{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,0.2);padding:4px 10px;border-radius:30px;border:1px solid rgba(255,255,255,0.15);max-height:38px}
+.user-box img{width:26px!important;height:26px!important;border-radius:50%;object-fit:cover;border:1.5px solid var(--accent)}
+.user-labels{display:flex;flex-direction:column;justify-content:center;line-height:1}
+.user-labels span{color:white;font-size:0.75rem;font-weight:700;max-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+#logout-btn{background:transparent;border:none;color:var(--olive);font-size:0.65rem;font-weight:700;padding:0;cursor:pointer;text-align:left;text-decoration:underline;text-transform:uppercase;letter-spacing:0.4px}
+#logout-btn:hover{color:white}
 .hero{
   margin-top:72px;
   padding:0; /* padding será controlado por hero-content */
@@ -172,22 +166,19 @@ footer p{color:white}
   .form-card{padding:24px 20px}
 }
 @media (max-width:768px){
+  body{padding-top:80px} /* Espacio para el header fijo en móvil */
   #menu-toggle{display:block}
-  .nav-links{display:none;position:absolute;top:60px;right:10px;left:10px;background:rgba(107,76,59,0.98);padding:14px;box-shadow:0 10px 25px rgba(0,0,0,0.2);border-radius:12px;flex-direction:column;gap:12px;z-index:1001}
-  .nav-links a{display:block;padding:10px 8px}
+  .nav-links{display:none;position:absolute;top:70px;left:50%;transform:translateX(-50%);width:90%;max-width:320px;background:rgba(86,59,45,0.98);padding:20px;box-shadow:0 15px 35px rgba(0,0,0,0.3);border-radius:16px;flex-direction:column;gap:8px;z-index:1001;text-align:center}
+  .nav-links.active{display:flex}
+  .nav-links a{display:block;padding:12px;color:#fff!important;text-decoration:none!important;font-size:1rem;border-bottom:1px solid rgba(255,255,255,0.1)}
+  .nav-links li:last-child a{border-bottom:none}
   .logo img{width:34px;height:34px}
   .logo span{font-size:1rem}
-  .user-panel{width:100%;justify-content:flex-end;margin-left:0;flex-wrap:wrap;gap:8px}
-  .user-panel a,.user-panel button{padding:6px 10px;font-size:.88rem}
-  .user-panel .user-box,
-  .user-panel .user-info{gap:8px;padding:4px 8px;max-width:180px}
-  .user-panel .user-box img,
-  .user-panel .user-info img{width:18px;height:18px}
-  .user-panel .user-box span,
-  .user-panel .user-info span{font-size:.9rem;max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .user-panel .user-box small,
-  .user-panel .user-info small{display:none}
-  .user-labels{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .user-panel{width:auto;justify-content:flex-end;gap:6px}
+  .user-box{padding:3px 8px;gap:6px;max-height:34px}
+  .user-box img{width:22px!important;height:22px!important}
+  .user-labels span{font-size:0.7rem;max-width:70px}
+  .user-labels #logout-btn{font-size:0.6rem}
   .hero{min-height:240px}
   .hero-content{padding:60px 16px}
   .hero h1{font-size:30px}

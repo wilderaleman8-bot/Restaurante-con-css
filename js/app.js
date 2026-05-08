@@ -1,139 +1,219 @@
 // ===============================
- // LOGIN
- // ===============================
- async function login(email, password) {
-   const backendUrl = window.location.protocol.startsWith('http')
-     ? `${window.location.protocol}//${window.location.hostname}:3000`
-     : 'http://127.0.0.1:3000';
+// CONFIGURACIÓN GLOBAL Y SESIÓN
+// ===============================
+function getUsuario() {
+  const stored = localStorage.getItem('usuario') || localStorage.getItem('saboresUser');
+  return stored ? JSON.parse(stored) : null;
+}
 
-   const response = await fetch(`${backendUrl}/api/usuarios/login`, {
-     method: 'POST',
-     headers: { 'Content-Type': 'application/json' },
-     body: JSON.stringify({ email, password })
-   });
+function logout() {
+  localStorage.removeItem('usuario');
+  localStorage.removeItem('saboresUser');
+  alert('Has cerrado sesión correctamente');
+  window.location.href = './index.html';
+}
 
-   const result = await response.json();
+// ===============================
+// UI - PANEL DE USUARIO Y MENÚ MÓVIL
+// ===============================
+document.addEventListener('DOMContentLoaded', () => {
+  const backendUrl = window.location.protocol.startsWith('http')
+    ? `${window.location.protocol}//${window.location.hostname}:3000`
+    : 'http://127.0.0.1:3000';
 
-   if (!response.ok) {
-     alert(result.error || 'Correo o contraseña incorrectos');
-     return null;
-   }
+  // 1. Renderizar Panel de Usuario
+  const userPanel = document.getElementById('user-panel');
+  if (userPanel) {
+    const usuario = getUsuario();
+    if (usuario) {
+      // Determinar la URL de la imagen (priorizar imageUrl guardada o construirla)
+      let imgPath = usuario.imageUrl || usuario.image_path;
+      if (usuario.image_path && !usuario.image_path.startsWith('http')) {
+        imgPath = `${backendUrl}/uploads/${usuario.image_path}`;
+      }
+      // Fallback final si no hay nada
+      if (!imgPath) imgPath = './imagenes/Logo.jpg';
 
-   const usuario = result.usuario;
-   const imageUrl = usuario.image_path
-     ? `${backendUrl}/uploads/${usuario.image_path}`
-     : '../imagenes/Logo.jpg';
-   const sessionUser = {
-     id: usuario.id,
-     nombre: usuario.nombre,
-     email: usuario.email,
-     image_path: usuario.image_path || null,
-     imageUrl
-   };
+      userPanel.innerHTML = `
+        <div class="user-box">
+          <img src="${imgPath}" alt="Avatar" onerror="this.src='./imagenes/Logo.jpg'">
+          <div class="user-labels">
+            <span>${usuario.nombre}</span>
+            <button id="logout-btn">Cerrar sesión</button>
+          </div>
+        </div>
+      `;
 
-   localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
-   localStorage.setItem('usuario', JSON.stringify(sessionUser));
-   alert('Bienvenido ' + usuario.nombre);
-   window.location.href = 'menu.html';
-   return sessionUser;
- }
+      document.getElementById('logout-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
+      });
+    } else {
+      userPanel.innerHTML = '<a href="login.html">Iniciar sesión</a>';
+    }
+  }
 
- // Evento login
- const formLogin = document.querySelector("#login-form");
- if (formLogin) {
-   formLogin.addEventListener("submit", e => {
-     e.preventDefault();
+  // 2. Menú Móvil Toggle
+  const menuToggle = document.getElementById('menu-toggle');
+  const navLinks = document.getElementById('nav-links');
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navLinks.classList.toggle('active');
+    });
+    
+    // Cerrar menú al hacer clic fuera
+    document.addEventListener('click', (e) => {
+      if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
+        navLinks.classList.remove('active');
+      }
+    });
+  }
+});
 
-     const email = e.target.email.value;
-     const password = e.target.password.value;
+// ===============================
+// AUTH - LOGIN Y REGISTRO
+// ===============================
+async function login(email, password) {
+  const backendUrl = window.location.protocol.startsWith('http')
+    ? `${window.location.protocol}//${window.location.hostname}:3000`
+    : 'http://127.0.0.1:3000';
 
-     login(email, password);
-   });
- }
+  try {
+    const response = await fetch(`${backendUrl}/api/usuarios/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
 
- // ===============================
- // REGISTRO
- // ===============================
- async function registrar(formData) {
-   const backendUrl = window.location.protocol.startsWith('http')
-     ? `${window.location.protocol}//${window.location.hostname}:3000`
-     : 'http://127.0.0.1:3000';
+    const result = await response.json();
 
-   const response = await fetch(`${backendUrl}/api/usuarios/registro`, {
-     method: 'POST',
-     body: formData
-   });
+    if (!response.ok) {
+      alert(result.error || 'Correo o contraseña incorrectos');
+      return null;
+    }
 
-   const result = await response.json();
+    const usuario = result.usuario;
+    const imageUrl = usuario.image_path
+      ? `${backendUrl}/uploads/${usuario.image_path}`
+      : './imagenes/Logo.jpg';
+    
+    const sessionUser = {
+      id: usuario.id,
+      nombre: usuario.nombre,
+      email: usuario.email,
+      image_path: usuario.image_path || null,
+      imageUrl: imageUrl
+    };
 
-   if (!response.ok) {
-     alert(result.error || 'Error al registrar');
-     return null;
-   }
+    localStorage.setItem('usuario', JSON.stringify(sessionUser));
+    localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
+    alert('Bienvenido ' + usuario.nombre);
+    window.location.href = './menu.html';
+    return sessionUser;
+  } catch (error) {
+    console.error('Error login:', error);
+    alert('Error al conectar con el servidor');
+    return null;
+  }
+}
 
-   return result.usuario;
- }
+async function registrar(formData) {
+  const backendUrl = window.location.protocol.startsWith('http')
+    ? `${window.location.protocol}//${window.location.hostname}:3000`
+    : 'http://127.0.0.1:3000';
 
- // Preview de imagen de registro
- const registerImageInput = document.getElementById('register-image');
- const registerImagePreview = document.getElementById('register-image-preview');
- if (registerImageInput && registerImagePreview) {
-   registerImageInput.addEventListener('change', function() {
-     const file = this.files[0];
-     if (!file) {
-       registerImagePreview.textContent = 'Tu foto aparecerá aquí';
-       registerImagePreview.style.backgroundImage = '';
-       return;
-     }
-     const reader = new FileReader();
-     reader.onload = () => {
-       registerImagePreview.style.backgroundImage = `url('${reader.result}')`;
-       registerImagePreview.style.backgroundSize = 'cover';
-       registerImagePreview.style.backgroundPosition = 'center';
-       registerImagePreview.textContent = '';
-     };
-     reader.readAsDataURL(file);
-   });
- }
+  try {
+    const response = await fetch(`${backendUrl}/api/usuarios/registro`, {
+      method: 'POST',
+      body: formData
+    });
 
- // Evento registro
- const formRegistro = document.querySelector("#register-form");
- if (formRegistro) {
-   formRegistro.addEventListener("submit", async e => {
-     e.preventDefault();
+    const result = await response.json();
 
-     const formData = new FormData(e.target);
-     const usuario = await registrar(formData);
+    if (!response.ok) {
+      alert(result.error || 'Error al registrar');
+      return null;
+    }
 
-     if (usuario) {
-       const backendUrl = window.location.protocol.startsWith('http')
-         ? `${window.location.protocol}//${window.location.hostname}:3000`
-         : 'http://127.0.0.1:3000';
-       const imageUrl = usuario.image_path
-         ? `${backendUrl}/uploads/${usuario.image_path}`
-         : '../imagenes/Logo.jpg';
-       const sessionUser = {
-         id: usuario.id,
-         nombre: usuario.nombre,
-         email: usuario.email,
-         image_path: usuario.image_path || null,
-         imageUrl
-       };
-       localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
-       localStorage.setItem('usuario', JSON.stringify(sessionUser));
-       alert('Usuario creado');
-       window.location.href = 'menu.html';
-     }
-   });
- }
+    return result.usuario;
+  } catch (error) {
+    console.error('Error registro:', error);
+    alert('Error al conectar con el servidor');
+    return null;
+  }
+}
 
- // ===============================
- // RESERVAS
- // ===============================
- async function guardarReserva(nombre, apellido, personas, fecha, mensaje) {
-  const reservaMessage = document.getElementById('reserva-message');
-  const confirmacion = document.getElementById('confirmacion');
-  const resumen = document.getElementById('resumen');
+// Eventos de formulario (si existen en la página)
+document.addEventListener('DOMContentLoaded', () => {
+  const formLogin = document.querySelector("#login-form");
+  if (formLogin) {
+    formLogin.addEventListener("submit", e => {
+      e.preventDefault();
+      const email = e.target.email.value;
+      const password = e.target.password.value;
+      login(email, password);
+    });
+  }
+
+  const formRegistro = document.querySelector("#register-form");
+  if (formRegistro) {
+    formRegistro.addEventListener("submit", async e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const usuario = await registrar(formData);
+
+      if (usuario) {
+        const backendUrl = window.location.protocol.startsWith('http')
+          ? `${window.location.protocol}//${window.location.hostname}:3000`
+          : 'http://127.0.0.1:3000';
+        
+        const imageUrl = usuario.image_path
+          ? `${backendUrl}/uploads/${usuario.image_path}`
+          : './imagenes/Logo.jpg';
+
+        const sessionUser = {
+          id: usuario.id,
+          nombre: usuario.nombre,
+          email: usuario.email,
+          image_path: usuario.image_path || null,
+          imageUrl: imageUrl
+        };
+        localStorage.setItem('usuario', JSON.stringify(sessionUser));
+        localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
+        alert('Usuario creado con éxito');
+        window.location.href = './menu.html';
+      }
+    });
+  }
+
+  // Preview de imagen de registro
+  const registerImageInput = document.getElementById('register-image');
+  const registerImagePreview = document.getElementById('register-image-preview');
+  if (registerImageInput && registerImagePreview) {
+    registerImageInput.addEventListener('change', function() {
+      const file = this.files[0];
+      if (!file) {
+        registerImagePreview.textContent = 'Tu foto aparecerá aquí';
+        registerImagePreview.style.backgroundImage = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        registerImagePreview.style.backgroundImage = `url('${reader.result}')`;
+        registerImagePreview.style.backgroundSize = 'cover';
+        registerImagePreview.style.backgroundPosition = 'center';
+        registerImagePreview.textContent = '';
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+});
+
+// ===============================
+// OTROS (Reservas, Opiniones, etc.)
+// ===============================
+async function guardarReserva(nombre, apellido, personas, fecha, mensaje) {
   const backendUrl = window.location.protocol.startsWith('http')
     ? `${window.location.protocol}//${window.location.hostname}:3000`
     : 'http://127.0.0.1:3000';
@@ -144,138 +224,27 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nombre, apellido, personas, fecha, mensaje })
     });
-
     const body = await response.json();
-
-    if (!response.ok) {
-      throw new Error(body.error || 'Error del servidor en reservas');
-    }
-
-    if (reservaMessage) reservaMessage.textContent = 'Reserva enviada correctamente.';
-    if (confirmacion && resumen) {
-      resumen.textContent = `Reserva para ${nombre} ${apellido} con ${personas} persona(s) el ${fecha}.`;
-      confirmacion.style.display = 'block';
-    }
+    if (!response.ok) throw new Error(body.error || 'Error en reserva');
+    alert("Reserva realizada con éxito");
     return body;
-  } catch (backendError) {
-    console.warn('Falling back to Supabase direct insert:', backendError);
-
-    const { data, error } = await supabase
-      .from('reservas')
-      .insert([{ nombre, apellido, personas, fecha_reserva: fecha, mensaje }]);
-
-    if (error) {
-      console.error('Reserva error:', error);
-      if (reservaMessage) reservaMessage.textContent = `Error: ${error.message}`;
-      alert("Error al guardar reserva. Revisa la consola del navegador.");
-      return null;
-    }
-
-    alert("Reserva realizada");
-    if (reservaMessage) reservaMessage.textContent = 'Reserva enviada correctamente.';
-    if (confirmacion && resumen) {
-      resumen.textContent = `Reserva para ${nombre} ${apellido} con ${personas} persona(s) el ${fecha}.`;
-      confirmacion.style.display = 'block';
-    }
-    return data;
+  } catch (err) {
+    console.error(err);
+    alert("Error al guardar reserva");
+    return null;
   }
 }
 
- // Evento reservas
- const formReserva = document.querySelector("#reserva-form");
- if (formReserva) {
-   formReserva.addEventListener("submit", e => {
-     e.preventDefault();
-
-     const nombre = e.target.nombre.value;
-     const apellido = e.target.apellido.value;
-     const personas = e.target.personas.value;
-     const fecha = e.target.fecha.value;
-     const mensaje = e.target.mensaje.value;
-
-     guardarReserva(nombre, apellido, personas, fecha, mensaje);
-   });
- }
-
- // ===============================
- // OPINIONES
- // ===============================
- async function guardarOpinion(nombre, apellido, comentario) {
-   const { error } = await supabase.from('opiniones').insert([
-     { nombre, apellido, comentario }
-   ]);
-
-   if (error) {
-     console.error('Opinión error:', error);
-     alert("Error al enviar opinión. Revisa la consola del navegador.");
-   } else {
-     alert("Gracias por tu opinión");
-   }
- }
-
- // Evento opinión
- const formOpinion = document.querySelector("#opinion-form");
- if (formOpinion) {
-   formOpinion.addEventListener("submit", e => {
-     e.preventDefault();
-
-     const nombre = e.target.nombre.value;
-     const apellido = e.target.apellido.value;
-     const comentario = e.target.comentario.value;
-
-     guardarOpinion(nombre, apellido, comentario);
-   });
- }
-
- // ===============================
- // VALORACIONES
- // ===============================
- async function guardarValoracion(nombre, apellido, calificacion, comentario) {
-   const { error } = await supabase.from('valoraciones').insert([
-     { nombre, apellido, calificacion: Number(calificacion), comentario }
-   ]);
-
-   if (error) {
-     console.error('Valoración error:', error);
-     alert("Error al enviar valoración. Revisa la consola del navegador.");
-   } else {
-     alert("Gracias por tu valoración");
-   }
- }
-
- const formValoracion = document.querySelector("#valoracion-form");
- if (formValoracion) {
-   formValoracion.addEventListener("submit", e => {
-     e.preventDefault();
-
-     const nombre = e.target.nombre.value;
-     const apellido = e.target.apellido.value;
-     const comentario = e.target.comentario.value;
-     const calificacion = e.target.estrellas.value;
-
-     guardarValoracion(nombre, apellido, calificacion, comentario);
-   });
- }
-
- // ===============================
- // PEDIDOS
- // ===============================
- async function guardarPedido(detalle, total, metodo_pago, card_last4, card_exp, card_brand) {
-
-   const { error } = await supabase
-     .from('pedidos')
-     .insert([{
-       detalle,
-       total,
-       metodo_pago,
-       card_last4,
-       card_exp,
-       card_brand
-     }]);
-
-   if (error) {
-     alert("Error al procesar pedido");
-   } else {
-     alert("Pedido realizado");
-   }
- }
+const formReserva = document.querySelector("#reserva-form");
+if (formReserva) {
+  formReserva.addEventListener("submit", e => {
+    e.preventDefault();
+    guardarReserva(
+      e.target.nombre.value,
+      e.target.apellido.value,
+      e.target.personas.value,
+      e.target.fecha.value,
+      e.target.mensaje.value
+    );
+  });
+}
