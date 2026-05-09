@@ -624,40 +624,53 @@
   <div id="cart-ball" title="Ir al resumen del pedido"><span id="cart-count">0</span></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
+    // Referencias a elementos del DOM (Document Object Model)
     const categoryButtons = document.querySelectorAll('.category-btn');
     const menuItemsContainer = document.getElementById('menu-items');
     const pedidoList = document.getElementById('pedido-list');
     const totalEl = document.getElementById('total');
     const ticketEl = document.getElementById('ticket');
 
+    // Estado del carrito de compras
     let total = 0;
     const pedido = [];
 
+    /**
+     * Muestra u oculta los campos de tarjeta de crédito según el método de pago seleccionado.
+     */
     function mostrarCardDetails() {
       const pago = document.getElementById('pago').value;
       const cardDetails = document.getElementById('card-details');
       cardDetails.style.display = pago === 'tarjeta' ? 'block' : 'none';
     }
 
+    /**
+     * Valida que los datos de la tarjeta de crédito tengan el formato correcto y no esté expirada.
+     */
     function validarTarjeta(cardNumber, cvv, expDate) {
       const normalized = cardNumber.replace(/\s+/g, '');
       if (!/^[0-9]{13,19}$/.test(normalized)) return 'Número de tarjeta inválido.';
       if (!/^[0-9]{3,4}$/.test(cvv)) return 'CVV inválido.';
       if (!/^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(expDate)) return 'Fecha de expiración inválida.';
+      
       const [m, a] = expDate.split('/').map(Number);
       const [year, month] = [2000 + a, m];
       const now = new Date();
       const expiry = new Date(year, month - 1, 1);
+      
       if (expiry < new Date(now.getFullYear(), now.getMonth(), 1)) return 'Tarjeta expirada.';
       return null;
     }
 
+    /**
+     * Extrae los últimos 4 dígitos de una tarjeta para almacenamiento seguro.
+     */
     function obtenerUltimos4(cardNumber) {
       const normalized = cardNumber.replace(/\D/g, '');
       return normalized.slice(-4);
     }
 
-    // Menú actualizado
+    // Base de datos local de productos del menú
     const menuData = {
       'entradas': [
         { name: 'Combo Familiar', description: 'Pan crujiente con tomate confitado, aceite de oliva y albahaca fresca.', price: 150.00, currency: 'C$', image: 'imagenes/entrada-1.jpg' },
@@ -710,9 +723,13 @@
       ]
     };
 
+    /**
+     * Renderiza los platillos en la cuadrícula según la categoría seleccionada.
+     */
     function loadMenuItems(category) {
       menuItemsContainer.innerHTML = '';
       if (!menuData[category]) return;
+
       menuData[category].forEach(item => {
         const div = document.createElement('div');
         div.className = 'menu-item';
@@ -724,23 +741,33 @@
             <button class="add-btn">Agregar</button>
           </div>
         `;
+        // Evento para añadir el producto al carrito
         div.querySelector('.add-btn').addEventListener('click', () => agregarAlPedido(item));
         menuItemsContainer.appendChild(div);
       });
     }
 
+    /**
+     * Añade un producto al carrito y actualiza la visualización.
+     */
     function agregarAlPedido(item) {
       pedido.push(item);
       total += item.price;
       actualizarPedido();
     }
 
+    /**
+     * Elimina un producto del carrito según su posición en la lista.
+     */
     function eliminarDelPedido(index) {
       total -= pedido[index].price;
       pedido.splice(index, 1);
       actualizarPedido();
     }
 
+    /**
+     * Actualiza la lista visual del resumen del pedido y el total.
+     */
     function actualizarPedido() {
       pedidoList.innerHTML = '';
       pedido.forEach((p, index) => {
@@ -752,10 +779,15 @@
         pedidoList.appendChild(li);
       });
       totalEl.textContent = `C$${total.toFixed(2)}`;
+      
+      // Actualiza el contador flotante del carrito
       document.getElementById('cart-count').textContent = pedido.length;
       document.getElementById('cart-ball').classList.toggle('cart-active', pedido.length > 0);
     }
 
+    /**
+     * Carga una imagen para ser usada dentro de la generación del PDF.
+     */
     function cargarImagenPDF(src) {
       return new Promise((resolve) => {
         const img = new Image();
@@ -771,12 +803,16 @@
       });
     }
 
-    async function descargarPDF() {
+    /**
+     * Genera y descarga un archivo PDF con el resumen del pedido.
+     */
+    async async function descargarPDF() {
       if (pedido.length === 0) return alert('El pedido está vacío');
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      const user = getUsuario() || { name: 'Cliente', tableNumber: 'S/N' };
+      const user = getUsuario() || { nombre: 'Cliente', name: 'Cliente', tableNumber: 'S/N' };
       
+      // Imagen de logo para el encabezado del PDF
       const logoData = await cargarImagenPDF('imagenes/Logo.jpg');
       if (logoData) doc.addImage(logoData, 'JPEG', 14, 14, 30, 30);
       
@@ -801,23 +837,30 @@
       doc.save('pedido-sabores.pdf');
     }
 
-    // Drag and drop del carrito simplificado
+    // Navegación rápida al resumen del pedido al hacer clic en el carrito flotante
     const ball = document.getElementById('cart-ball');
     ball.addEventListener('click', () => document.getElementById('pedido').scrollIntoView({behavior:'smooth'}));
 
+    // Eventos de botones principales
     document.getElementById('download-pdf').addEventListener('click', descargarPDF);
     document.getElementById('pago').addEventListener('change', mostrarCardDetails);
 
+    /**
+     * Finaliza el pedido enviando la información al servidor.
+     */
     document.getElementById('finalizar').addEventListener('click', async () => {
       if (pedido.length === 0) return alert('Pedido vacío');
       
       const metodo_pago = document.getElementById('pago').value;
+      
+      // Preparar objeto de datos para el servidor
       let pedidoData = {
         detalle: pedido.map(item => ({ nombre: item.name, precio: item.price })),
         total: total,
         metodo_pago: metodo_pago
       };
 
+      // Si el pago es con tarjeta, validamos los datos
       if (metodo_pago === 'tarjeta') {
         const cardNumber = document.getElementById('card_number').value;
         const cvv = document.getElementById('cvv').value;
@@ -826,14 +869,17 @@
         const error = validarTarjeta(cardNumber, cvv, expDate);
         if (error) return alert(error);
 
+        // Guardar solo los últimos 4 por seguridad
         pedidoData.card_last4 = obtenerUltimos4(cardNumber);
         pedidoData.card_exp = expDate;
-        pedidoData.card_brand = 'Visa/MC'; // Simplificado
+        pedidoData.card_brand = 'Visa/MC'; 
       }
 
+      // Llamada a la función global del frontend para guardar en la base de datos
       const result = await guardarPedido(pedidoData);
       
       if (result) {
+        // Mostrar confirmación visual al usuario
         const id = Math.floor(Math.random() * 100000);
         ticketEl.style.display = 'block';
         ticketEl.innerHTML = `
@@ -842,11 +888,13 @@
           <p>Gracias por preferir Sabores Ancestrales.</p>
         `;
         
+        // Vaciar el carrito tras el éxito
         pedido.length = 0; total = 0;
         actualizarPedido();
       }
     });
 
+    // Eventos para los botones de categorías (filtrado)
     categoryButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         categoryButtons.forEach(b => b.classList.remove('active'));
@@ -855,6 +903,7 @@
       });
     });
 
+    // Cargar la categoría por defecto al iniciar
     loadMenuItems('entradas');
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>

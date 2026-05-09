@@ -1,11 +1,21 @@
+
 // ===============================
 // CONFIGURACIÓN GLOBAL Y SESIÓN
 // ===============================
+
+/**
+ * Obtiene los datos del usuario desde el almacenamiento local (localStorage).
+ * Intenta con dos claves diferentes por compatibilidad.
+ */
 function getUsuario() {
   const stored = localStorage.getItem('usuario') || localStorage.getItem('saboresUser');
   return stored ? JSON.parse(stored) : null;
 }
 
+/**
+ * Cierra la sesión del usuario eliminando sus datos del almacenamiento local
+ * y redirigiéndolo a la página de inicio.
+ */
 function logout() {
   localStorage.removeItem('usuario');
   localStorage.removeItem('saboresUser');
@@ -16,24 +26,28 @@ function logout() {
 // ===============================
 // UI - PANEL DE USUARIO Y MENÚ MÓVIL
 // ===============================
+
+// Se ejecuta cuando el documento HTML ha sido cargado completamente
 document.addEventListener('DOMContentLoaded', () => {
+  // Determina la URL del servidor backend (local o producción)
   const backendUrl = window.location.protocol.startsWith('http')
     ? `${window.location.protocol}//${window.location.hostname}:3000`
     : 'http://127.0.0.1:3000';
 
-  // 1. Renderizar Panel de Usuario
+  // 1. Renderizar Panel de Usuario (Saludo y Foto en el Header)
   const userPanel = document.getElementById('user-panel');
   if (userPanel) {
     const usuario = getUsuario();
     if (usuario) {
-      // Determinar la URL de la imagen (priorizar imageUrl guardada o construirla)
+      // Determinar la URL de la imagen de perfil
       let imgPath = usuario.imageUrl || usuario.image_path;
       if (usuario.image_path && !usuario.image_path.startsWith('http')) {
         imgPath = `${backendUrl}/uploads/${usuario.image_path}`;
       }
-      // Fallback final si no hay nada
+      // Imagen por defecto si no hay una cargada
       if (!imgPath) imgPath = './imagenes/Logo.jpg';
 
+      // Insertar el HTML del panel de usuario
       userPanel.innerHTML = `
         <div class="user-box">
           <img src="${imgPath}" alt="Avatar" onerror="this.src='./imagenes/Logo.jpg'">
@@ -44,25 +58,27 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
+      // Evento para cerrar sesión al hacer clic en el botón
       document.getElementById('logout-btn').addEventListener('click', (e) => {
         e.preventDefault();
         logout();
       });
     } else {
+      // Si no hay sesión, mostrar enlace para iniciar sesión
       userPanel.innerHTML = '<a href="login.html">Iniciar sesión</a>';
     }
   }
 
-  // 2. Menú Móvil Toggle
+  // 2. Control del Menú Móvil (Botón Hamburguesa)
   const menuToggle = document.getElementById('menu-toggle');
   const navLinks = document.getElementById('nav-links');
   if (menuToggle && navLinks) {
     menuToggle.addEventListener('click', (e) => {
       e.stopPropagation();
-      navLinks.classList.toggle('active');
+      navLinks.classList.toggle('active'); // Muestra/oculta el menú
     });
     
-    // Cerrar menú al hacer clic fuera
+    // Cerrar el menú si se hace clic fuera de él
     document.addEventListener('click', (e) => {
       if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
         navLinks.classList.remove('active');
@@ -74,6 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===============================
 // AUTH - LOGIN Y REGISTRO
 // ===============================
+
+/**
+ * Procesa el inicio de sesión enviando las credenciales al servidor.
+ * @param {string} email 
+ * @param {string} password 
+ */
 async function login(email, password) {
   const backendUrl = window.location.protocol.startsWith('http')
     ? `${window.location.protocol}//${window.location.hostname}:3000`
@@ -94,10 +116,12 @@ async function login(email, password) {
     }
 
     const usuario = result.usuario;
+    // Construir la URL completa de la imagen de perfil
     const imageUrl = usuario.image_path
       ? `${backendUrl}/uploads/${usuario.image_path}`
       : './imagenes/Logo.jpg';
     
+    // Guardar los datos del usuario en un objeto de sesión
     const sessionUser = {
       id: usuario.id,
       nombre: usuario.nombre,
@@ -106,6 +130,7 @@ async function login(email, password) {
       imageUrl: imageUrl
     };
 
+    // Persistir la sesión en el navegador
     localStorage.setItem('usuario', JSON.stringify(sessionUser));
     localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
     alert('Bienvenido ' + usuario.nombre);
@@ -118,6 +143,10 @@ async function login(email, password) {
   }
 }
 
+/**
+ * Envía los datos de registro (incluyendo imagen) al servidor.
+ * @param {FormData} formData 
+ */
 async function registrar(formData) {
   const backendUrl = window.location.protocol.startsWith('http')
     ? `${window.location.protocol}//${window.location.hostname}:3000`
@@ -126,7 +155,7 @@ async function registrar(formData) {
   try {
     const response = await fetch(`${backendUrl}/api/usuarios/registro`, {
       method: 'POST',
-      body: formData
+      body: formData // Nota: FormData no requiere headers de Content-Type manuales
     });
 
     const result = await response.json();
@@ -144,8 +173,9 @@ async function registrar(formData) {
   }
 }
 
-// Eventos de formulario (si existen en la página)
+// Configuración de eventos para formularios de Login y Registro
 document.addEventListener('DOMContentLoaded', () => {
+  // Manejo del formulario de Login
   const formLogin = document.querySelector("#login-form");
   if (formLogin) {
     formLogin.addEventListener("submit", e => {
@@ -156,6 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Manejo del formulario de Registro
   const formRegistro = document.querySelector("#register-form");
   if (formRegistro) {
     formRegistro.addEventListener("submit", async e => {
@@ -179,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
           image_path: usuario.image_path || null,
           imageUrl: imageUrl
         };
+        // Guardar sesión automáticamente tras registrarse
         localStorage.setItem('usuario', JSON.stringify(sessionUser));
         localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
         alert('Usuario creado con éxito');
@@ -187,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Preview de imagen de registro
+  // Vista previa de la imagen seleccionada en el formulario de registro
   const registerImageInput = document.getElementById('register-image');
   const registerImagePreview = document.getElementById('register-image-preview');
   if (registerImageInput && registerImagePreview) {
@@ -213,6 +245,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===============================
 // OTROS (Reservas, Opiniones, etc.)
 // ===============================
+
+/**
+ * Envía una solicitud de reserva al servidor.
+ */
 async function guardarReserva(nombre, apellido, personas, fecha, mensaje) {
   const backendUrl = window.location.protocol.startsWith('http')
     ? `${window.location.protocol}//${window.location.hostname}:3000`
@@ -220,6 +256,8 @@ async function guardarReserva(nombre, apellido, personas, fecha, mensaje) {
 
   const usuario = getUsuario();
   const bodyData = { nombre, apellido, personas, fecha, mensaje };
+  
+  // Si el usuario está logueado, adjuntamos su ID para vincular la reserva
   if (usuario && usuario.id) {
     bodyData.usuario_id = usuario.id;
   }
@@ -241,12 +279,17 @@ async function guardarReserva(nombre, apellido, personas, fecha, mensaje) {
   }
 }
 
+/**
+ * Guarda los detalles de un pedido realizado desde el menú.
+ * @param {Object} pedidoData - Contiene detalles, total, método de pago, etc.
+ */
 async function guardarPedido(pedidoData) {
   const backendUrl = window.location.protocol.startsWith('http')
     ? `${window.location.protocol}//${window.location.hostname}:3000`
     : 'http://127.0.0.1:3000';
 
   const usuario = getUsuario();
+  // Vincular el pedido al usuario actual si hay sesión iniciada
   if (usuario && usuario.id) {
     pedidoData.usuario_id = usuario.id;
   }
@@ -267,6 +310,9 @@ async function guardarPedido(pedidoData) {
   }
 }
 
+/**
+ * Envía la opinión de un cliente al servidor.
+ */
 async function guardarOpinion(nombre, apellido, comentario) {
   const backendUrl = window.location.protocol.startsWith('http')
     ? `${window.location.protocol}//${window.location.hostname}:3000`
@@ -295,12 +341,16 @@ async function guardarOpinion(nombre, apellido, comentario) {
   }
 }
 
+/**
+ * Envía la valoración (estrellas y comentario) al servidor.
+ */
 async function guardarValoracion(nombre, apellido, calificacion, comentario) {
   const backendUrl = window.location.protocol.startsWith('http')
     ? `${window.location.protocol}//${window.location.hostname}:3000`
     : 'http://127.0.0.1:3000';
 
   const usuario = getUsuario();
+  // Estructura de datos para enviar
   const bodyData = { nombre, apellido, calificacion: parseInt(calificacion), comentario };
   if (usuario && usuario.id) {
     bodyData.usuario_id = usuario.id;
@@ -323,7 +373,9 @@ async function guardarValoracion(nombre, apellido, calificacion, comentario) {
   }
 }
 
+// Configuración de eventos para formularios adicionales (Reserva, Opinión, Valoración)
 document.addEventListener('DOMContentLoaded', () => {
+  // Manejo del formulario de Reservas
   const formReserva = document.querySelector("#reserva-form");
   if (formReserva) {
     formReserva.addEventListener("submit", e => {
@@ -338,6 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Manejo del formulario de Opiniones
   const formOpinion = document.querySelector("#opinion-form");
   if (formOpinion) {
     formOpinion.addEventListener("submit", e => {
@@ -347,10 +400,11 @@ document.addEventListener('DOMContentLoaded', () => {
         e.target.apellido.value,
         e.target.comentario.value
       );
-      e.target.reset();
+      e.target.reset(); // Limpia el formulario tras enviar
     });
   }
 
+  // Manejo del formulario de Valoraciones
   const formValoracion = document.querySelector("#valoracion-form");
   if (formValoracion) {
     formValoracion.addEventListener("submit", e => {
@@ -361,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.target.estrellas.value,
         e.target.comentario.value
       );
-      e.target.reset();
+      e.target.reset(); // Limpia el formulario tras enviar
     });
   }
 });
