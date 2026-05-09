@@ -2,13 +2,14 @@ const router = require('express').Router();
 const supabase = require('../lib/supabaseClient');
 
 router.post('/', async (req, res) => {
-  const { nombre, apellido, comentario } = req.body;
+  const { nombre, apellido, comentario, usuario_id } = req.body;
 
   if (!nombre || !apellido || !comentario) {
     return res.status(400).json({ error: 'Faltan datos obligatorios' });
   }
 
   const { error } = await supabase.from('opiniones').insert([{
+    usuario_id,
     nombre,
     apellido,
     comentario

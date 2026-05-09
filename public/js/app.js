@@ -218,11 +218,17 @@ async function guardarReserva(nombre, apellido, personas, fecha, mensaje) {
     ? `${window.location.protocol}//${window.location.hostname}:3000`
     : 'http://127.0.0.1:3000';
 
+  const usuario = getUsuario();
+  const bodyData = { nombre, apellido, personas, fecha, mensaje };
+  if (usuario && usuario.id) {
+    bodyData.usuario_id = usuario.id;
+  }
+
   try {
     const response = await fetch(`${backendUrl}/api/reservas`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre, apellido, personas, fecha, mensaje })
+      body: JSON.stringify(bodyData)
     });
     const body = await response.json();
     if (!response.ok) throw new Error(body.error || 'Error en reserva');
@@ -235,16 +241,127 @@ async function guardarReserva(nombre, apellido, personas, fecha, mensaje) {
   }
 }
 
-const formReserva = document.querySelector("#reserva-form");
-if (formReserva) {
-  formReserva.addEventListener("submit", e => {
-    e.preventDefault();
-    guardarReserva(
-      e.target.nombre.value,
-      e.target.apellido.value,
-      e.target.personas.value,
-      e.target.fecha.value,
-      e.target.mensaje.value
-    );
-  });
+async function guardarPedido(pedidoData) {
+  const backendUrl = window.location.protocol.startsWith('http')
+    ? `${window.location.protocol}//${window.location.hostname}:3000`
+    : 'http://127.0.0.1:3000';
+
+  const usuario = getUsuario();
+  if (usuario && usuario.id) {
+    pedidoData.usuario_id = usuario.id;
+  }
+
+  try {
+    const response = await fetch(`${backendUrl}/api/pedidos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(pedidoData)
+    });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.error || 'Error en pedido');
+    return body;
+  } catch (err) {
+    console.error(err);
+    alert("Error al guardar el pedido en el servidor");
+    return null;
+  }
 }
+
+async function guardarOpinion(nombre, apellido, comentario) {
+  const backendUrl = window.location.protocol.startsWith('http')
+    ? `${window.location.protocol}//${window.location.hostname}:3000`
+    : 'http://127.0.0.1:3000';
+
+  const usuario = getUsuario();
+  const bodyData = { nombre, apellido, comentario };
+  if (usuario && usuario.id) {
+    bodyData.usuario_id = usuario.id;
+  }
+
+  try {
+    const response = await fetch(`${backendUrl}/api/opiniones`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bodyData)
+    });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.error || 'Error en opinión');
+    alert("Opinión enviada con éxito");
+    return body;
+  } catch (err) {
+    console.error(err);
+    alert("Error al enviar la opinión");
+    return null;
+  }
+}
+
+async function guardarValoracion(nombre, apellido, calificacion, comentario) {
+  const backendUrl = window.location.protocol.startsWith('http')
+    ? `${window.location.protocol}//${window.location.hostname}:3000`
+    : 'http://127.0.0.1:3000';
+
+  const usuario = getUsuario();
+  const bodyData = { nombre, apellido, calificacion: parseInt(calificacion), comentario };
+  if (usuario && usuario.id) {
+    bodyData.usuario_id = usuario.id;
+  }
+
+  try {
+    const response = await fetch(`${backendUrl}/api/valoraciones`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bodyData)
+    });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.error || 'Error en valoración');
+    alert("Valoración enviada con éxito");
+    return body;
+  } catch (err) {
+    console.error(err);
+    alert("Error al enviar la valoración");
+    return null;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const formReserva = document.querySelector("#reserva-form");
+  if (formReserva) {
+    formReserva.addEventListener("submit", e => {
+      e.preventDefault();
+      guardarReserva(
+        e.target.nombre.value,
+        e.target.apellido.value,
+        e.target.personas.value,
+        e.target.fecha.value,
+        e.target.mensaje.value
+      );
+    });
+  }
+
+  const formOpinion = document.querySelector("#opinion-form");
+  if (formOpinion) {
+    formOpinion.addEventListener("submit", e => {
+      e.preventDefault();
+      guardarOpinion(
+        e.target.nombre.value,
+        e.target.apellido.value,
+        e.target.comentario.value
+      );
+      e.target.reset();
+    });
+  }
+
+  const formValoracion = document.querySelector("#valoracion-form");
+  if (formValoracion) {
+    formValoracion.addEventListener("submit", e => {
+      e.preventDefault();
+      guardarValoracion(
+        e.target.nombre.value,
+        e.target.apellido.value,
+        e.target.estrellas.value,
+        e.target.comentario.value
+      );
+      e.target.reset();
+    });
+  }
+});

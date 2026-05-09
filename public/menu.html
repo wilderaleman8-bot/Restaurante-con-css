@@ -808,19 +808,43 @@
     document.getElementById('download-pdf').addEventListener('click', descargarPDF);
     document.getElementById('pago').addEventListener('change', mostrarCardDetails);
 
-    document.getElementById('finalizar').addEventListener('click', () => {
+    document.getElementById('finalizar').addEventListener('click', async () => {
       if (pedido.length === 0) return alert('Pedido vacío');
       
-      const id = Math.floor(Math.random() * 100000);
-      ticketEl.style.display = 'block';
-      ticketEl.innerHTML = `
-        <h4>✅ Pedido #${id} Confirmado</h4>
-        <p>Total: C$${total.toFixed(2)}</p>
-        <p>Gracias por preferir Sabores Ancestrales.</p>
-      `;
+      const metodo_pago = document.getElementById('pago').value;
+      let pedidoData = {
+        detalle: pedido.map(item => ({ nombre: item.name, precio: item.price })),
+        total: total,
+        metodo_pago: metodo_pago
+      };
+
+      if (metodo_pago === 'tarjeta') {
+        const cardNumber = document.getElementById('card_number').value;
+        const cvv = document.getElementById('cvv').value;
+        const expDate = document.getElementById('exp_date').value;
+        
+        const error = validarTarjeta(cardNumber, cvv, expDate);
+        if (error) return alert(error);
+
+        pedidoData.card_last4 = obtenerUltimos4(cardNumber);
+        pedidoData.card_exp = expDate;
+        pedidoData.card_brand = 'Visa/MC'; // Simplificado
+      }
+
+      const result = await guardarPedido(pedidoData);
       
-      pedido.length = 0; total = 0;
-      actualizarPedido();
+      if (result) {
+        const id = Math.floor(Math.random() * 100000);
+        ticketEl.style.display = 'block';
+        ticketEl.innerHTML = `
+          <h4>✅ Pedido #${id} Confirmado</h4>
+          <p>Total: C$${total.toFixed(2)}</p>
+          <p>Gracias por preferir Sabores Ancestrales.</p>
+        `;
+        
+        pedido.length = 0; total = 0;
+        actualizarPedido();
+      }
     });
 
     categoryButtons.forEach(btn => {

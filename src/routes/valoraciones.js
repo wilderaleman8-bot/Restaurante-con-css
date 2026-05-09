@@ -2,14 +2,14 @@ const router = require('express').Router();
 const supabase = require('../lib/supabaseClient');
 
 router.post('/', async (req, res) => {
-  const { nombre, apellido, calificacion, comentario } = req.body;
+  const { calificacion, comentario, usuario_id } = req.body;
 
-  if (!nombre || !apellido || !Number.isInteger(calificacion) || calificacion < 1 || calificacion > 5) {
+  if (!Number.isInteger(calificacion) || calificacion < 1 || calificacion > 5) {
     return res.status(400).json({ error: 'Faltan datos obligatorios o calificación inválida' });
   }
 
   const { error } = await supabase.from('valoraciones').insert([
-    { nombre, apellido, calificacion, comentario }
+    { usuario_id, calificacion, comentario }
   ]);
 
   if (error) {

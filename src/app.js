@@ -7,14 +7,17 @@ const pedidosRoutes = require('./routes/pedidos');
 const opinionesRoutes = require('./routes/opiniones');
 const valoracionesRoutes = require('./routes/valoraciones');
 
+const path = require('path');
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
+app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-  res.json({ message: 'Backend Restaurante con Supabase activo' });
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 app.use('/api/usuarios', usuariosRoutes);
