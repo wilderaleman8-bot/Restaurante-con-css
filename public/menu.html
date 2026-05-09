@@ -806,7 +806,7 @@
     /**
      * Genera y descarga un archivo PDF con el resumen del pedido.
      */
-    async async function descargarPDF() {
+    async function descargarPDF() {
       if (pedido.length === 0) return alert('El pedido está vacío');
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
