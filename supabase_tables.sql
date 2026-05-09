@@ -1,4 +1,4 @@
--- Tablas adaptadas para Supabase / PostgreSQL
+-- Tablas de Supabase / PostgreSQL
 
 create extension if not exists "pgcrypto";
 
