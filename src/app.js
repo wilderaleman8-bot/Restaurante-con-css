@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression');
 
 const usuariosRoutes = require('./routes/usuarios');
 const reservasRoutes = require('./routes/reservas');
@@ -12,9 +13,12 @@ const path = require('path');
 const app = express();
 
 app.use(cors());
+app.use(compression());
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
-app.use(express.static('public'));
+
+const cacheOptions = { maxAge: '7d', immutable: true };
+app.use('/uploads', express.static('uploads', cacheOptions));
+app.use(express.static('public', cacheOptions));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));

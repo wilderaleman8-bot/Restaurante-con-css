@@ -3,6 +3,10 @@
 // CONFIGURACIÓN GLOBAL Y SESIÓN
 // ===============================
 
+const BACKEND_URL = window.location.port === '80' || window.location.port === '443' || window.location.port === ''
+  ? 'http://localhost:3000'
+  : window.location.origin;
+
 /**
  * Obtiene los datos del usuario desde el almacenamiento local (localStorage).
  * Intenta con dos claves diferentes por compatibilidad.
@@ -30,7 +34,7 @@ function logout() {
 // Se ejecuta cuando el documento HTML ha sido cargado completamente
 document.addEventListener('DOMContentLoaded', () => {
   // Determina la URL del servidor backend (local o producción)
-  const backendUrl = window.location.origin;
+  const backendUrl = BACKEND_URL;
 
   // 1. Renderizar Panel de Usuario (Saludo y Foto en el Header)
   const userPanel = document.getElementById('user-panel');
@@ -95,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {string} password 
  */
 async function login(email, password) {
-  const backendUrl = window.location.origin;
+  const backendUrl = BACKEND_URL;
 
   try {
     const response = await fetch(`${backendUrl}/api/usuarios/login`, {
@@ -144,7 +148,7 @@ async function login(email, password) {
  * @param {FormData} formData 
  */
 async function registrar(formData) {
-  const backendUrl = window.location.origin;
+  const backendUrl = BACKEND_URL;
 
   try {
     const response = await fetch(`${backendUrl}/api/usuarios/registro`, {
@@ -189,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const usuario = await registrar(formData);
 
       if (usuario) {
-        const backendUrl = window.location.origin;
+        const backendUrl = BACKEND_URL;
         
         const imageUrl = usuario.image_path
           ? `${backendUrl}/uploads/${usuario.image_path}`
@@ -242,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * Envía una solicitud de reserva al servidor.
  */
 async function guardarReserva(nombre, apellido, personas, fecha, mensaje) {
-  const backendUrl = window.location.origin;
+  const backendUrl = BACKEND_URL;
 
   const usuario = getUsuario();
   const bodyData = { nombre, apellido, personas, fecha, mensaje };
@@ -274,7 +278,7 @@ async function guardarReserva(nombre, apellido, personas, fecha, mensaje) {
  * @param {Object} pedidoData - Contiene detalles, total, método de pago, etc.
  */
 async function guardarPedido(pedidoData) {
-  const backendUrl = window.location.origin;
+  const backendUrl = BACKEND_URL;
 
   const usuario = getUsuario();
   // Vincular el pedido al usuario actual si hay sesión iniciada
@@ -302,7 +306,7 @@ async function guardarPedido(pedidoData) {
  * Envía la opinión de un cliente al servidor.
  */
 async function guardarOpinion(nombre, apellido, comentario) {
-  const backendUrl = window.location.origin;
+  const backendUrl = BACKEND_URL;
 
   const usuario = getUsuario();
   const bodyData = { nombre, apellido, comentario };
@@ -331,7 +335,7 @@ async function guardarOpinion(nombre, apellido, comentario) {
  * Envía la valoración (estrellas y comentario) al servidor.
  */
 async function guardarValoracion(nombre, apellido, calificacion, comentario) {
-  const backendUrl = window.location.origin;
+  const backendUrl = BACKEND_URL;
 
   const usuario = getUsuario();
   // Estructura de datos para enviar
