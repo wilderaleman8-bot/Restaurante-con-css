@@ -218,60 +218,86 @@
 
     #cart-ball {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 56px;
-      height: 56px;
+      bottom: 28px;
+      right: 28px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #C17A56, #6B4C3B);
+      background: linear-gradient(145deg, #c17a56, #5a3d2e);
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
-      font-size: 0.95rem;
-      cursor: grab;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(90,61,46,0.4);
       z-index: 1000;
-      transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, background 0.3s ease;
       user-select: none;
+      border: 2px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(4px);
     }
 
-    #cart-ball::before {
-      content: '🏬';
+    #cart-ball svg {
+      width: 26px;
+      height: 26px;
+      fill: white;
+      transition: transform 0.3s ease;
+    }
+
+    #cart-ball .badge {
       position: absolute;
-      top: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 1rem;
+      top: -4px;
+      right: -4px;
+      background: #e67e22;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 700;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5px;
+      box-shadow: 0 2px 8px rgba(230,126,34,0.5);
+      border: 2px solid #f7f3ed;
       line-height: 1;
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    #cart-ball .badge.hidden {
+      display: none;
     }
 
     #cart-ball.cart-active {
-      animation: cartGlow 1s infinite alternate;
-      box-shadow: 0 0 24px 10px rgba(193,122,86,0.75), 0 6px 24px rgba(0,0,0,0.28);
+      animation: cartGlow 1.4s ease-in-out infinite alternate;
+      box-shadow: 0 0 28px 8px rgba(193,122,86,0.5), 0 8px 24px rgba(90,61,46,0.35);
     }
 
     #cart-ball.cart-active:hover {
-      animation: cartGlow 1s infinite alternate-reverse;
-    }
-
-    #cart-ball:active {
-      cursor: grabbing;
-      transform: scale(0.96);
+      animation: cartGlow 0.6s ease-in-out infinite alternate-reverse;
     }
 
     #cart-ball:hover {
-      background: linear-gradient(135deg, #c17a56, #6b4c3b);
+      background: linear-gradient(145deg, #d4885e, #6b4533);
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 12px 32px rgba(90,61,46,0.5);
     }
 
-    #cart-ball span {
-      pointer-events: none;
+    #cart-ball:hover svg {
+      transform: rotate(-8deg) scale(1.1);
+    }
+
+    #cart-ball:active {
+      transform: scale(0.92);
+      box-shadow: 0 4px 12px rgba(90,61,46,0.3);
     }
 
     @keyframes cartGlow {
-      from { box-shadow: 0 0 16px 6px rgba(193,122,86,0.55), 0 6px 20px rgba(0,0,0,0.25); }
-      to { box-shadow: 0 0 30px 14px rgba(193,122,86,0.95), 0 6px 28px rgba(0,0,0,0.30); }
+      from { box-shadow: 0 0 18px 6px rgba(193,122,86,0.35), 0 8px 24px rgba(90,61,46,0.3); }
+      to { box-shadow: 0 0 36px 14px rgba(193,122,86,0.6), 0 8px 28px rgba(90,61,46,0.4); }
     }
 
     /* Sección de pedido */
@@ -465,6 +491,17 @@
         bottom: 16px;
         right: 16px;
       }
+      #cart-ball svg {
+        width: 22px;
+        height: 22px;
+      }
+      #cart-ball .badge {
+        min-width: 20px;
+        height: 20px;
+        font-size: 0.65rem;
+        top: -3px;
+        right: -3px;
+      }
     }
     
     @media (max-width: 576px) {
@@ -621,7 +658,12 @@
     <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
   </footer>
 
-  <div id="cart-ball" title="Ir al resumen del pedido"><span id="cart-count">0</span></div>
+  <div id="cart-ball" title="Ir al resumen del pedido">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.17 14.75l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01l-1.1 2-2.76 5H8.53l-.13-.27L6.16 6l-.95-2-.94-2H1v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25z"/>
+    </svg>
+    <span class="badge" id="cart-count">0</span>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     // Referencias a elementos del DOM (Document Object Model)
@@ -781,7 +823,9 @@
       totalEl.textContent = `C$${total.toFixed(2)}`;
       
       // Actualiza el contador flotante del carrito
-      document.getElementById('cart-count').textContent = pedido.length;
+      const cartCount = document.getElementById('cart-count');
+      cartCount.textContent = pedido.length;
+      cartCount.classList.toggle('hidden', pedido.length === 0);
       document.getElementById('cart-ball').classList.toggle('cart-active', pedido.length > 0);
     }
 
@@ -806,8 +850,13 @@
     /**
      * Genera y descarga un archivo PDF con el resumen del pedido.
      */
+    let ultimoPedido = null;
+    let ultimoTotal = 0;
+
     async function descargarPDF() {
-      if (pedido.length === 0) return alert('El pedido está vacío');
+      const items = pedido.length > 0 ? pedido : (ultimoPedido || []);
+      const totalActual = pedido.length > 0 ? total : ultimoTotal;
+      if (items.length === 0) return alert('No hay ningún pedido para descargar');
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
       const user = getUsuario() || { nombre: 'Cliente', name: 'Cliente', tableNumber: 'S/N' };
@@ -825,7 +874,7 @@
       
       doc.line(14, 70, 196, 70);
       let y = 80;
-      pedido.forEach((item, i) => {
+      items.forEach((item, i) => {
         doc.text(`${i+1}. ${item.name}`, 14, y);
         doc.text(`${item.currency}${item.price.toFixed(2)}`, 170, y);
         y += 10;
@@ -833,7 +882,7 @@
       
       doc.line(14, y, 196, y);
       doc.setFontSize(14);
-      doc.text(`TOTAL: C$${total.toFixed(2)}`, 14, y + 15);
+      doc.text(`TOTAL: C$${totalActual.toFixed(2)}`, 14, y + 15);
       doc.save('pedido-sabores.pdf');
     }
 
@@ -888,7 +937,9 @@
           <p>Gracias por preferir Sabores Ancestrales.</p>
         `;
         
-        // Vaciar el carrito tras el éxito
+        // Guardar copia del pedido para PDF posterior y vaciar el carrito
+        ultimoPedido = [...pedido];
+        ultimoTotal = total;
         pedido.length = 0; total = 0;
         actualizarPedido();
       }

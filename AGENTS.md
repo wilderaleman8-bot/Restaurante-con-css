@@ -59,6 +59,8 @@ npm start
 # Terminal 2: exponer el puerto 3000
 ngrok http 3000
 
+http://localhost:3000/
+
 # Usar la URL https://xxxx.ngrok.io generada por ngrok
 # en Postman o navegador desde cualquier equipo.
 ```
