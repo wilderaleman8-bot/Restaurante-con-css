@@ -125,7 +125,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--olive);box-shadow:0 0
 .pedido{background:var(--card);padding:26px;border-radius:var(--radius);box-shadow:0 8px 20px var(--shadow);margin-top:40px}
 .ticket{margin-top:20px;padding:20px;background-color:#f9f9f9;border-radius:5px;border-left:4px solid #27ae60}
 .ticket h4{color:#27ae60;margin-bottom:10px}
+.ticket p{margin:2px 0}
 .pedido h3{color:#8b4513;margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid #f4a460}
+.total-breakdown{margin:15px 0 10px;padding:12px 0;border-top:1px solid #eee}
+.total-breakdown p{margin:4px 0;font-size:0.9rem}
+.total-breakdown .iva-line{color:#8b4513;font-size:0.85rem;border-bottom:1px dashed #ddd;padding-bottom:6px;margin-bottom:6px}
+.total-breakdown .total-line{font-size:1.1rem}
 #pedido-list{list-style:none;margin-bottom:20px}
 #pedido-list li{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee}
 .remove-btn{background-color:#e74c3c;color:white;border:none;padding:5px 10px;border-radius:3px;cursor:pointer;font-size:0.8rem}
