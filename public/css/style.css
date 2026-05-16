@@ -131,6 +131,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--olive);box-shadow:0 0
 .total-breakdown p{margin:4px 0;font-size:0.9rem}
 .total-breakdown .iva-line{color:#8b4513;font-size:0.85rem;border-bottom:1px dashed #ddd;padding-bottom:6px;margin-bottom:6px}
 .total-breakdown .total-line{font-size:1.1rem}
+.historial-pedidos{margin-top:30px;padding-top:20px;border-top:2px solid #f4a460}
+.historial-pedidos h3{color:#8b4513;margin-bottom:15px}
+.historial-pedidos .pedido-card{background:#faf7f2;border-radius:8px;padding:14px 16px;margin-bottom:12px;border:1px solid #e8ddd0;text-align:left}
+.historial-pedidos .pedido-card .fecha{font-size:0.8rem;color:#888}
+.historial-pedidos .pedido-card .items{margin:6px 0;padding-left:14px;font-size:0.9rem}
+.historial-pedidos .pedido-card .total-pedido{font-weight:bold;color:#8b4513}
 #pedido-list{list-style:none;margin-bottom:20px}
 #pedido-list li{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee}
 .remove-btn{background-color:#e74c3c;color:white;border:none;padding:5px 10px;border-radius:3px;cursor:pointer;font-size:0.8rem}

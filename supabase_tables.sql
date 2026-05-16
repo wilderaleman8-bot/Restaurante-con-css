@@ -48,5 +48,6 @@ create table if not exists pedidos (
     card_last4 varchar(4),
     card_exp varchar(7),
     card_brand text,
+    status text not null default 'pendiente',
     created_at timestamptz default now()
 );

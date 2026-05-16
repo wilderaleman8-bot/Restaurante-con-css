@@ -1,21 +1,21 @@
 const router = require('express').Router();
 const supabase = require('../lib/supabaseClient');
 
-/**
- * RUTA: POST /api/valoraciones
- * DESCRIPCIÓN: Guarda la calificación numérica y el comentario de un cliente.
- */
 router.post('/', async (req, res) => {
-  const { calificacion, comentario, usuario_id } = req.body;
+  const { nombre, apellido, calificacion, comentario, usuario_id } = req.body;
 
-  // Validación de la calificación (debe ser un número entre 1 y 5)
+  if (!nombre || !apellido) {
+    return res.status(400).json({ error: 'Nombre y apellido son obligatorios' });
+  }
   if (!Number.isInteger(calificacion) || calificacion < 1 || calificacion > 5) {
-    return res.status(400).json({ error: 'Faltan datos obligatorios o calificación inválida' });
+    return res.status(400).json({ error: 'Calificación inválida (1-5)' });
+  }
+  if (typeof comentario === 'string' && comentario.length > 2000) {
+    return res.status(400).json({ error: 'El comentario no puede exceder 2000 caracteres' });
   }
 
-  // Inserción en la tabla 'valoraciones'
   const { error } = await supabase.from('valoraciones').insert([
-    { usuario_id, calificacion, comentario }
+    { usuario_id, nombre, apellido, calificacion, comentario }
   ]);
 
   if (error) {
@@ -25,10 +25,6 @@ router.post('/', async (req, res) => {
   res.status(201).json({ message: 'Valoración guardada correctamente' });
 });
 
-/**
- * RUTA: GET /api/valoraciones
- * DESCRIPCIÓN: Obtiene el listado de todas las valoraciones.
- */
 router.get('/', async (req, res) => {
   const { data, error } = await supabase.from('valoraciones').select('*').order('created_at', { ascending: false });
 

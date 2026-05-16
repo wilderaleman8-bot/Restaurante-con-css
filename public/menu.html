@@ -136,6 +136,24 @@
       gap: 10px;
       margin-bottom: 40px;
     }
+
+    .menu-search {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .menu-search input {
+      width: 100%;
+      max-width: 380px;
+      padding: 10px 18px;
+      border-radius: 25px;
+      border: 2px solid #ddd;
+      outline: none;
+      font-size: 0.95rem;
+      transition: border-color 0.3s;
+    }
+    .menu-search input:focus {
+      border-color: #9EB384;
+    }
     
     .category-btn {
       padding: 10px 20px;
@@ -417,6 +435,37 @@
       color: #27ae60;
       margin-bottom: 10px;
     }
+
+    .historial-pedidos {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #f4a460;
+    }
+    .historial-pedidos h3 {
+      color: #8b4513;
+      margin-bottom: 15px;
+    }
+    .historial-pedidos .pedido-card {
+      background: #faf7f2;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      border: 1px solid #e8ddd0;
+      text-align: left;
+    }
+    .historial-pedidos .pedido-card .fecha {
+      font-size: 0.8rem;
+      color: #888;
+    }
+    .historial-pedidos .pedido-card .items {
+      margin: 6px 0;
+      padding-left: 14px;
+      font-size: 0.9rem;
+    }
+    .historial-pedidos .pedido-card .total-pedido {
+      font-weight: bold;
+      color: #8b4513;
+    }
     
     /* Footer */
     footer {
@@ -644,6 +693,10 @@
         <button class="category-btn" data-category="cervezas">Cervezas</button>
       </div>
 
+      <div class="menu-search">
+        <input type="text" id="menu-search-input" placeholder="Buscar platillo…" />
+      </div>
+
       <div class="menu-grid" id="menu-items"></div>
 
       <div class="pedido" id="pedido">
@@ -674,6 +727,11 @@
         <button class="btn" id="download-pdf" type="button">Descargar PDF</button>
 
         <div class="ticket" id="ticket" style="display:none;"></div>
+
+        <div class="historial-pedidos" id="historial-pedidos" style="display:none;">
+          <h3>Mis Pedidos Anteriores</h3>
+          <div id="historial-lista"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -699,7 +757,24 @@
 
     // Estado del carrito de compras
     let total = 0;
-    const pedido = [];
+    let pedido = [];
+
+    function guardarCarrito() {
+      localStorage.setItem('saboresPedido', JSON.stringify(pedido));
+      localStorage.setItem('saboresTotal', total.toString());
+    }
+
+    function restaurarCarrito() {
+      const saved = localStorage.getItem('saboresPedido');
+      const savedTotal = localStorage.getItem('saboresTotal');
+      if (saved) {
+        try { pedido = JSON.parse(saved); } catch(e) { pedido = []; }
+      }
+      if (savedTotal) {
+        total = parseFloat(savedTotal) || 0;
+      }
+    }
+    restaurarCarrito();
 
     /**
      * Muestra u oculta los campos de tarjeta de crédito según el método de pago seleccionado.
@@ -734,6 +809,15 @@
     function obtenerUltimos4(cardNumber) {
       const normalized = cardNumber.replace(/\D/g, '');
       return normalized.slice(-4);
+    }
+
+    function detectarMarcaTarjeta(cardNumber) {
+      const n = cardNumber.replace(/\D/g, '');
+      if (/^4/.test(n)) return 'Visa';
+      if (/^5[1-5]/.test(n)) return 'Mastercard';
+      if (/^3[47]/.test(n)) return 'Amex';
+      if (/^6011/.test(n)) return 'Discover';
+      return 'Visa/MC';
     }
 
     // Base de datos local de productos del menú
@@ -792,15 +876,21 @@
     /**
      * Renderiza los platillos en la cuadrícula según la categoría seleccionada.
      */
+    let categoriaActual = 'entradas';
+
     function loadMenuItems(category) {
+      categoriaActual = category;
       menuItemsContainer.innerHTML = '';
       if (!menuData[category]) return;
 
+      const searchTerm = document.getElementById('menu-search-input').value.toLowerCase().trim();
+
       menuData[category].forEach(item => {
+        if (searchTerm && !item.name.toLowerCase().includes(searchTerm) && !item.description.toLowerCase().includes(searchTerm)) return;
         const div = document.createElement('div');
         div.className = 'menu-item';
         div.innerHTML = `
-          <img src="${item.image}" alt="${item.name}" onerror="this.src='imagenes/descarga.png'">
+          <img src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.src='imagenes/descarga.png'">
           <div class="content">
             <h4>${item.name} <span class="price">${item.currency}${item.price.toFixed(2)}</span></h4>
             <p>${item.description}</p>
@@ -860,6 +950,45 @@
       cartCount.textContent = pedido.length;
       cartCount.classList.toggle('hidden', pedido.length === 0);
       document.getElementById('cart-ball').classList.toggle('cart-active', pedido.length > 0);
+
+      guardarCarrito();
+    }
+
+    async function cargarHistorialPedidos() {
+      const usuario = getUsuario();
+      if (!usuario || !usuario.id) return;
+
+      const historialDiv = document.getElementById('historial-pedidos');
+      const historialLista = document.getElementById('historial-lista');
+
+      const backendUrl = window.location.port === '80' || window.location.port === '443' || window.location.port === ''
+        ? 'http://localhost:3000' : window.location.origin;
+      try {
+        const response = await fetch(`${backendUrl}/api/pedidos`);
+        const pedidos = await response.json();
+        const misPedidos = pedidos.filter(p => p.usuario_id === usuario.id);
+
+        if (misPedidos.length === 0) return;
+
+        historialDiv.style.display = 'block';
+        const estadosColores = { pendiente: '#e67e22', preparando: '#3498db', servido: '#27ae60', cancelado: '#e74c3c' };
+        historialLista.innerHTML = misPedidos.slice(0, 10).map(p => {
+          const detalle = Array.isArray(p.detalle)
+            ? p.detalle.map(d => `<li>${d.nombre || d.name} - C$${(d.precio || d.price || 0).toFixed(2)}</li>`).join('')
+            : '<li>Detalle no disponible</li>';
+          const fecha = p.created_at ? new Date(p.created_at).toLocaleString() : '';
+          const color = estadosColores[p.status] || '#888';
+          return `
+            <div class="pedido-card">
+              <div class="fecha">${fecha}</div>
+              <ul class="items">${detalle}</ul>
+              <div class="total-pedido">Total: C$${(p.total || 0).toFixed(2)} — ${p.metodo_pago || ''}</div>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        console.error('Error al cargar historial:', e);
+      }
     }
 
     /**
@@ -892,7 +1021,7 @@
       const subtotal = pedido.length > 0 ? total : ultimoTotal;
       const iva = pedido.length > 0 ? total * IVA_RATE : ultimoIVA;
       const totalConIVA = subtotal + iva;
-      if (items.length === 0) return alert('No hay ningún pedido para descargar');
+      if (items.length === 0) return showToast('No hay ningún pedido para descargar', 'error');
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
       const user = getUsuario() || { nombre: 'Cliente', name: 'Cliente', tableNumber: 'S/N' };
@@ -945,61 +1074,73 @@
      * Finaliza el pedido enviando la información al servidor.
      */
     document.getElementById('finalizar').addEventListener('click', async () => {
-      if (pedido.length === 0) return alert('Pedido vacío');
-      
-      const metodo_pago = document.getElementById('pago').value;
+      if (pedido.length === 0) return showToast('Pedido vacío', 'error');
 
-      const subtotal = total;
-      const iva = subtotal * IVA_RATE;
-      const totalConIVA = subtotal + iva;
+      const btn = document.getElementById('finalizar');
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
 
-      // Preparar objeto de datos para el servidor
-      let pedidoData = {
-        detalle: pedido.map(item => ({ nombre: item.name, precio: item.price })),
-        total: totalConIVA,
-        metodo_pago: metodo_pago
-      };
+      try {
+        const metodo_pago = document.getElementById('pago').value;
 
-      // Si el pago es con tarjeta, validamos los datos
-      if (metodo_pago === 'tarjeta') {
-        const cardNumber = document.getElementById('card_number').value;
-        const cvv = document.getElementById('cvv').value;
-        const expDate = document.getElementById('exp_date').value;
+        const subtotal = total;
+        const iva = subtotal * IVA_RATE;
+        const totalConIVA = subtotal + iva;
+
+        let pedidoData = {
+          detalle: pedido.map(item => ({ nombre: item.name, precio: item.price })),
+          total: totalConIVA,
+          metodo_pago: metodo_pago
+        };
+
+        if (metodo_pago === 'tarjeta') {
+          const cardNumber = document.getElementById('card_number').value;
+          const cvv = document.getElementById('cvv').value;
+          const expDate = document.getElementById('exp_date').value;
+          
+          const error = validarTarjeta(cardNumber, cvv, expDate);
+          if (error) {
+            showToast(error, 'error');
+            btn.disabled = false;
+            btn.textContent = 'Finalizar Pedido';
+            return;
+          }
+
+          pedidoData.card_last4 = obtenerUltimos4(cardNumber);
+          pedidoData.card_exp = expDate;
+          pedidoData.card_brand = detectarMarcaTarjeta(cardNumber);
+        }
+
+        const result = await guardarPedido(pedidoData);
         
-        const error = validarTarjeta(cardNumber, cvv, expDate);
-        if (error) return alert(error);
-
-        // Guardar solo los últimos 4 por seguridad
-        pedidoData.card_last4 = obtenerUltimos4(cardNumber);
-        pedidoData.card_exp = expDate;
-        pedidoData.card_brand = 'Visa/MC'; 
+        if (result) {
+          const pedidoId = result.id ? result.id.slice(0, 8) : Math.floor(Math.random() * 100000);
+          ticketEl.style.display = 'block';
+          ticketEl.innerHTML = `
+            <h4>✅ Pedido #${pedidoId} Confirmado</h4>
+            <p>Subtotal: C$${subtotal.toFixed(2)}</p>
+            <p>IVA (15%): C$${iva.toFixed(2)}</p>
+            <p><strong>Total: C$${totalConIVA.toFixed(2)}</strong></p>
+            <p>Estado: <span style="color:#e67e22;font-weight:600">Pendiente</span></p>
+            <p>Gracias por preferir Sabores Ancestrales.</p>
+          `;
+          
+          ultimoPedido = [...pedido];
+          ultimoTotal = subtotal;
+          ultimoIVA = iva;
+          pedido.length = 0; total = 0;
+          actualizarPedido();
+        }
+      } catch (err) {
+        console.error('Error en finalizar:', err);
+        showToast('Ocurrió un error inesperado', 'error');
       }
 
-      // Llamada a la función global del frontend para guardar en la base de datos
-      const result = await guardarPedido(pedidoData);
-      
-      if (result) {
-        // Mostrar confirmación visual al usuario
-        const id = Math.floor(Math.random() * 100000);
-        ticketEl.style.display = 'block';
-        ticketEl.innerHTML = `
-          <h4>✅ Pedido #${id} Confirmado</h4>
-          <p>Subtotal: C$${subtotal.toFixed(2)}</p>
-          <p>IVA (15%): C$${iva.toFixed(2)}</p>
-          <p><strong>Total: C$${totalConIVA.toFixed(2)}</strong></p>
-          <p>Gracias por preferir Sabores Ancestrales.</p>
-        `;
-        
-        // Guardar copia del pedido para PDF posterior y vaciar el carrito
-        ultimoPedido = [...pedido];
-        ultimoTotal = subtotal;
-        ultimoIVA = iva;
-        pedido.length = 0; total = 0;
-        actualizarPedido();
-      }
+      btn.disabled = false;
+      btn.textContent = 'Finalizar Pedido';
     });
 
-    // Eventos para los botones de categorías (filtrado)
+    // Filtro por categoría
     categoryButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         categoryButtons.forEach(b => b.classList.remove('active'));
@@ -1008,11 +1149,17 @@
       });
     });
 
+    // Búsqueda en el menú
+    document.getElementById('menu-search-input').addEventListener('input', () => {
+      loadMenuItems(categoriaActual);
+    });
+
     // Cargar la categoría por defecto al iniciar
     loadMenuItems('entradas');
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/app.js"></script>
+  <script>cargarHistorialPedidos();</script>
 </body>
 </html>
