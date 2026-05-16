@@ -1,9 +1,12 @@
+// Rutas para la gestión de reservas del restaurante
 const router = require('express').Router();
 const supabase = require('../lib/supabaseClient');
 
+// POST /api/reservas — Crea una nueva reserva
 router.post('/', async (req, res) => {
   const { nombre, apellido, personas, fecha, mensaje, usuario_id } = req.body;
 
+  // Validaciones de campos obligatorios
   if (!nombre || !apellido || !personas || !fecha) {
     return res.status(400).json({ error: 'Faltan datos obligatorios' });
   }
@@ -22,6 +25,7 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Fecha inválida' });
   }
 
+  // Guarda la reserva en la base de datos (mensaje opcional, máximo 500 caracteres)
   const { error } = await supabase.from('reservas').insert([{
     usuario_id,
     nombre,
@@ -38,6 +42,7 @@ router.post('/', async (req, res) => {
   res.status(201).json({ message: 'Reserva guardada correctamente' });
 });
 
+// GET /api/reservas — Obtiene todas las reservas ordenadas de la más reciente a la más antigua
 router.get('/', async (req, res) => {
   const { data, error } = await supabase.from('reservas').select('*').order('created_at', { ascending: false });
 

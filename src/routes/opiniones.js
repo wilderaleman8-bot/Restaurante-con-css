@@ -1,9 +1,12 @@
+// Rutas para gestionar las opiniones de los clientes
 const router = require('express').Router();
 const supabase = require('../lib/supabaseClient');
 
+// POST /api/opiniones — Guarda una nueva opinión de un cliente
 router.post('/', async (req, res) => {
   const { nombre, apellido, comentario, usuario_id } = req.body;
 
+  // Validaciones de campos obligatorios
   if (!nombre || !apellido || !comentario) {
     return res.status(400).json({ error: 'Faltan datos obligatorios' });
   }
@@ -31,6 +34,7 @@ router.post('/', async (req, res) => {
   res.status(201).json({ message: 'Opinión guardada correctamente' });
 });
 
+// GET /api/opiniones — Obtiene todas las opiniones ordenadas de la más reciente a la más antigua
 router.get('/', async (req, res) => {
   const { data, error } = await supabase.from('opiniones').select('*').order('created_at', { ascending: false });
 

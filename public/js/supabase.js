@@ -1,6 +1,4 @@
-// ===============================
-// CONFIGURACIÓN SUPABASE
-// ===============================
+// CONFIGURACIÓN SUPABASE.
 
 // DATOS Principales de conexion a Supabase
 const SUPABASE_URL = "https://dgdwpcrxrhxnsjpnfddw.supabase.co";

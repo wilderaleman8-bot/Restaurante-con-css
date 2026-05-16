@@ -1,10 +1,13 @@
+// Rutas para la gestión de pedidos del restaurante
 const router = require('express').Router();
 const supabase = require('../lib/supabaseClient');
 const { verificarToken } = require('../middleware/auth');
 
+// POST /api/pedidos — Crea un nuevo pedido
 router.post('/', async (req, res) => {
   const { detalle, total, metodo_pago, card_last4, card_exp, card_brand, usuario_id } = req.body;
 
+  // Validaciones de los datos obligatorios
   if (!detalle || total === undefined || !metodo_pago) {
     return res.status(400).json({ error: 'Faltan datos obligatorios' });
   }
@@ -19,6 +22,7 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Método de pago inválido' });
   }
 
+  // Inserta el pedido en la base de datos
   const { data, error } = await supabase.from('pedidos').insert([{
     usuario_id,
     detalle,
@@ -36,6 +40,7 @@ router.post('/', async (req, res) => {
   res.status(201).json({ message: 'Pedido creado correctamente', id: data.id, status: 'pendiente' });
 });
 
+// GET /api/pedidos — Obtiene todos los pedidos ordenados del más reciente al más antiguo
 router.get('/', async (req, res) => {
   const { data, error } = await supabase.from('pedidos').select('*').order('created_at', { ascending: false });
 
@@ -46,6 +51,7 @@ router.get('/', async (req, res) => {
   res.json(data);
 });
 
+// PATCH /api/pedidos/:id — Actualiza el estado de un pedido (requiere autenticación)
 router.patch('/:id', verificarToken, async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;

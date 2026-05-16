@@ -25,7 +25,7 @@ function logout() {
 }
 
 // ===============================
-// TOAST NOTIFICATION SYSTEM
+// Notificaciones, loading states, etc.
 // ===============================
 
 function showToast(message, type) {
@@ -70,7 +70,7 @@ function setLoading(button, loading) {
 }
 
 // ===============================
-// UI - USER PANEL & MOBILE MENU
+// UI - panel de usuario, menú responsive, etc.
 // ===============================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ===============================
-// AUTH - LOGIN & REGISTRO
+// AUTH - LOGIN y REGISTRO.
 // ===============================
 
 async function login(email, password) {
