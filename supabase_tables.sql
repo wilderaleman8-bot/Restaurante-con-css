@@ -11,6 +11,16 @@ create table if not exists usuarios (
     created_at timestamptz default now()
 );
 
+-- Permitir a usuarios anónimos registrarse (INSERT)
+create policy "Permitir registro anónimo" on usuarios
+  for insert to anon
+  with check (true);
+
+-- Permitir a usuarios anónimos consultar datos (para login)
+create policy "Permitir consulta anónima" on usuarios
+  for select to anon
+  using (true);
+
 create table if not exists reservas (
     id uuid primary key default gen_random_uuid(),
     usuario_id uuid references usuarios(id) on delete set null,

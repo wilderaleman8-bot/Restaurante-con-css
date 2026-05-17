@@ -150,13 +150,13 @@ async function login(email, password) {
       ? `${backendUrl}/uploads/${usuario.image_path}`
       : './imagenes/Logo.jpg';
 
-    const sessionUser = {
-      id: usuario.id,
-      nombre: usuario.nombre,
-      email: usuario.email,
-      image_path: usuario.image_path || null,
-      imageUrl: imageUrl
-    };
+        const sessionUser = {
+          id: usuario.id,
+          nombre: usuario.nombre,
+          email: usuario.email,
+          image_path: usuario.image_path || null,
+          imageUrl: imageUrl
+        };
 
     localStorage.setItem('usuario', JSON.stringify(sessionUser));
     localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
@@ -248,6 +248,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.pw-toggle');
+    if (!btn) return;
+    const input = document.getElementById(btn.dataset.for);
+    if (!input) return;
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.textContent = show ? '👁' : '👁';
+  });
 
   const registerImageInput = document.getElementById('register-image');
   const registerImagePreview = document.getElementById('register-image-preview');

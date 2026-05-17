@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sabores Ancestrales | Login</title>
-  <meta name="description" content="Inicia sesión en Sabores Ancestrales para acceder a tu perfil, historial de pedidos y reservas.">
+  <title>Sabores Ancestrales | Registro</title>
+  <meta name="description" content="Crea tu cuenta en Sabores Ancestrales y disfruta de pedidos, reservas y promociones exclusivas.">
   <link rel="stylesheet" href="css/style.css">
   <style>
     .auth-card {
-      max-width: 440px;
+      max-width: 480px;
       margin: 30px auto 0;
       background: #fff;
       padding: 28px;
@@ -32,8 +32,10 @@
       color: var(--wood);
       font-size: 0.9rem;
     }
+    .auth-card input[type="text"],
     .auth-card input[type="email"],
-    .auth-card input[type="password"] {
+    .auth-card input[type="password"],
+    .auth-card input[type="file"] {
       width: 100%;
       padding: 10px 12px;
       border-radius: 8px;
@@ -62,6 +64,19 @@
       margin-bottom: 8px;
       font-weight: 500;
       font-size: 0.9rem;
+    }
+    #register-image-preview {
+      width: 100%;
+      min-height: 120px;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+      margin-bottom: 16px;
+      background: #faf7f2;
+      font-size: 0.85rem;
     }
     .auth-hint {
       display: flex;
@@ -112,25 +127,38 @@
 
   <section>
     <div class="container">
-      <h2>Iniciar sesión</h2>
-      <p class="lead">Ingresa tus datos para acceder a tu perfil.</p>
+      <h2>Crear cuenta nueva</h2>
+      <p class="lead">Regístrate para guardar tu perfil, ver tu nombre y tu imagen en todas las secciones.</p>
 
       <div class="auth-card">
-        <form id="login-form">
-          <div class="auth-message" id="login-message"></div>
-          <label for="login-email">Correo electrónico</label>
-          <input type="email" id="login-email" name="email" placeholder="correo@ejemplo.com" required>
+        <form id="register-form" enctype="multipart/form-data" novalidate>
+          <div class="auth-message" id="register-message"></div>
+          <label for="register-name">Nombre completo</label>
+          <input type="text" id="register-name" name="nombre" placeholder="Tu nombre completo" required>
 
-          <label for="login-password">Contraseña</label>
+          <label for="register-email">Correo electrónico</label>
+          <input type="email" id="register-email" name="email" placeholder="correo@ejemplo.com" required>
+
+          <label for="register-password">Contraseña</label>
           <div class="pw-wrap">
-            <input type="password" id="login-password" name="password" placeholder="Tu contraseña" required>
-            <button type="button" class="pw-toggle" data-for="login-password">👁</button>
+            <input type="password" id="register-password" name="password" placeholder="Crea una contraseña" required>
+            <button type="button" class="pw-toggle" data-for="register-password">👁</button>
           </div>
 
-          <button type="submit">Entrar a mi cuenta</button>
+          <label for="register-confirm-password">Confirmar contraseña</label>
+          <div class="pw-wrap">
+            <input type="password" id="register-confirm-password" name="confirm_password" placeholder="Repite la contraseña" required>
+            <button type="button" class="pw-toggle" data-for="register-confirm-password">👁</button>
+          </div>
+
+          <label for="register-image">Foto de perfil</label>
+          <input type="file" id="register-image" name="image" accept="image/png, image/jpeg">
+          <div id="register-image-preview">Tu foto aparecerá aquí</div>
+
+          <button type="submit">Crear cuenta</button>
         </form>
         <div class="auth-link">
-          ¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a>
+          ¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a>
         </div>
       </div>
     </div>

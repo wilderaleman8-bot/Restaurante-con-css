@@ -2,6 +2,9 @@
 const express = require('express');
 const cors = require('cors');
 const compression = require('compression');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 
 // Importaciones de rutas locales
 const usuariosRoutes = require('./routes/usuarios');
@@ -14,7 +17,20 @@ const path = require('path');
 
 const app = express();
 
-// Middlewares globales
+// Middlewares de seguridad y logging
+app.use(helmet());
+app.use(morgan('dev'));
+
+// Límite de peticiones para evitar abusos
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiadas peticiones. Intenta de nuevo en 15 minutos.' }
+});
+app.use('/api/', limiter);
+
 app.use(cors());               // Permite peticiones desde otros dominios
 app.use(compression());        // Comprime las respuestas para mejorar velocidad
 app.use(express.json());       // Parsea cuerpos JSON en las peticiones
