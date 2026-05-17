@@ -242,189 +242,14 @@
     }
     
     .menu-item .content {
-      padding: 20px;
+      padding: 20px 20px 16px;
       background: #ede4d6;
       margin-top: -2px;
     }
-    
-    .menu-item h4 {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      color: #6B4C3B;
-    }
-    
-    .menu-item .price {
-      color: #6B4C3B;
-      font-weight: bold;
-    }
-    
-    .menu-item p {
-      color: #5a5a5a;
-      margin-bottom: 15px;
-      font-size: 0.9rem;
-    }
-    
-    .add-btn {
-      background-color: #6B4C3B;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    
-    .add-btn:hover {
-      background-color: #a0522d;
-    }
-
-    #cart-ball {
-      position: fixed;
-      bottom: 28px;
-      right: 28px;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: linear-gradient(145deg, #c17a56, #5a3d2e);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.9rem;
-      cursor: pointer;
-      box-shadow: 0 8px 24px rgba(90,61,46,0.4);
-      z-index: 1000;
-      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, background 0.3s ease;
-      user-select: none;
-      border: 2px solid rgba(255,255,255,0.15);
-      backdrop-filter: blur(4px);
-    }
-
-    #cart-ball svg {
-      width: 26px;
-      height: 26px;
-      fill: white;
-      transition: transform 0.3s ease;
-    }
-
-    #cart-ball .badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: #e67e22;
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 700;
-      min-width: 22px;
-      height: 22px;
-      border-radius: 11px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 5px;
-      box-shadow: 0 2px 8px rgba(230,126,34,0.5);
-      border: 2px solid #f7f3ed;
-      line-height: 1;
-      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
-    }
-
-    #cart-ball .badge.hidden {
-      display: none;
-    }
-
-    #cart-ball.cart-active {
-      animation: cartGlow 1.4s ease-in-out infinite alternate;
-      box-shadow: 0 0 28px 8px rgba(193,122,86,0.5), 0 8px 24px rgba(90,61,46,0.35);
-    }
-
-    #cart-ball.cart-active:hover {
-      animation: cartGlow 0.6s ease-in-out infinite alternate-reverse;
-    }
-
-    #cart-ball:hover {
-      background: linear-gradient(145deg, #d4885e, #6b4533);
-      transform: translateY(-2px) scale(1.04);
-      box-shadow: 0 12px 32px rgba(90,61,46,0.5);
-    }
-
-    #cart-ball:hover svg {
-      transform: rotate(-8deg) scale(1.1);
-    }
-
-    #cart-ball:active {
-      transform: scale(0.92);
-      box-shadow: 0 4px 12px rgba(90,61,46,0.3);
-    }
-
-    @keyframes cartGlow {
-      from { box-shadow: 0 0 18px 6px rgba(193,122,86,0.35), 0 8px 24px rgba(90,61,46,0.3); }
-      to { box-shadow: 0 0 36px 14px rgba(193,122,86,0.6), 0 8px 28px rgba(90,61,46,0.4); }
-    }
-
-    /* Sección de pedido */
-    .pedido {
-      background-color: white;
-      border-radius: 10px;
-      padding: 25px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      margin-top: 40px;
-    }
-    
-    .pedido h3 {
-      color: #8b4513;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid #f4a460;
-    }
-
-    .total-breakdown {
-      margin: 15px 0 10px;
-      padding: 12px 0;
-      border-top: 1px solid #eee;
-    }
-    .total-breakdown p {
-      margin: 4px 0;
-      font-size: 0.9rem;
-    }
-    .total-breakdown .iva-line {
-      color: #8b4513;
-      font-size: 0.85rem;
-      border-bottom: 1px dashed #ddd;
-      padding-bottom: 6px;
-      margin-bottom: 6px;
-    }
-    .total-breakdown .total-line {
-      font-size: 1.1rem;
-    }
-    
-    #pedido-list {
-      list-style: none;
-      margin-bottom: 20px;
-    }
-    
-    #pedido-list li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid #eee;
-    }
-    
-    .remove-btn {
-      background-color: #e74c3c;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 0.8rem;
-    }
-    
-    .remove-btn:hover {
-      background-color: #c0392b;
-    }
+    .qty-row { display:flex; align-items:center; justify-content:center; gap:8px; margin-top:14px }
+    .qty-label { font-size:0.85rem; font-weight:600; color:var(--wood); margin:0; white-space:nowrap; line-height:1 }
+    .qty-select { padding: 8px 6px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; width: 65px; cursor: pointer; }
+    .qty-select:focus { border-color: var(--olive); box-shadow: 0 0 0 2px rgba(158,179,132,0.2); }
     
     #total {
       font-size: 1.2rem;
@@ -447,7 +272,7 @@
     }
     
     .btn {
-      background-color: #27ae60;
+      background-color: var(--wood);
       color: white;
       border: none;
       padding: 12px 25px;
@@ -465,7 +290,7 @@
     }
     
     .btn:hover {
-      background-color: #219955;
+      background-color: #5a382b;
     }
     
     .ticket {
@@ -811,6 +636,8 @@
     let total = 0;
     let pedido = [];
 
+    const MAX_POR_ITEM = 5;
+
     function guardarCarrito() {
       localStorage.setItem('saboresPedido', JSON.stringify(pedido));
       localStorage.setItem('saboresTotal', total.toString());
@@ -820,7 +647,14 @@
       const saved = localStorage.getItem('saboresPedido');
       const savedTotal = localStorage.getItem('saboresTotal');
       if (saved) {
-        try { pedido = JSON.parse(saved); } catch(e) { pedido = []; }
+        try {
+          const raw = JSON.parse(saved);
+          if (raw.length > 0 && raw[0].item) {
+            pedido = raw;
+          } else {
+            pedido = [];
+          }
+        } catch(e) { pedido = []; }
       }
       if (savedTotal) {
         total = parseFloat(savedTotal) || 0;
@@ -979,31 +813,61 @@
         <div class="content">
           <h4>${item.name} <span class="price">${item.currency}${item.price.toFixed(2)}</span></h4>
           <p>${item.description}</p>
-          <button class="add-btn">Agregar</button>
+          <div class="qty-row">
+            <label class="qty-label">Cant:</label>
+            <select class="qty-select">
+              ${[1,2,3,4,5].map(n => `<option value="${n}">${n}</option>`).join('')}
+            </select>
+            <button class="add-btn">Agregar</button>
+          </div>
         </div>
       `;
-      div.querySelector('.add-btn').addEventListener('click', () => agregarAlPedido(item));
+      const btn = div.querySelector('.add-btn');
+      const select = div.querySelector('.qty-select');
+      btn.addEventListener('click', () => agregarAlPedido(item, parseInt(select.value)));
       menuItemsContainer.appendChild(div);
     }
 
     const IVA_RATE = 0.15;
 
     /**
-     * Añade un producto al carrito y actualiza la visualización.
+     * Añade un producto al carrito (máximo MAX_POR_ITEM por producto).
      */
-    function agregarAlPedido(item) {
-      pedido.push(item);
-      total += item.price;
+    function agregarAlPedido(item, cantidad = 1) {
+      const existing = pedido.find(p => p.item.name === item.name);
+      const actual = existing ? existing.quantity : 0;
+      const posible = Math.min(cantidad, MAX_POR_ITEM - actual);
+      if (posible <= 0) {
+        showToast(`Máximo ${MAX_POR_ITEM} unidades por producto`, 'error');
+        return;
+      }
+      if (existing) {
+        existing.quantity += posible;
+        total += item.price * posible;
+      } else {
+        pedido.push({ item, quantity: posible });
+        total += item.price * posible;
+      }
+      if (posible < cantidad) {
+        showToast(`Solo se pudieron agregar ${posible} (máximo ${MAX_POR_ITEM})`, 'error');
+      } else {
+        showToast(`${posible} × ${item.name} agregado${posible > 1 ? 's' : ''}`, 'success');
+      }
       actualizarPedido();
     }
 
     /**
-     * Elimina un producto del carrito según su posición en la lista.
+     * Elimina completamente un producto del carrito.
      */
     function eliminarDelPedido(index) {
-      total -= pedido[index].price;
+      const entry = pedido[index];
+      total -= entry.item.price * entry.quantity;
       pedido.splice(index, 1);
       actualizarPedido();
+    }
+
+    function contarItems() {
+      return pedido.reduce((sum, p) => sum + p.quantity, 0);
     }
 
     /**
@@ -1013,10 +877,38 @@
       pedidoList.innerHTML = '';
       pedido.forEach((p, index) => {
         const li = document.createElement('li');
-        li.innerHTML = `
-          <span>${p.name} - ${p.currency}${p.price.toFixed(2)}</span>
-          <button class="remove-btn" onclick="eliminarDelPedido(${index})">Eliminar</button>
-        `;
+        li.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee';
+
+        const span = document.createElement('span');
+        span.style.cssText = 'flex:1';
+        span.textContent = `${p.item.name} x${p.quantity} — ${p.item.currency}${(p.item.price * p.quantity).toFixed(2)}`;
+
+        const controls = document.createElement('div');
+        controls.style.cssText = 'display:flex;align-items:center;gap:6px';
+
+        const btnLess = document.createElement('button');
+        btnLess.className = 'qty-btn';
+        btnLess.textContent = '−';
+        btnLess.addEventListener('click', () => cambiarCantidad(index, -1));
+
+        const qtySpan = document.createElement('span');
+        qtySpan.className = 'qty-num';
+        qtySpan.textContent = p.quantity;
+
+        const btnMore = document.createElement('button');
+        btnMore.className = 'qty-btn';
+        btnMore.textContent = '+';
+        if (p.quantity >= MAX_POR_ITEM) btnMore.disabled = true;
+        btnMore.addEventListener('click', () => cambiarCantidad(index, 1));
+
+        const btnRemove = document.createElement('button');
+        btnRemove.className = 'remove-btn';
+        btnRemove.textContent = '✕';
+        btnRemove.style.marginLeft = '4px';
+        btnRemove.addEventListener('click', () => eliminarDelPedido(index));
+
+        controls.append(btnLess, qtySpan, btnMore, btnRemove);
+        li.append(span, controls);
         pedidoList.appendChild(li);
       });
 
@@ -1028,13 +920,27 @@
       document.getElementById('iva').textContent = iva.toFixed(2);
       document.getElementById('total').textContent = totalConIVA.toFixed(2);
       
-      // Actualiza el contador flotante del carrito
+      const itemCount = contarItems();
       const cartCount = document.getElementById('cart-count');
-      cartCount.textContent = pedido.length;
-      cartCount.classList.toggle('hidden', pedido.length === 0);
-      document.getElementById('cart-ball').classList.toggle('cart-active', pedido.length > 0);
+      cartCount.textContent = itemCount;
+      cartCount.classList.toggle('hidden', itemCount === 0);
+      document.getElementById('cart-ball').classList.toggle('cart-active', itemCount > 0);
 
       guardarCarrito();
+    }
+
+    function cambiarCantidad(index, delta) {
+      const entry = pedido[index];
+      const nueva = entry.quantity + delta;
+      if (nueva < 1) { eliminarDelPedido(index); return; }
+      if (nueva > MAX_POR_ITEM) {
+        showToast(`Máximo ${MAX_POR_ITEM} unidades`, 'error');
+        return;
+      }
+      if (delta > 0) total += entry.item.price;
+      else total -= entry.item.price;
+      entry.quantity = nueva;
+      actualizarPedido();
     }
 
     async function cargarHistorialPedidos() {
@@ -1099,8 +1005,16 @@
     let ultimoTotal = 0;
     let ultimoIVA = 0;
 
+    function aplanarPedido(pedidoArr) {
+      const flat = [];
+      pedidoArr.forEach(p => {
+        for (let i = 0; i < p.quantity; i++) flat.push(p.item);
+      });
+      return flat;
+    }
+
     async function descargarPDF() {
-      const items = pedido.length > 0 ? pedido : (ultimoPedido || []);
+      const items = pedido.length > 0 ? aplanarPedido(pedido) : aplanarPedido(ultimoPedido || []);
       const subtotal = pedido.length > 0 ? total : ultimoTotal;
       const iva = pedido.length > 0 ? total * IVA_RATE : ultimoIVA;
       const totalConIVA = subtotal + iva;
@@ -1171,7 +1085,7 @@
         const totalConIVA = subtotal + iva;
 
         let pedidoData = {
-          detalle: pedido.map(item => ({ nombre: item.name, precio: item.price })),
+          detalle: pedido.map(p => ({ nombre: p.item.name, precio: p.item.price, cantidad: p.quantity })),
           total: totalConIVA,
           metodo_pago: metodo_pago
         };
@@ -1208,7 +1122,7 @@
             <p>Gracias por preferir Sabores Ancestrales.</p>
           `;
           
-          ultimoPedido = [...pedido];
+          ultimoPedido = pedido.map(p => ({ item: {...p.item}, quantity: p.quantity }));
           ultimoTotal = subtotal;
           ultimoIVA = iva;
           pedido.length = 0; total = 0;
