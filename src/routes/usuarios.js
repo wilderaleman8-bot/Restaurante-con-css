@@ -4,6 +4,7 @@ const supabase = require('../lib/supabaseClient');
 const multer = require('multer');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const dns = require('dns').promises;
 const { generarToken } = require('../middleware/auth');
 
 // Configuración de Multer: guarda imágenes de perfil en la carpeta uploads/
@@ -40,8 +41,18 @@ router.post('/registro', upload.single('image'), async (req, res) => {
   if (typeof nombre !== 'string' || nombre.length > 100) {
     return res.status(400).json({ error: 'Nombre inválido' });
   }
-  if (typeof email !== 'string' || email.length > 255 || !email.includes('@')) {
+  if (typeof email !== 'string' || email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ error: 'Email inválido' });
+  }
+
+  const dominio = email.split('@')[1];
+  try {
+    const mx = await dns.resolveMx(dominio);
+    if (!mx || mx.length === 0) {
+      return res.status(400).json({ error: 'El dominio del email no existe o no recibe correos' });
+    }
+  } catch {
+    return res.status(400).json({ error: 'El dominio del email no existe o no recibe correos' });
   }
   if (typeof password !== 'string' || password.length < 6) {
     return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });

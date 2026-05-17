@@ -18,7 +18,18 @@ const path = require('path');
 const app = express();
 
 // Middlewares de seguridad y logging
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: ["'self'", "cdnjs.cloudflare.com", "cdn.jsdelivr.net"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com", "cdn.jsdelivr.net"],
+      styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:"],
+      fontSrc: ["'self'", "data:", "fonts.gstatic.com"],
+    },
+  },
+}));
 app.use(morgan('dev'));
 
 // Límite de peticiones para evitar abusos

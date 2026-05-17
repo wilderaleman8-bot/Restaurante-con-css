@@ -134,7 +134,38 @@
       justify-content: center;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 40px;
+      margin-bottom: 12px;
+    }
+
+    .subcategories {
+      display: none;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .subcategories.active {
+      display: flex;
+    }
+    .subcategory-btn {
+      border: 1px solid var(--olive);
+      background: transparent;
+      color: var(--wood);
+      padding: 6px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .subcategory-btn.active {
+      background: var(--olive);
+      color: #fff;
+      border-color: var(--olive);
+    }
+    .subcategory-btn:hover {
+      background: var(--olive);
+      color: #fff;
     }
 
     .menu-search {
@@ -182,24 +213,38 @@
     
     .menu-item {
       background: white;
-      border-radius: 10px;
+      border-radius: var(--radius, 10px);
       overflow: hidden;
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border: 2px solid #e0d4c3;
       transition: transform 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .menu-item .content {
+      flex: 1;
+      padding: 20px;
+      background: #ede4d6;
     }
     
     .menu-item:hover {
       transform: translateY(-5px);
+      border-color: var(--olive, #9EB384);
     }
     
     .menu-item img {
       width: 100%;
-      height: 200px;
+      max-width: 100%;
+      height: 220px;
       object-fit: cover;
+      padding: 0;
     }
     
     .menu-item .content {
       padding: 20px;
+      background: #ede4d6;
+      margin-top: -2px;
     }
     
     .menu-item h4 {
@@ -479,7 +524,7 @@
     /* Responsive - Optimizado para todos los dispositivos móviles */
     @media (max-width: 1024px) {
       .menu-grid { gap: 24px; }
-      .menu-item img { height: 190px; }
+      .menu-item img { height: 200px; }
     }
     
     @media (max-width: 900px) {
@@ -543,7 +588,7 @@
       }
       
       .menu-item img {
-        height: 180px;
+        height: 190px;
       }
       
       .pedido {
@@ -596,7 +641,7 @@
       }
       
       .menu-item img {
-        height: 160px;
+        height: 170px;
       }
       
       .add-btn {
@@ -638,7 +683,7 @@
     
     @media (max-width: 400px) {
       .menu-item img {
-        height: 140px;
+        height: 150px;
       }
       
       .menu-item .content {
@@ -690,7 +735,14 @@
         <button class="category-btn" data-category="platos">Platos Principales</button>
         <button class="category-btn" data-category="postres">Postres</button>
         <button class="category-btn" data-category="bebidas">Bebidas</button>
-        <button class="category-btn" data-category="cervezas">Cervezas</button>
+      </div>
+
+      <div class="subcategories" id="bebidas-subs">
+        <button class="subcategory-btn active" data-sub="todas">Todas</button>
+        <button class="subcategory-btn" data-sub="licores">Licores</button>
+        <button class="subcategory-btn" data-sub="cervezas">Cervezas</button>
+        <button class="subcategory-btn" data-sub="enbotellados">Enbotellados</button>
+        <button class="subcategory-btn" data-sub="refrescos">Refrescos Naturales</button>
       </div>
 
       <div class="menu-search">
@@ -852,31 +904,44 @@
         { name: 'Pio Quinto', description: 'Pastel de ron con natilla.', price: 120.00, currency: 'C$', image: 'imagenes/Pio Quinto.png' },
         { name: 'Atolillo', description: 'Bebida espesa y dulce a base de maíz.', price: 120.00, currency: 'C$', image: 'imagenes/Atolillo.png' }
       ],
-      'bebidas': [
-        { name: 'Vino Tinto', description: 'Copa de nuestro tinto seleccionado.', price: 400.00, currency: 'C$', image: 'imagenes/vino-tinto-de-la-casa.png' },
-        { name: 'Margarita', description: 'Tequila, triple sec y jugo de limón.', price: 140.00, currency: 'C$', image: 'imagenes/limon.png' },
-        { name: 'Espresso', description: 'Café espresso italiano corto e intenso.', price: 100.00, currency: 'C$', image: 'imagenes/cafe-espresso-italiano.png' },
-        { name: 'Tamarindo', description: 'Refrescante jugo natural de tamarindo.', price: 60.00, currency: 'C$', image: 'imagenes/Jugo de Tamarindo.png' },
-        { name: 'Cacao Caliente', description: 'Bebida de cacao puro, espesa y aromática.', price: 80.00, currency: 'C$', image: 'imagenes/Cacao Caliente.png' },
-        { name: 'Limonada Menta', description: 'Limonada refrescante con hojas de menta.', price: 60.00, currency: 'C$', image: 'imagenes/Limonada con Menta.png' },
-        { name: 'Guanábana', description: 'Batido cremoso de guanábana fresca.', price: 90.00, currency: 'C$', image: 'imagenes/Batido de Guanábana.png' },
-        { name: 'Jamaica', description: 'Infusión de flor de jamaica refrescante.', price: 60.00, currency: 'C$', image: 'imagenes/Té de Jamaica.png' }
-      ],
-      'cervezas': [
-        { name: 'Toña', description: 'Cerveza lager nicaragüense clásica.', price: 80.00, currency: 'C$', image: 'imagenes/Toña.png' },
-        { name: 'Victoria', description: 'Cerveza lager con cuerpo y sabor marcado.', price: 80.00, currency: 'C$', image: 'imagenes/victoria.png' },
-        { name: 'Premium', description: 'Cerveza lager premium equilibrada.', price: 85.00, currency: 'C$', image: 'imagenes/Premium.png' },
-        { name: 'Brahva', description: 'Cerveza lager ligera y refrescante.', price: 85.00, currency: 'C$', image: 'imagenes/Brahva.png' },
-        { name: 'Ron & Cola', description: 'Preparado con ron Flor de Caña.', price: 250.00, currency: 'C$', image: 'imagenes/flor de Caña Ron & Cola.png' },
-        { name: 'Victoria Frost', description: 'Victoria con un toque de limón.', price: 75.00, currency: 'C$', image: 'imagenes/Victoria Frost.png' },
-        { name: 'Artesanal', description: 'Cerveza artesanal nica de sabor único.', price: 100.00, currency: 'C$', image: 'imagenes/Cerveza Artesanal Nica.png' }
-      ]
+      'bebidas': {
+        'licores': [
+          { name: 'Vino Tinto', description: 'Copa de nuestro tinto seleccionado.', price: 400.00, currency: 'C$', image: 'imagenes/vino-tinto-de-la-casa.png' },
+          { name: 'Margarita', description: 'Tequila, triple sec y jugo de limón.', price: 140.00, currency: 'C$', image: 'imagenes/Coctel-Margarita.png' },
+          { name: 'Ron Flor de Caña', description: 'Ron nicaragüense premium.', price: 200.00, currency: 'C$', image: 'imagenes/flor de Caña Ron & Cola.png' },
+          { name: 'Pisco Sour', description: 'Cóctel clásico a base de pisco.', price: 160.00, currency: 'C$', image: 'imagenes/pisco.png' },
+          { name: 'Cuba Libre', description: 'Ron con cola y limón.', price: 150.00, currency: 'C$', image: 'imagenes/Cuba libre.jpg' }
+        ],
+        'cervezas': [
+          { name: 'Toña', description: 'Cerveza lager nicaragüense clásica.', price: 80.00, currency: 'C$', image: 'imagenes/Toña.png' },
+          { name: 'Victoria', description: 'Cerveza lager con cuerpo y sabor marcado.', price: 80.00, currency: 'C$', image: 'imagenes/victoria.png' },
+          { name: 'Premium', description: 'Cerveza lager premium equilibrada.', price: 85.00, currency: 'C$', image: 'imagenes/Premium.png' },
+          { name: 'Brahva', description: 'Cerveza lager ligera y refrescante.', price: 85.00, currency: 'C$', image: 'imagenes/Brahva.png' },
+          { name: 'Toña Light', description: 'Cerveza suave con menos calorías.', price: 75.00, currency: 'C$', image: 'imagenes/Toña Light.png' },
+          { name: 'Victoria Frost', description: 'Victoria con un toque de limón.', price: 75.00, currency: 'C$', image: 'imagenes/Victoria Frost.png' },
+          { name: 'Cerveza Artesanal', description: 'Cerveza artesanal nica de sabor único.', price: 100.00, currency: 'C$', image: 'imagenes/Cerveza Artesanal Nica.png' }
+        ],
+        'enbotellados': [
+          { name: 'Coca Cola', description: 'Refresco gaseoso clásico.', price: 40.00, currency: 'C$', image: 'imagenes/coca cola.jpg' },
+          { name: 'Fanta Naranja', description: 'Refresco sabor naranja.', price: 40.00, currency: 'C$', image: 'imagenes/Fanta Naranja.jpg' },
+          { name: 'Agua Purificada', description: 'Agua embotellada pura.', price: 25.00, currency: 'C$', image: 'imagenes/Agua Purificada.jpg' }
+        ],
+        'refrescos': [
+          { name: 'Jugo de Tamarindo', description: 'Refrescante jugo natural de tamarindo.', price: 60.00, currency: 'C$', image: 'imagenes/Jugo de Tamarindo.png' },
+          { name: 'Cacao Caliente', description: 'Bebida de cacao puro, espesa y aromática.', price: 80.00, currency: 'C$', image: 'imagenes/Cacao Caliente.png' },
+          { name: 'Limonada con Menta', description: 'Limonada refrescante con hojas de menta.', price: 60.00, currency: 'C$', image: 'imagenes/Limonada con Menta.png' },
+          { name: 'Batido de Guanábana', description: 'Batido cremoso de guanábana fresca.', price: 90.00, currency: 'C$', image: 'imagenes/Batido de Guanábana.png' },
+          { name: 'Té de Jamaica', description: 'Infusión de flor de jamaica refrescante.', price: 60.00, currency: 'C$', image: 'imagenes/Té de Jamaica.png' },
+          { name: 'Espresso', description: 'Café espresso italiano corto e intenso.', price: 100.00, currency: 'C$', image: 'imagenes/cafe-espresso-italiano.png' }
+        ]
+      }
     };
 
     /**
      * Renderiza los platillos en la cuadrícula según la categoría seleccionada.
      */
     let categoriaActual = 'entradas';
+    let subcategoriaActual = 'todas';
 
     function loadMenuItems(category) {
       categoriaActual = category;
@@ -885,22 +950,40 @@
 
       const searchTerm = document.getElementById('menu-search-input').value.toLowerCase().trim();
 
-      menuData[category].forEach(item => {
-        if (searchTerm && !item.name.toLowerCase().includes(searchTerm) && !item.description.toLowerCase().includes(searchTerm)) return;
-        const div = document.createElement('div');
-        div.className = 'menu-item';
-        div.innerHTML = `
-          <img src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.src='imagenes/descarga.png'">
-          <div class="content">
-            <h4>${item.name} <span class="price">${item.currency}${item.price.toFixed(2)}</span></h4>
-            <p>${item.description}</p>
-            <button class="add-btn">Agregar</button>
-          </div>
-        `;
-        // Evento para añadir el producto al carrito
-        div.querySelector('.add-btn').addEventListener('click', () => agregarAlPedido(item));
-        menuItemsContainer.appendChild(div);
-      });
+      const data = menuData[category];
+
+      if (Array.isArray(data)) {
+        data.forEach(item => renderItem(item, searchTerm));
+      } else {
+        Object.keys(data).forEach(sub => {
+          if (subcategoriaActual !== 'todas' && sub !== subcategoriaActual) return;
+          const items = data[sub].filter(item =>
+            !searchTerm || item.name.toLowerCase().includes(searchTerm) || item.description.toLowerCase().includes(searchTerm)
+          );
+          if (items.length === 0) return;
+          const header = document.createElement('h3');
+          header.textContent = sub.charAt(0).toUpperCase() + sub.slice(1);
+          header.style.cssText = 'grid-column:1/-1;margin:10px 0 0;color:var(--accent);font-size:1.1rem;border-bottom:2px solid var(--olive);padding-bottom:6px';
+          menuItemsContainer.appendChild(header);
+          items.forEach(item => renderItem(item, searchTerm));
+        });
+      }
+    }
+
+    function renderItem(item, searchTerm) {
+      if (searchTerm && !item.name.toLowerCase().includes(searchTerm) && !item.description.toLowerCase().includes(searchTerm)) return;
+      const div = document.createElement('div');
+      div.className = 'menu-item';
+      div.innerHTML = `
+        <img src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.src='imagenes/descarga.png'">
+        <div class="content">
+          <h4>${item.name} <span class="price">${item.currency}${item.price.toFixed(2)}</span></h4>
+          <p>${item.description}</p>
+          <button class="add-btn">Agregar</button>
+        </div>
+      `;
+      div.querySelector('.add-btn').addEventListener('click', () => agregarAlPedido(item));
+      menuItemsContainer.appendChild(div);
     }
 
     const IVA_RATE = 0.15;
@@ -1141,11 +1224,28 @@
     });
 
     // Filtro por categoría
+    const subsContainer = document.getElementById('bebidas-subs');
+    const subButtons = document.querySelectorAll('.subcategory-btn');
+
     categoryButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         categoryButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        loadMenuItems(btn.dataset.category);
+        const cat = btn.dataset.category;
+        subsContainer.classList.toggle('active', cat === 'bebidas');
+        if (cat !== 'bebidas') subcategoriaActual = 'todas';
+        subButtons.forEach(b => b.classList.remove('active'));
+        document.querySelector('.subcategory-btn[data-sub="todas"]')?.classList.add('active');
+        loadMenuItems(cat);
+      });
+    });
+
+    subButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        subButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        subcategoriaActual = btn.dataset.sub;
+        loadMenuItems('bebidas');
       });
     });
 
