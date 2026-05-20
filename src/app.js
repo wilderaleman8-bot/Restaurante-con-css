@@ -28,10 +28,10 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      connectSrc: ["'self'", "http://localhost:3000", "https://localhost:3000", "cdnjs.cloudflare.com", "cdn.jsdelivr.net", "ws:", "wss:"],
+      connectSrc: ["'self'", "http://localhost:3000", "https://localhost:3000", "cdnjs.cloudflare.com", "cdn.jsdelivr.net", "cdn.socket.io", "ws:", "wss:"],
       scriptSrc: ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com", "cdn.jsdelivr.net", "cdn.socket.io"],
       styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
-      imgSrc: ["'self'", "data:"],
+      imgSrc: ["*", "data:"],
       fontSrc: ["'self'", "data:", "fonts.gstatic.com"],
     },
   },

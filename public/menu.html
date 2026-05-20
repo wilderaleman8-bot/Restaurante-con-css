@@ -773,10 +773,11 @@
             currency: item.currency || 'C$',
             image: item.image || 'imagenes/descarga.png'
           };
-          if (cat === 'bebidas' && sub) {
-            if (!menuData[cat]) menuData[cat] = {};
-            if (!menuData[cat][sub]) menuData[cat][sub] = [];
-            menuData[cat][sub].push(mapped);
+          if (cat === 'bebidas') {
+            if (!menuData[cat] || Array.isArray(menuData[cat])) menuData[cat] = {};
+            const key = sub || '_general';
+            if (!menuData[cat][key]) menuData[cat][key] = [];
+            menuData[cat][key].push(mapped);
           } else {
             if (!menuData[cat]) menuData[cat] = [];
             menuData[cat].push(mapped);
@@ -816,7 +817,7 @@
           );
           if (items.length === 0) return;
           const header = document.createElement('h3');
-          header.textContent = sub.charAt(0).toUpperCase() + sub.slice(1);
+          header.textContent = sub === '_general' ? 'Otras Bebidas' : sub.charAt(0).toUpperCase() + sub.slice(1);
           header.style.cssText = 'grid-column:1/-1;margin:10px 0 0;color:var(--accent);font-size:1.1rem;border-bottom:2px solid var(--olive);padding-bottom:6px';
           menuItemsContainer.appendChild(header);
           items.forEach(item => renderItem(item, searchTerm));
@@ -829,7 +830,7 @@
       const div = document.createElement('div');
       div.className = 'menu-item';
       div.innerHTML = `
-        <img src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.src='imagenes/descarga.png'">
+        <img src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.onerror=null;this.src='imagenes/descarga.png'">
         <div class="content">
           <h4>${item.name} <span class="price">${item.currency}${item.price.toFixed(2)}</span></h4>
           <p>${item.description}</p>

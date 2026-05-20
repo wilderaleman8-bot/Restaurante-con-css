@@ -62,7 +62,7 @@
             </div>
 
             <div>
-              <label for="subcategoria">Subcategoría</label>
+              <label for="subcategoria">Subcategoría <span id="sub-req" style="color:var(--danger);display:none;">*</span></label>
               <select id="subcategoria">
                 <option value="">Ninguna</option>
                 <option value="licores">Licores</option>
@@ -80,6 +80,9 @@
             <div class="full">
               <label for="imagen">URL de imagen</label>
               <input type="text" id="imagen" placeholder="../imagenes/ejemplo.png">
+            </div>
+            <div class="full" id="imagen-preview-wrap" style="display:none;">
+              <img id="imagen-preview" style="max-width:200px;max-height:150px;border-radius:8px;border:2px solid var(--border);object-fit:cover;">
             </div>
             <div class="full">
               <label for="imagen-file">O subir archivo</label>
@@ -163,6 +166,7 @@
       document.getElementById('form-title').textContent = 'Añadir platillo';
       document.getElementById('form-submit-btn').textContent = 'Guardar platillo';
       document.getElementById('form-cancel-btn').style.display = 'none';
+      updateImagePreview('');
     }
 
     function fillForm(p) {
@@ -173,9 +177,11 @@
       document.getElementById('subcategoria').value = p.subcategory || '';
       document.getElementById('descripcion').value = p.description || '';
       document.getElementById('imagen').value = p.image || '';
+      updateImagePreview(p.image || '');
       document.getElementById('form-title').textContent = 'Editar platillo';
       document.getElementById('form-submit-btn').textContent = 'Actualizar platillo';
       document.getElementById('form-cancel-btn').style.display = 'inline-block';
+      document.getElementById('categoria').dispatchEvent(new Event('change'));
       document.getElementById('menu-form-card').scrollIntoView({ behavior: 'smooth' });
     }
 
@@ -219,6 +225,10 @@
 
       if (!data.name || !data.price || !data.category || !data.description) {
         showToast('Completa todos los campos obligatorios', 'error');
+        return;
+      }
+      if (data.category === 'bebidas' && !data.subcategory) {
+        showToast('Selecciona una subcategoría para la bebida', 'error');
         return;
       }
 
@@ -304,7 +314,44 @@
       }
     }
 
+    function updateImagePreview(url) {
+      const wrap = document.getElementById('imagen-preview-wrap');
+      const img = document.getElementById('imagen-preview');
+      if (url) {
+        img.src = url;
+        wrap.style.display = 'block';
+      } else {
+        wrap.style.display = 'none';
+        img.src = '';
+      }
+    }
+
+    document.getElementById('imagen').addEventListener('input', function() {
+      updateImagePreview(this.value.trim());
+    });
+
+    document.getElementById('categoria').addEventListener('change', function() {
+      const subReq = document.getElementById('sub-req');
+      const subSelect = document.getElementById('subcategoria');
+      if (this.value === 'bebidas') {
+        subReq.style.display = 'inline';
+        subSelect.required = true;
+      } else {
+        subReq.style.display = 'none';
+        subSelect.required = false;
+      }
+    });
+
+    document.getElementById('imagen-file').addEventListener('change', function() {
+      if (this.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = e => updateImagePreview(e.target.result);
+        reader.readAsDataURL(this.files[0]);
+      }
+    });
+
     document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('categoria').dispatchEvent(new Event('change'));
       loadPlatillos();
       document.getElementById('menu-form').addEventListener('submit', savePlatillo);
       document.getElementById('form-cancel-btn').addEventListener('click', resetForm);
