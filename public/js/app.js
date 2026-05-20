@@ -1,7 +1,5 @@
 
-const BACKEND_URL = window.location.port === '80' || window.location.port === '443' || window.location.port === ''
-  ? 'http://localhost:3000'
-  : window.location.origin;
+const BACKEND_URL = window.location.origin;
 
 function getUsuario() {
   const stored = localStorage.getItem('usuario') || localStorage.getItem('saboresUser');
@@ -129,6 +127,62 @@ async function cargarTestimonios() {
 }
 
 // ===============================
+// Valoraciones - Cargar promedio y distribución
+// ===============================
+async function cargarValoraciones() {
+  const container = document.getElementById('valoraciones-container');
+  if (!container) return;
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/valoraciones`);
+    if (!response.ok) return;
+    const valoraciones = await response.json();
+    const ratings = Array.isArray(valoraciones) ? valoraciones : [];
+
+    if (ratings.length === 0) {
+      container.innerHTML = '<p class="lead">No hay valoraciones aún. Sé el primero en valorar.</p>';
+      return;
+    }
+
+    const total = ratings.length;
+    const sum = ratings.reduce((acc, v) => acc + (v.calificacion || 0), 0);
+    const avg = (sum / total).toFixed(1);
+
+    const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    ratings.forEach(v => {
+      const c = v.calificacion || 0;
+      if (dist[c] !== undefined) dist[c]++;
+    });
+
+    container.innerHTML = `
+      <div class="valoraciones-summary">
+        <div class="valoraciones-average">
+          <div class="avg-stars">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5 - Math.round(avg))}</div>
+          <div class="avg-number">${avg}/5</div>
+          <div class="avg-count">${total} valoración${total !== 1 ? 'es' : ''}</div>
+        </div>
+        <div class="valoraciones-distribution">
+          ${[5,4,3,2,1].map(star => {
+            const pct = total > 0 ? (dist[star] / total * 100) : 0;
+            return `
+              <div class="dist-row">
+                <span class="dist-label">${star} ★</span>
+                <div class="dist-bar-bg">
+                  <div class="dist-bar-fill" style="width:${pct}%"></div>
+                </div>
+                <span class="dist-pct">${Math.round(pct)}%</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  } catch (e) {
+    console.error('Error cargando valoraciones:', e);
+  }
+}
+
+// ===============================
 // Back to Top
 // ===============================
 function initBackToTop() {
@@ -148,6 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   initBackToTop();
   cargarTestimonios();
+  cargarValoraciones();
 
   const backendUrl = BACKEND_URL;
 
@@ -165,8 +220,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="user-box">
           <img src="${imgPath}" alt="Avatar" onerror="this.src='./imagenes/Logo.jpg'">
           <div class="user-labels">
-            <span>${usuario.nombre}</span>
-            <button id="logout-btn">Cerrar sesión</button>
+          <span>${usuario.nombre}${usuario.rol === 'admin' ? '<a href="./admin/index.html" class="admin-link"> ⚙ Admin</a>' : ''}</span>
+          <button id="logout-btn">Cerrar sesión</button>
           </div>
         </div>
       `;
@@ -230,14 +285,16 @@ async function login(email, password) {
           nombre: usuario.nombre,
           email: usuario.email,
           image_path: usuario.image_path || null,
-          imageUrl: imageUrl
+          imageUrl: imageUrl,
+          rol: usuario.rol
         };
 
     localStorage.setItem('usuario', JSON.stringify(sessionUser));
     localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
     if (result.token) setToken(result.token);
     showToast('Bienvenido ' + usuario.nombre, 'success');
-    setTimeout(() => { window.location.href = './menu.html'; }, 500);
+    const redirectUrl = usuario.rol === 'admin' ? './admin/index.html' : './menu.html';
+    setTimeout(() => { window.location.href = redirectUrl; }, 500);
     return sessionUser;
   } catch (error) {
     console.error('Error login:', error);
@@ -274,7 +331,6 @@ async function registrar(formData) {
       return null;
     }
 
-    if (result.token) setToken(result.token);
     return result.usuario;
   } catch (error) {
     console.error('Error registro:', error);
@@ -314,12 +370,14 @@ document.addEventListener('DOMContentLoaded', () => {
           nombre: usuario.nombre,
           email: usuario.email,
           image_path: usuario.image_path || null,
-          imageUrl: imageUrl
+          imageUrl: imageUrl,
+          rol: usuario.rol
         };
         localStorage.setItem('usuario', JSON.stringify(sessionUser));
         localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
         showToast('Usuario creado con éxito', 'success');
-        setTimeout(() => { window.location.href = './menu.html'; }, 500);
+        const redirectUrl = usuario.rol === 'admin' ? './admin/index.html' : './menu.html';
+        setTimeout(() => { window.location.href = redirectUrl; }, 500);
       }
     });
   }
@@ -505,18 +563,30 @@ document.addEventListener('DOMContentLoaded', () => {
   if (formReserva) {
     formReserva.addEventListener("submit", async e => {
       e.preventDefault();
+      const fechaHora = e.target.hora.value
+        ? `${e.target.fecha.value}T${e.target.hora.value}:00`
+        : e.target.fecha.value;
       const result = await guardarReserva(
         e.target.nombre.value,
         e.target.apellido.value,
         e.target.personas.value,
-        e.target.fecha.value,
+        fechaHora,
         e.target.mensaje.value
       );
       if (result) {
         const confirmacion = document.getElementById('confirmacion');
         const resumen = document.getElementById('resumen');
         if (confirmacion && resumen) {
-          resumen.textContent = `Gracias, ${e.target.nombre.value}. Tu reserva para ${e.target.personas.value} persona(s) el ${e.target.fecha.value} ha sido registrada.`;
+          const horaSel = e.target.hora.value;
+          let horaTexto = '';
+          if (horaSel) {
+            const [h, m] = horaSel.split(':');
+            const hh = parseInt(h);
+            const ampm = hh >= 12 ? 'PM' : 'AM';
+            const h12 = hh === 0 ? 12 : hh > 12 ? hh - 12 : hh;
+            horaTexto = ` a las ${h12}:${m} ${ampm}`;
+          }
+          resumen.textContent = `Gracias, ${e.target.nombre.value}. Tu reserva para ${e.target.personas.value} persona(s) el ${e.target.fecha.value}${horaTexto} ha sido registrada.`;
           confirmacion.style.display = 'block';
         }
         e.target.reset();

@@ -70,8 +70,8 @@ router.post('/registro', upload.single('image'), async (req, res) => {
   // Inserta el usuario en la base de datos
   const { data, error } = await supabase
     .from('usuarios')
-    .insert([{ nombre, email, password: hashedPassword, image_path: imagePath }])
-    .select('id, nombre, email, image_path')
+    .insert([{ nombre, email, password: hashedPassword, image_path: imagePath, rol: 'cliente' }])
+    .select('id, nombre, email, image_path, rol')
     .single();
 
   if (error) {
@@ -94,7 +94,7 @@ router.post('/login', async (req, res) => {
   // Busca al usuario por email
   const { data, error } = await supabase
     .from('usuarios')
-    .select('id, nombre, email, image_path, password')
+    .select('id, nombre, email, image_path, rol, password')
     .eq('email', email)
     .single();
 

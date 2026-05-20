@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sabores Ancestrales | Menú</title>
+  <link rel="icon" href="../imagenes/Logo.jpg" type="image/jpeg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="../imagenes/Logo.jpg" alt="Logo">
+        <div>
+          <span>Sabores Ancestrales</span>
+          <small>Panel Admin</small>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html"><span class="icon">📊</span> Dashboard</a>
+        <a href="pedidos.html"><span class="icon">📋</span> Pedidos</a>
+        <a href="reservas.html"><span class="icon">📅</span> Reservas</a>
+        <a href="menu.html"><span class="icon">🍽️</span> Menú</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <button id="sidebar-toggle">☰</button>
+        <h1>Gestión del Menú</h1>
+        <div class="admin-user" id="admin-user-info"></div>
+      </header>
+
+      <div class="admin-content">
+        <div class="menu-form-card" id="menu-form-card">
+          <h3 id="form-title">Añadir platillo</h3>
+          <form class="menu-form" id="menu-form">
+            <input type="hidden" id="edit-id" value="">
+
+            <div>
+              <label for="nombre">Nombre</label>
+              <input type="text" id="nombre" required>
+            </div>
+
+            <div>
+              <label for="precio">Precio (C$)</label>
+              <input type="number" id="precio" step="0.01" min="0" required>
+            </div>
+
+            <div>
+              <label for="categoria">Categoría</label>
+              <select id="categoria" required>
+                <option value="entradas">Entradas</option>
+                <option value="platos">Platos Principales</option>
+                <option value="postres">Postres</option>
+                <option value="bebidas">Bebidas</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="subcategoria">Subcategoría</label>
+              <select id="subcategoria">
+                <option value="">Ninguna</option>
+                <option value="licores">Licores</option>
+                <option value="cervezas">Cervezas</option>
+                <option value="enbotellados">Enbotellados</option>
+                <option value="refrescos">Refrescos Naturales</option>
+              </select>
+            </div>
+
+            <div class="full">
+              <label for="descripcion">Descripción</label>
+              <textarea id="descripcion" required></textarea>
+            </div>
+
+            <div class="full">
+              <label for="imagen">URL de imagen</label>
+              <input type="text" id="imagen" placeholder="../imagenes/ejemplo.png">
+            </div>
+            <div class="full">
+              <label for="imagen-file">O subir archivo</label>
+              <input type="file" id="imagen-file" accept="image/*">
+              <small style="color:var(--muted);">Máximo 5MB. Reemplaza la URL si subes un archivo.</small>
+            </div>
+
+            <div class="menu-form-actions">
+              <button type="submit" class="btn primary" id="form-submit-btn">Guardar platillo</button>
+              <button type="button" class="btn secondary" id="form-cancel-btn" style="display:none;">Cancelar</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="sync-bar">
+          <button class="btn" id="sync-btn">🔄 Sincronizar menú</button>
+          <span id="sync-status"></span>
+        </div>
+
+        <div class="admin-table-wrap">
+          <h3>Todos los platillos</h3>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Categoría</th>
+                  <th>Subcategoría</th>
+                  <th>Precio</th>
+                  <th>Activo</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="menu-body">
+                <tr><td colspan="6" class="empty-state"><p>Cargando...</p></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    let platillosData = [];
+
+    function renderPlatillos(platillos) {
+      const tbody = document.getElementById('menu-body');
+      if (!platillos.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><p>No hay platillos registrados. ¡Añade el primero!</p></td></tr>';
+        return;
+      }
+      tbody.innerHTML = platillos.map(p => {
+        const id = p.id;
+        const activo = p.active !== false;
+        return `
+          <tr>
+            <td>${p.name || '—'}</td>
+            <td>${p.category || '—'}</td>
+            <td>${p.subcategory || '—'}</td>
+            <td>C$${Number(p.price || 0).toFixed(2)}</td>
+            <td><span class="badge ${activo ? 'servido' : 'cancelado'}">${activo ? 'Sí' : 'No'}</span></td>
+            <td>
+              <div class="actions">
+                <button class="btn-small warning btn-edit" data-id="${id}">✏️ Editar</button>
+                <button class="btn-small ${activo ? 'danger' : 'primary'} btn-toggle" data-id="${id}" data-activo="${activo}">
+                  ${activo ? '🗑️ Desactivar' : '✅ Activar'}
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function resetForm() {
+      document.getElementById('menu-form').reset();
+      document.getElementById('edit-id').value = '';
+      document.getElementById('form-title').textContent = 'Añadir platillo';
+      document.getElementById('form-submit-btn').textContent = 'Guardar platillo';
+      document.getElementById('form-cancel-btn').style.display = 'none';
+    }
+
+    function fillForm(p) {
+      document.getElementById('edit-id').value = p.id;
+      document.getElementById('nombre').value = p.name || '';
+      document.getElementById('precio').value = p.price || '';
+      document.getElementById('categoria').value = p.category || 'entradas';
+      document.getElementById('subcategoria').value = p.subcategory || '';
+      document.getElementById('descripcion').value = p.description || '';
+      document.getElementById('imagen').value = p.image || '';
+      document.getElementById('form-title').textContent = 'Editar platillo';
+      document.getElementById('form-submit-btn').textContent = 'Actualizar platillo';
+      document.getElementById('form-cancel-btn').style.display = 'inline-block';
+      document.getElementById('menu-form-card').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function editPlatillo(id) {
+      const p = platillosData.find(x => x.id == id);
+      if (p) fillForm(p);
+    }
+
+    async function savePlatillo(e) {
+      e.preventDefault();
+      const id = document.getElementById('edit-id').value;
+      const fileInput = document.getElementById('imagen-file');
+      let imageUrl = document.getElementById('imagen').value.trim() || null;
+
+      if (fileInput.files.length > 0) {
+        const formData = new FormData();
+        formData.append('image', fileInput.files[0]);
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/upload`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${getToken()}` },
+            body: formData
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Error al subir imagen');
+          imageUrl = data.url;
+        } catch (e) {
+          showToast('Error al subir imagen: ' + e.message, 'error');
+          return;
+        }
+      }
+
+      const data = {
+        name: document.getElementById('nombre').value.trim(),
+        price: parseFloat(document.getElementById('precio').value),
+        category: document.getElementById('categoria').value,
+        subcategory: document.getElementById('subcategoria').value || null,
+        description: document.getElementById('descripcion').value.trim(),
+        image: imageUrl
+      };
+
+      if (!data.name || !data.price || !data.category || !data.description) {
+        showToast('Completa todos los campos obligatorios', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('form-submit-btn');
+      setLoading(btn, true);
+
+      try {
+        if (id) {
+          await apiFetch(`/api/platillos/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data)
+          });
+          showToast('Platillo actualizado', 'success');
+        } else {
+          await apiFetch('/api/platillos', {
+            method: 'POST',
+            body: JSON.stringify(data)
+          });
+          showToast('Platillo creado', 'success');
+        }
+        resetForm();
+        fileInput.value = '';
+        await loadPlatillos();
+      } catch (e) {
+        showToast(e.message || 'Error al guardar', 'error');
+      } finally {
+        setLoading(btn, false);
+      }
+    }
+
+    async function togglePlatillo(id, activo) {
+      try {
+        await apiFetch(`/api/platillos/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ active: activo })
+        });
+        showToast(activo ? 'Platillo activado' : 'Platillo desactivado', 'success');
+        await loadPlatillos();
+      } catch (e) {
+        showToast(e.message || 'Error al actualizar', 'error');
+      }
+    }
+
+    async function deletePlatillo(id) {
+      if (!confirm('¿Eliminar este platillo permanentemente?')) return;
+      try {
+        await apiFetch(`/api/platillos/${id}`, { method: 'DELETE' });
+        showToast('Platillo eliminado', 'success');
+        await loadPlatillos();
+      } catch (e) {
+        showToast(e.message || 'Error al eliminar', 'error');
+      }
+    }
+
+    async function syncMenu() {
+      const btn = document.getElementById('sync-btn');
+      const statusEl = document.getElementById('sync-status');
+      setLoading(btn, true);
+      statusEl.textContent = 'Sincronizando...';
+      try {
+        const res = await apiFetch('/api/platillos/seed', { method: 'POST' });
+        statusEl.textContent = `✅ ${res.message || 'Menú sincronizado'}`;
+        showToast('Menú sincronizado con éxito', 'success');
+        await loadPlatillos();
+        setTimeout(() => { statusEl.textContent = ''; }, 4000);
+      } catch (e) {
+        statusEl.textContent = '❌ Error al sincronizar';
+        showToast(e.message || 'Error de sincronización', 'error');
+        setTimeout(() => { statusEl.textContent = ''; }, 4000);
+      } finally {
+        setLoading(btn, false);
+      }
+    }
+
+    async function loadPlatillos() {
+      try {
+        const data = await apiFetch('/api/platillos/admin');
+        platillosData = Array.isArray(data) ? data : [];
+        renderPlatillos(platillosData);
+      } catch (e) {
+        document.getElementById('menu-body').innerHTML =
+          '<tr><td colspan="6" class="empty-state"><p>Error al cargar platillos</p></td></tr>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPlatillos();
+      document.getElementById('menu-form').addEventListener('submit', savePlatillo);
+      document.getElementById('form-cancel-btn').addEventListener('click', resetForm);
+      document.getElementById('sync-btn').addEventListener('click', syncMenu);
+
+      document.getElementById('menu-body').addEventListener('click', e => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+
+        if (btn.classList.contains('btn-edit')) {
+          editPlatillo(btn.dataset.id);
+        } else if (btn.classList.contains('btn-toggle')) {
+          togglePlatillo(btn.dataset.id, btn.dataset.activo === 'true' ? false : true);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

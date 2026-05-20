@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sabores Ancestrales | Admin</title>
+  <link rel="icon" href="../imagenes/Logo.jpg" type="image/jpeg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="../imagenes/Logo.jpg" alt="Logo">
+        <div>
+          <span>Sabores Ancestrales</span>
+          <small>Panel Admin</small>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html"><span class="icon">📊</span> Dashboard</a>
+        <a href="pedidos.html"><span class="icon">📋</span> Pedidos</a>
+        <a href="reservas.html"><span class="icon">📅</span> Reservas</a>
+        <a href="menu.html"><span class="icon">🍽️</span> Menú</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <button id="sidebar-toggle">☰</button>
+        <h1>Dashboard</h1>
+        <div class="admin-user" id="admin-user-info"></div>
+      </header>
+
+      <div class="admin-content">
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card"><div class="stat-icon orange">📦</div><div class="stat-info"><h3 id="stat-today-orders">—</h3><p>Pedidos hoy</p></div></div>
+          <div class="stat-card"><div class="stat-icon blue">⏳</div><div class="stat-info"><h3 id="stat-pending-orders">—</h3><p>Pendientes</p></div></div>
+          <div class="stat-card"><div class="stat-icon green">📅</div><div class="stat-info"><h3 id="stat-today-reservas">—</h3><p>Reservas hoy</p></div></div>
+          <div class="stat-card"><div class="stat-icon purple">👥</div><div class="stat-info"><h3 id="stat-total-users">—</h3><p>Total usuarios</p></div></div>
+        </div>
+
+        <div class="admin-table-wrap">
+          <h3>Últimos pedidos</h3>
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Total</th>
+                <th>Método</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="recent-orders-body">
+              <tr><td colspan="5" class="empty-state"><p>Cargando...</p></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="color:var(--wood);font-family:var(--font-heading);margin-bottom:14px;">Acciones rápidas</h3>
+        <div class="quick-actions">
+          <button class="quick-action-btn" data-href="pedidos.html"><span class="qa-icon">📋</span> Ver pedidos</button>
+          <button class="quick-action-btn" data-href="reservas.html"><span class="qa-icon">📅</span> Ver reservas</button>
+          <button class="quick-action-btn" data-href="menu.html"><span class="qa-icon">🍽️</span> Gestionar menú</button>
+          <button class="quick-action-btn" data-href="../menu.html" data-target="_blank"><span class="qa-icon">🔍</span> Vista previa menú</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    async function loadDashboard() {
+      try {
+        const [orders, reservas, users, menu] = await Promise.all([
+          apiFetch('/api/pedidos').catch(() => []),
+          apiFetch('/api/admin/reservas').catch(() => []),
+          apiFetch('/api/admin/usuarios').catch(() => []),
+          apiFetch('/api/platillos').catch(() => [])
+        ]);
+
+        const today = new Date().toISOString().slice(0, 10);
+        const ordersToday = (Array.isArray(orders) ? orders : []).filter(o => {
+          const d = o.created_at || o.fecha || '';
+          return d.slice(0, 10) === today;
+        });
+        const pending = (Array.isArray(orders) ? orders : []).filter(o => o.status === 'pendiente');
+        const reservasToday = (Array.isArray(reservas) ? reservas : []).filter(r => {
+          const d = r.fecha || '';
+          return d.slice(0, 10) === today;
+        });
+        const userCount = Array.isArray(users) ? users.length : 0;
+
+        document.getElementById('stat-today-orders').textContent = ordersToday.length;
+        document.getElementById('stat-pending-orders').textContent = pending.length;
+        document.getElementById('stat-today-reservas').textContent = reservasToday.length;
+        document.getElementById('stat-total-users').textContent = userCount;
+
+        const recentOrders = (Array.isArray(orders) ? orders : []).slice(0, 5);
+        const tbody = document.getElementById('recent-orders-body');
+
+        if (recentOrders.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><p>No hay pedidos recientes</p></td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = recentOrders.map(o => {
+          const fecha = o.created_at ? new Date(o.created_at).toLocaleString('es-ES') : (o.fecha || '—');
+          const cliente = o.nombre || o.cliente || o.usuario_nombre || '—';
+          const total = o.total ? `C$${Number(o.total).toFixed(2)}` : '—';
+          const metodo = o.metodo_pago || '—';
+          const status = o.status || 'pendiente';
+          return `
+            <tr>
+              <td>${fecha}</td>
+              <td>${cliente}</td>
+              <td>${total}</td>
+              <td>${metodo}</td>
+              <td><span class="badge ${status}">${status}</span></td>
+            </tr>
+          `;
+        }).join('');
+      } catch (e) {
+        console.error('Dashboard error:', e);
+        document.getElementById('recent-orders-body').innerHTML =
+          '<tr><td colspan="5" class="empty-state"><p>Error al cargar datos</p></td></tr>';
+      }
+    }
+
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.quick-action-btn');
+      if (!btn) return;
+      const href = btn.dataset.href;
+      if (!href) return;
+      if (btn.dataset.target === '_blank') {
+        window.open(href, '_blank');
+      } else {
+        location.href = href;
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDashboard();
+      setInterval(loadDashboard, 30000);
+    });
+  </script>
+</body>
+</html>

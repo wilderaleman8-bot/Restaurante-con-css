@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sabores Ancestrales | Login</title>
-  <meta name="description" content="Inicia sesión en Sabores Ancestrales para acceder a tu perfil, historial de pedidos y reservas.">
+  <title>Sabores Ancestrales | Recuperar Contraseña</title>
+  <meta name="description" content="Solicita un enlace para recuperar tu contraseña en Sabores Ancestrales.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="icon" href="imagenes/Logo.jpg" type="image/jpeg">
@@ -35,8 +35,7 @@
       color: var(--wood);
       font-size: 0.9rem;
     }
-    .auth-card input[type="email"],
-    .auth-card input[type="password"] {
+    .auth-card input[type="email"] {
       width: 100%;
       padding: 10px 12px;
       border-radius: 8px;
@@ -45,7 +44,7 @@
       outline: none;
       font-size: 0.95rem;
     }
-    .auth-card button:not(.pw-toggle) {
+    .auth-card button {
       background: var(--wood);
       color: #fff;
       border: none;
@@ -57,28 +56,8 @@
       font-size: 0.9rem;
       width: 100%;
     }
-    .auth-card button:not(.pw-toggle):hover {
+    .auth-card button:hover {
       background: var(--accent);
-    }
-    .auth-message {
-      min-height: 20px;
-      margin-bottom: 8px;
-      font-weight: 500;
-      font-size: 0.9rem;
-    }
-    .auth-hint {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-top: 12px;
-    }
-    .auth-hint span {
-      background: #f3ece4;
-      color: var(--wood);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
     }
     .auth-link {
       text-align: center;
@@ -115,26 +94,18 @@
 
   <section>
     <div class="container">
-      <h2>Iniciar sesión</h2>
-      <p class="lead">Ingresa tus datos para acceder a tu perfil.</p>
+      <h2>Recuperar Contraseña</h2>
+      <p class="lead">Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
 
       <div class="auth-card">
-        <form id="login-form">
-          <div class="auth-message" id="login-message"></div>
-          <label for="login-email">Correo electrónico</label>
-          <input type="email" id="login-email" name="email" placeholder="correo@ejemplo.com" autocomplete="username" required>
-
-          <label for="login-password">Contraseña</label>
-          <div class="pw-wrap">
-            <input type="password" id="login-password" name="password" placeholder="Tu contraseña" autocomplete="current-password" required>
-            <button type="button" class="pw-toggle" data-for="login-password">👁</button>
-          </div>
-
-          <button type="submit">Entrar a mi cuenta</button>
-          <p style="margin-top:14px;text-align:center;"><a href="solicitar-reset.html" style="color:var(--wood);font-size:0.9rem;">¿Olvidaste tu contraseña?</a></p>
+        <div id="reset-message"></div>
+        <form id="solicitar-reset-form">
+          <label for="reset-email">Correo electrónico</label>
+          <input type="email" id="reset-email" name="email" placeholder="correo@ejemplo.com" autocomplete="email" required>
+          <button type="submit">Enviar enlace de recuperación</button>
         </form>
         <div class="auth-link">
-          ¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a>
+          <a href="login.html">Volver a iniciar sesión</a>
         </div>
       </div>
     </div>
@@ -147,11 +118,41 @@
         <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">◉</a>
         <a href="https://wa.me/50588888888" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
       </div>
-      <p>© 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
+      <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
     </div>
   </footer>
   <button id="back-to-top" aria-label="Volver arriba">↑</button>
 
+  <script>
+    document.getElementById('solicitar-reset-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = e.target.email.value;
+      const btn = e.target.querySelector('button');
+      const msg = document.getElementById('reset-message');
+
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+
+      const BACKEND_URL = window.location.port === '80' || window.location.port === '443' || window.location.port === ''
+        ? 'http://localhost:3000' : window.location.origin;
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/password-reset/solicitar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        await response.json();
+        msg.innerHTML = '<div class="success-msg">Si el correo existe, recibirás un enlace de recuperación.</div>';
+        e.target.querySelector('input').value = '';
+      } catch (err) {
+        msg.innerHTML = '<div class="error-msg">Error al conectar con el servidor. Intenta de nuevo.</div>';
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Enviar enlace de recuperación';
+    });
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/app.js"></script>

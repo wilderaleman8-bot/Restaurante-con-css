@@ -17,8 +17,8 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Apellido inválido' });
   }
   const numPersonas = parseInt(personas, 10);
-  if (isNaN(numPersonas) || numPersonas < 1 || numPersonas > 50) {
-    return res.status(400).json({ error: 'Número de personas inválido (1-50)' });
+  if (isNaN(numPersonas) || numPersonas < 1 || numPersonas > 15) {
+    return res.status(400).json({ error: 'Número de personas inválido (máximo 15)' });
   }
   const fechaDate = new Date(fecha);
   if (isNaN(fechaDate.getTime())) {
@@ -38,6 +38,9 @@ router.post('/', async (req, res) => {
   if (error) {
     return res.status(500).json({ error: error.message });
   }
+
+  const io = req.app.get('io');
+  if (io) io.emit('new-reservation', { nombre, apellido, personas: numPersonas, fecha: req.body.fecha });
 
   res.status(201).json({ message: 'Reserva guardada correctamente' });
 });

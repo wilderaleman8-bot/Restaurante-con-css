@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sabores Ancestrales | Pedidos</title>
+  <link rel="icon" href="../imagenes/Logo.jpg" type="image/jpeg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="../imagenes/Logo.jpg" alt="Logo">
+        <div>
+          <span>Sabores Ancestrales</span>
+          <small>Panel Admin</small>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html"><span class="icon">📊</span> Dashboard</a>
+        <a href="pedidos.html"><span class="icon">📋</span> Pedidos</a>
+        <a href="reservas.html"><span class="icon">📅</span> Reservas</a>
+        <a href="menu.html"><span class="icon">🍽️</span> Menú</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <button id="sidebar-toggle">☰</button>
+        <h1>Gestión de Pedidos</h1>
+        <div class="admin-user" id="admin-user-info"></div>
+      </header>
+
+      <div class="admin-content">
+        <div class="admin-filters">
+          <input type="text" id="search-input" placeholder="Buscar por cliente...">
+          <select id="status-filter">
+            <option value="">Todos los estados</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="preparando">Preparando</option>
+            <option value="servido">Servido</option>
+            <option value="cancelado">Cancelado</option>
+          </select>
+        </div>
+
+        <div class="admin-table-wrap">
+          <h3>Todos los pedidos</h3>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Cliente</th>
+                  <th>Platillos</th>
+                  <th>Total</th>
+                  <th>Método</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="orders-body">
+                <tr><td colspan="7" class="empty-state"><p>Cargando...</p></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    let ordersData = [];
+
+    function renderOrders(orders) {
+      const tbody = document.getElementById('orders-body');
+      if (!orders.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><p>No hay pedidos registrados</p></td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = orders.map(o => {
+        const fecha = o.created_at ? new Date(o.created_at).toLocaleString('es-ES') : (o.fecha || '—');
+        const cliente = o.nombre || o.cliente || o.usuario_nombre || '—';
+        const total = o.total ? `C$${Number(o.total).toFixed(2)}` : '—';
+        const metodo = o.metodo_pago || '—';
+        const status = o.status || 'pendiente';
+
+        const detalle = Array.isArray(o.detalle)
+          ? o.detalle.map(d => `${d.nombre || d.name || '?'}${d.cantidad ? ` x${d.cantidad}` : ''}`).join(', ')
+          : (typeof o.detalle === 'string' ? o.detalle : '—');
+
+        const opciones = ['pendiente', 'preparando', 'servido', 'cancelado'];
+        const disabled = status === 'servido' || status === 'cancelado';
+
+        return `
+          <tr>
+            <td>${fecha}</td>
+            <td>${cliente}</td>
+            <td style="max-width:220px;white-space:normal;word-break:break-word;">${detalle}</td>
+            <td>${total}</td>
+            <td>${metodo}</td>
+            <td><span class="badge ${status}">${status}</span></td>
+            <td>
+              ${disabled ? '<span style="color:var(--muted);font-size:0.8rem">Finalizado</span>' : `
+              <div style="display:flex;gap:6px;align-items:center">
+                <select class="status-select" data-id="${o.id}" style="padding:4px 8px;border-radius:6px;border:1px solid #ccc;font-size:0.8rem">
+                  ${opciones.map(s => `<option value="${s}" ${s === status ? 'selected' : ''}>${s}</option>`).join('')}
+                </select>
+                <button class="btn-small primary btn-update-status" data-id="${o.id}">Actualizar</button>
+              </div>`}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterOrders() {
+      const search = document.getElementById('search-input').value.toLowerCase().trim();
+      const status = document.getElementById('status-filter').value;
+      let filtered = ordersData;
+      if (search) {
+        filtered = filtered.filter(o => {
+          const cliente = (o.nombre || o.cliente || o.usuario_nombre || '').toLowerCase();
+          return cliente.includes(search);
+        });
+      }
+      if (status) {
+        filtered = filtered.filter(o => (o.status || 'pendiente') === status);
+      }
+      renderOrders(filtered);
+    }
+
+    async function updateStatus(id) {
+      const select = document.querySelector(`.status-select[data-id="${id}"]`);
+      if (!select) { showToast('No se encontró el selector', 'error'); return; }
+      const newStatus = select.value;
+      try {
+        await apiFetch(`/api/admin/pedidos/${id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: newStatus })
+        });
+        showToast(`Pedido actualizado a "${newStatus}"`, 'success');
+        await loadOrders();
+      } catch (e) {
+        showToast(e.message || 'Error al actualizar', 'error');
+      }
+    }
+
+    async function loadOrders() {
+      try {
+        const data = await apiFetch('/api/pedidos');
+        ordersData = Array.isArray(data) ? data : [];
+        filterOrders();
+      } catch (e) {
+        document.getElementById('orders-body').innerHTML =
+          '<tr><td colspan="7" class="empty-state"><p>Error al cargar pedidos</p></td></tr>';
+      }
+    }
+
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.btn-update-status');
+      if (!btn) return;
+      updateStatus(btn.dataset.id);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadOrders();
+      setInterval(loadOrders, 30000);
+      document.getElementById('search-input').addEventListener('input', filterOrders);
+      document.getElementById('status-filter').addEventListener('change', filterOrders);
+    });
+  </script>
+</body>
+</html>

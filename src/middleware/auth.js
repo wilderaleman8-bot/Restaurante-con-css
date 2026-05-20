@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 // Genera un token JWT con los datos del usuario, válido por 7 días
 function generarToken(usuario) {
   return jwt.sign(
-    { id: usuario.id, email: usuario.email, nombre: usuario.nombre },
+    { id: usuario.id, email: usuario.email, nombre: usuario.nombre, rol: usuario.rol || 'cliente' },
     JWT_SECRET,
     { expiresIn: '7d' }
   );
@@ -30,4 +30,12 @@ function verificarToken(req, res, next) {
   }
 }
 
-module.exports = { generarToken, verificarToken };
+// Verifica que el usuario autenticado tenga rol de administrador
+function verificarAdmin(req, res, next) {
+  if (!req.usuario || req.usuario.rol !== 'admin') {
+    return res.status(403).json({ error: 'Acceso denegado. Se requiere rol de administrador.' });
+  }
+  next();
+}
+
+module.exports = { generarToken, verificarToken, verificarAdmin };

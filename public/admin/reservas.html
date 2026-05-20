@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sabores Ancestrales | Reservas</title>
+  <link rel="icon" href="../imagenes/Logo.jpg" type="image/jpeg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="../imagenes/Logo.jpg" alt="Logo">
+        <div>
+          <span>Sabores Ancestrales</span>
+          <small>Panel Admin</small>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html"><span class="icon">📊</span> Dashboard</a>
+        <a href="pedidos.html"><span class="icon">📋</span> Pedidos</a>
+        <a href="reservas.html"><span class="icon">📅</span> Reservas</a>
+        <a href="menu.html"><span class="icon">🍽️</span> Menú</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <button id="sidebar-toggle">☰</button>
+        <h1>Gestión de Reservas</h1>
+        <div class="admin-user" id="admin-user-info"></div>
+      </header>
+
+      <div class="admin-content">
+        <div class="admin-filters">
+          <input type="text" id="search-input" placeholder="Buscar por nombre...">
+        </div>
+
+        <div class="admin-table-wrap">
+          <h3>Todas las reservas</h3>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Fecha registro</th>
+                  <th>Nombre</th>
+                  <th>Personas</th>
+                  <th>Fecha y hora</th>
+                  <th>Mensaje</th>
+                </tr>
+              </thead>
+              <tbody id="reservas-body">
+                <tr><td colspan="5" class="empty-state"><p>Cargando...</p></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    let reservasData = [];
+
+    function renderReservas(reservas) {
+      const tbody = document.getElementById('reservas-body');
+      if (!reservas.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><p>No hay reservas registradas</p></td></tr>';
+        return;
+      }
+      tbody.innerHTML = reservas.map(r => {
+        const fechaReg = r.created_at ? new Date(r.created_at).toLocaleString('es-ES') : (r.fecha_registro || '—');
+        const nombre = [r.nombre, r.apellido].filter(Boolean).join(' ') || '—';
+        const personas = r.personas || '—';
+        const fechaReserva = r.fecha_reserva ? new Date(r.fecha_reserva).toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' }) : '—';
+        const mensaje = r.mensaje || '—';
+        return `
+          <tr>
+            <td>${fechaReg}</td>
+            <td>${nombre}</td>
+            <td>${personas}</td>
+            <td>${fechaReserva}</td>
+            <td style="max-width:250px;white-space:normal;word-break:break-word;">${mensaje}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterReservas() {
+      const search = document.getElementById('search-input').value.toLowerCase().trim();
+      if (!search) {
+        renderReservas(reservasData);
+        return;
+      }
+      const filtered = reservasData.filter(r => {
+        const nombre = [r.nombre, r.apellido].filter(Boolean).join(' ').toLowerCase();
+        return nombre.includes(search);
+      });
+      renderReservas(filtered);
+    }
+
+    async function loadReservas() {
+      try {
+        const data = await apiFetch('/api/admin/reservas');
+        reservasData = Array.isArray(data) ? data : [];
+        renderReservas(reservasData);
+      } catch (e) {
+        document.getElementById('reservas-body').innerHTML =
+          '<tr><td colspan="5" class="empty-state"><p>Error al cargar reservas</p></td></tr>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadReservas();
+      setInterval(loadReservas, 30000);
+      document.getElementById('search-input').addEventListener('input', filterReservas);
+    });
+  </script>
+</body>
+</html>

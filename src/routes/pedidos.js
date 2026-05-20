@@ -37,6 +37,9 @@ router.post('/', async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 
+  const io = req.app.get('io');
+  if (io) io.emit('new-order', { id: data.id, total: req.body.total, metodo_pago: req.body.metodo_pago, status: 'pendiente' });
+
   res.status(201).json({ message: 'Pedido creado correctamente', id: data.id, status: 'pendiente' });
 });
 
@@ -71,6 +74,9 @@ router.patch('/:id', verificarToken, async (req, res) => {
   if (error) {
     return res.status(500).json({ error: error.message });
   }
+
+  const io = req.app.get('io');
+  if (io) io.emit('order-status', { id: data.id, status: data.status });
 
   res.json({ message: 'Estado actualizado', id: data.id, status: data.status });
 });
