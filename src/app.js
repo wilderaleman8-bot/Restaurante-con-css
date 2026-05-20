@@ -65,7 +65,10 @@ app.use('/api/valoraciones', valoracionesRoutes);
 
 // Manejo de rutas no encontradas (404)
 app.use((req, res) => {
-  res.status(404).json({ error: 'Endpoint no encontrado' });
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'Endpoint no encontrado' });
+  }
+  res.status(404).sendFile(path.join(__dirname, '../public/404.html'));
 });
 
 // Manejo global de errores del servidor

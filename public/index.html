@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sabores Ancestrales | Inicio</title>
   <meta name="description" content="Sabores Ancestrales - Restaurante de comida tradicional nicaragüense. Platillos auténticos, ingredientes locales y recetas familiares.">
-  <style>.hero{position:relative;min-height:300px;overflow:hidden}.hero .hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="imagenes/Logo.jpg" type="image/jpeg">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -29,7 +31,11 @@
   </header>
 
   <section class="hero">
-    <img src="imagenes/hero.webp" alt="Portada Sabores Ancestrales" class="hero-bg" width="1920" height="922" loading="eager" fetchpriority="high">
+    <picture>
+      <source media="(max-width: 576px)" srcset="imagenes/hero.webp" sizes="100vw">
+      <source media="(max-width: 1024px)" srcset="imagenes/hero.webp" sizes="100vw">
+      <img src="imagenes/hero.webp" alt="Portada Sabores Ancestrales" class="hero-bg" width="1920" height="922" loading="eager" fetchpriority="high" sizes="100vw" srcset="imagenes/hero.webp 1920w">
+    </picture>
     <div class="hero-content">
       <h1>Bienvenido a Sabores Ancestrales</h1>
       <p>Venimos desde abajo, con esfuerzo, dedicación y amor por la cocina.  
@@ -39,26 +45,26 @@
     </div>
   </section>
 
-  <section>
+  <section class="reveal">
     <div class="container">
       <h2>Nuestra Historia</h2>
-      <p class="lead">
+      <p class="lead reveal reveal-delay-1">
         En <strong>Sabores Ancestrales</strong> celebramos las raíces culinarias de nuestra tierra. Nacimos como un pequeño puesto familiar y con los años nos convertimos en un restaurante reconocido por su autenticidad y calidez.  
         Cada día trabajamos con pasión para ofrecer comida tradicional con un toque moderno, respetando los ingredientes locales y la esencia de nuestras abuelas.
       </p>
 
       <div class="features">
-        <div class="card">
+        <div class="card reveal reveal-delay-1">
             <img src="imagenes/ancestrales.png" alt="Pasión por la cocina" width="64" height="64">
             <h3>Pasión por la cocina</h3>
             <p>Cocinamos con amor y dedicación, manteniendo vivas las recetas que han pasado de generación en generación. Cada plato cuenta una historia.</p>
           </div>
-          <div class="card">
+          <div class="card reveal reveal-delay-2">
             <img src="imagenes/ensalada.jpg" alt="Ingredientes locales" width="64" height="64">
             <h3>Ingredientes locales</h3>
             <p>Apoyamos a agricultores y productores nicaragüenses, utilizando ingredientes frescos y naturales provenientes de la región.</p>
           </div>
-          <div class="card">
+          <div class="card reveal reveal-delay-3">
             <img src="imagenes/images.png" alt="Experiencia artesanal" width="64" height="64">
             <h3>Experiencia artesanal</h3>
             <p>Nuestros chefs combinan técnicas ancestrales con presentaciones modernas, logrando una fusión de sabor, color y textura.</p>
@@ -67,32 +73,59 @@
     </div>
   </section>
 
-  <section>
+  <section class="reveal">
     <div class="container">
       <h2>Visítanos</h2>
-      <p class="lead">Te invitamos a vivir una experiencia gastronómica completa. Ven con tu familia, amigos o pareja y disfruta de un ambiente cálido, rústico y lleno de tradición.</p>
+      <p class="lead reveal reveal-delay-1">Te invitamos a vivir una experiencia gastronómica completa. Ven con tu familia, amigos o pareja y disfruta de un ambiente cálido, rústico y lleno de tradición.</p>
       <div class="features">
-        <div class="card">
+        <div class="card reveal reveal-delay-1">
           <h3>📍 Ubicación</h3>
           <p>Nos encontramos en el corazón de la ciudad, cerca del parque central. Fácil acceso y estacionamiento disponible.</p>
         </div>
-        <div class="card">
+        <div class="card reveal reveal-delay-2">
           <h3>🕒 Horarios</h3>
           <p>Lunes a Domingo: 10:00 a.m. - 10:00 p.m.<br>  
              Almuerzos, cenas y eventos especiales con reservación.</p>
         </div>
-        <div class="card">
+        <div class="card reveal reveal-delay-3">
           <h3>☎️ Contáctanos</h3>
           <p>Tel: +505 8888-8888<br>  
              Email: contacto@saboresancestrales.com</p>
         </div>
       </div>
+      <div class="map-container reveal reveal-delay-4">
+        <a href="https://maps.google.com/?q=Parque+Masaya+Nicaragua&ftid=0x8f74061f014ce183:0xfe6d5002064b0e24" target="_blank" rel="noopener" class="map-card">
+          <div class="map-card-icon">📍</div>
+          <div class="map-card-text">
+            <strong>Parque Masaya, Nicaragua</strong>
+            <span>Frente al parque central — Haz clic para ver en Google Maps</span>
+          </div>
+          <span class="map-card-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal" id="testimonios-section">
+    <div class="container">
+      <h2>Lo que dicen nuestros clientes</h2>
+      <p class="lead reveal reveal-delay-1">Las opiniones de quienes nos visitan nos motivan a seguir mejorando cada día.</p>
+      <div class="testimonials-grid" id="testimonials-grid"></div>
     </div>
   </section>
 
   <footer>
-    <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
+    <div class="container footer-content">
+      <div class="social-links">
+        <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">f</a>
+        <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">◉</a>
+        <a href="https://wa.me/50588888888" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+      </div>
+      <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
+    </div>
   </footer>
+
+  <button id="back-to-top" aria-label="Volver arriba">↑</button>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <script src="js/supabase.js"></script>

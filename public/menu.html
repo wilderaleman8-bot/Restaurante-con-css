@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sabores Ancestrales | Menú</title>
   <meta name="description" content="Explora el menú de Sabores Ancestrales: platillos tradicionales nicaragüenses, bebidas típicas y postres artesanales.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="imagenes/Logo.jpg" type="image/jpeg">
   <link rel="stylesheet" href="css/style.css">
   <style>
     /* Estilos generales */
@@ -119,6 +122,9 @@
       color: #8b4513;
       margin-bottom: 20px;
       font-size: 2.5rem;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      letter-spacing: -0.5px;
     }
     
     .lead {
@@ -591,13 +597,29 @@
           <option value="tarjeta">Tarjeta</option>
         </select>
 
-        <div id="card-details" style="display:none; margin-top:10px;">
-          <label for="card_number">Número de tarjeta</label>
-          <input id="card_number" type="text" placeholder="xxxx xxxx xxxx xxxx" maxlength="19" />
-          <label for="cvv">CVV</label>
-          <input id="cvv" type="text" placeholder="123" maxlength="4" />
-          <label for="exp_date">Expiración (MM/AA)</label>
-          <input id="exp_date" type="text" placeholder="MM/AA" maxlength="5" />
+        <div id="card-details" style="display:none;">
+          <div class="card-form">
+            <div class="card-form-header">
+              <span class="card-form-title">Datos de la tarjeta</span>
+              <span class="card-brand-badge" id="card-brand-badge">💳</span>
+            </div>
+            <div class="card-form-body">
+              <div class="card-field card-field-full">
+                <label for="card_number">Número de tarjeta</label>
+                <input id="card_number" type="text" inputmode="numeric" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number">
+              </div>
+              <div class="card-field-row">
+                <div class="card-field">
+                  <label for="exp_date">Vencimiento</label>
+                  <input id="exp_date" type="text" inputmode="numeric" placeholder="MM/AA" maxlength="5" autocomplete="cc-exp">
+                </div>
+                <div class="card-field">
+                  <label for="cvv">CVV</label>
+                  <input id="cvv" type="text" inputmode="numeric" placeholder="123" maxlength="4" autocomplete="cc-csc">
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <button class="btn" id="finalizar">Finalizar Pedido</button>
@@ -614,8 +636,16 @@
   </section>
 
   <footer>
-    <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
+    <div class="container footer-content">
+      <div class="social-links">
+        <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">f</a>
+        <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">◉</a>
+        <a href="https://wa.me/50588888888" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+      </div>
+      <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
+    </div>
   </footer>
+  <button id="back-to-top" aria-label="Volver arriba">↑</button>
 
   <div id="cart-ball" title="Ir al resumen del pedido">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -1066,6 +1096,30 @@
     // Eventos de botones principales
     document.getElementById('download-pdf').addEventListener('click', descargarPDF);
     document.getElementById('pago').addEventListener('change', mostrarCardDetails);
+
+    // Formato y detección de marca de tarjeta en tiempo real
+    const cardInput = document.getElementById('card_number');
+    const brandBadge = document.getElementById('card-brand-badge');
+    if (cardInput) {
+      cardInput.addEventListener('input', function() {
+        const raw = this.value.replace(/\D/g, '').slice(0, 16);
+        const groups = [];
+        for (let i = 0; i < raw.length; i += 4) groups.push(raw.slice(i, i + 4));
+        this.value = groups.join(' ');
+        const brand = detectarMarcaTarjeta(raw);
+        const icons = { Visa: '💳', Mastercard: '💳', Amex: '🏦', Discover: '💳' };
+        brandBadge.textContent = icons[brand] || '💳';
+        brandBadge.title = brand;
+      });
+    }
+    ['cvv', 'exp_date'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', function() {
+          this.value = this.value.replace(/\D/g, '');
+        });
+      }
+    });
 
     /**
      * Finaliza el pedido enviando la información al servidor.

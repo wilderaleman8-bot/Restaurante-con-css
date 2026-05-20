@@ -73,7 +73,82 @@ function setLoading(button, loading) {
 // UI - panel de usuario, menú responsive, etc.
 // ===============================
 
+// ===============================
+// Scroll Reveal (Intersection Observer)
+// ===============================
+function initScrollReveal() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+    observer.observe(el);
+  });
+}
+
+// ===============================
+// Testimonios - Cargar últimas opiniones
+// ===============================
+async function cargarTestimonios() {
+  const grid = document.getElementById('testimonials-grid');
+  if (!grid) return;
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/opiniones`);
+    if (!response.ok) return;
+    const opiniones = await response.json();
+    const ultimas = (Array.isArray(opiniones) ? opiniones : []).slice(-4).reverse();
+
+    if (ultimas.length === 0) {
+      document.getElementById('testimonios-section')?.remove();
+      return;
+    }
+
+    grid.innerHTML = ultimas.map(op => {
+      const nombre = op.nombre || 'Cliente';
+      const apellido = op.apellido || '';
+      return `
+        <div class="testimonial-card reveal reveal-delay-${Math.floor(Math.random() * 3) + 1}">
+          <div class="stars">★★★★★</div>
+          <p>${op.comentario || ''}</p>
+          <div class="author">${nombre} ${apellido} <small>· Cliente</small></div>
+        </div>
+      `;
+    }).join('');
+
+    setTimeout(initScrollReveal, 50);
+  } catch (e) {
+    console.error('Error cargando testimonios:', e);
+    document.getElementById('testimonios-section')?.remove();
+  }
+}
+
+// ===============================
+// Back to Top
+// ===============================
+function initBackToTop() {
+  const btn = document.getElementById('back-to-top');
+  if (!btn) return;
+
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initScrollReveal();
+  initBackToTop();
+  cargarTestimonios();
+
   const backendUrl = BACKEND_URL;
 
   const userPanel = document.getElementById('user-panel');

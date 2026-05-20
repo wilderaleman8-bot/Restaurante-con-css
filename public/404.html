@@ -3,12 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sabores Ancestrales | Valoración</title>
-  <meta name="description" content="Valora tu experiencia en Sabores Ancestrales. Tu opinión nos ayuda a mejorar y seguir ofreciendo lo mejor de la cocina nicaragüense.">
+  <title>404 — Página no encontrada | Sabores Ancestrales</title>
+  <meta name="description" content="La página que buscas no existe. Regresa al inicio de Sabores Ancestrales.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="icon" href="imagenes/Logo.jpg" type="image/jpeg">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .error-page{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:100px 20px 60px}
+    .error-page h1{font-size:8rem;line-height:1;color:var(--olive);margin-bottom:0;text-shadow:2px 4px 0 var(--wood)}
+    .error-page h2{font-size:1.8rem;margin-bottom:16px}
+    .error-page p{max-width:500px;margin-bottom:30px}
+    .error-page .btn{display:inline-flex;align-items:center;gap:8px}
+  </style>
 </head>
 <body>
   <header>
@@ -23,51 +30,18 @@
         <li><a href="informacion.html">Información</a></li>
         <li><a href="menu.html">Platillos</a></li>
         <li><a href="reservas.html">Reservas</a></li>
-        <li><a href="valoracion.html" class="active">Valoración</a></li>
+        <li><a href="valoracion.html">Valoración</a></li>
         <li><a href="opiniones.html">Opiniones</a></li>
       </ul>
       <div id="user-panel" class="user-panel"></div>
     </div>
   </header>
 
-  <section>
-    <div class="container">
-      <h2>Tu Valoración</h2>
-      <p class="lead">Cuéntanos qué te pareció tu experiencia en Sabores Ancestrales.</p>
-
-      <form id="valoracion-form" class="form-card">
-        <div class="form-row">
-          <div>
-            <label for="nombre">Nombre</label>
-            <input type="text" name="nombre" id="nombre" required>
-          </div>
-          <div>
-            <label for="apellido">Apellidos</label>
-            <input type="text" name="apellido" id="apellido" required>
-          </div>
-        </div>
-
-        <div class="form-row full">
-          <label for="estrellas">Calificación</label>
-          <select name="estrellas" id="estrellas" required>
-            <option value="">Selecciona...</option>
-            <option value="1">⭐</option>
-            <option value="2">⭐⭐</option>
-            <option value="3">⭐⭐⭐</option>
-            <option value="4">⭐⭐⭐⭐</option>
-            <option value="5">⭐⭐⭐⭐⭐</option>
-          </select>
-        </div>
-
-        <div class="form-row full">
-          <label for="comentario">Comentario</label>
-          <textarea name="comentario" id="comentario" rows="3" maxlength="300" placeholder="Máximo 300 caracteres" required></textarea>
-        </div>
-
-        <button type="submit" class="btn">Enviar Valoración</button>
-        <div id="valoracion-message" class="form-message"></div>
-      </form>
-    </div>
+  <section class="error-page">
+    <h1>404</h1>
+    <h2>Esta página no está en el menú</h2>
+    <p>Parece que te desviaste del camino. La página que buscas no existe o fue movida. Volvé al inicio para seguir disfrutando.</p>
+    <a href="index.html" class="btn">← Volver al inicio</a>
   </section>
 
   <footer>
@@ -82,7 +56,6 @@
   </footer>
   <button id="back-to-top" aria-label="Volver arriba">↑</button>
 
-  <!-- JavaScript -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/app.js"></script>
