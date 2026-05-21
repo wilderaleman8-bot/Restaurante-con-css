@@ -111,14 +111,29 @@ function renderSidebarUser() {
 function setupSidebarToggle() {
   const btn = document.getElementById('sidebar-toggle');
   const sidebar = document.querySelector('.admin-sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
   if (!btn || !sidebar) return;
+
+  function toggleSidebar(open) {
+    sidebar.classList.toggle('open', open);
+    if (overlay) overlay.classList.toggle('active', open);
+  }
+
   btn.addEventListener('click', () => {
-    sidebar.classList.toggle('open');
+    const isOpen = sidebar.classList.contains('open');
+    toggleSidebar(!isOpen);
   });
+
+  if (overlay) {
+    overlay.addEventListener('click', () => {
+      toggleSidebar(false);
+    });
+  }
+
   document.addEventListener('click', (e) => {
     if (window.innerWidth > 768) return;
     if (!sidebar.contains(e.target) && !btn.contains(e.target)) {
-      sidebar.classList.remove('open');
+      toggleSidebar(false);
     }
   });
 }

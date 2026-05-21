@@ -515,6 +515,20 @@ a { text-decoration: none; color: inherit; }
   background: transparent; border: none;
   font-size: 24px; cursor: pointer;
   color: var(--wood); padding: 4px;
+  z-index: 110;
+  position: relative;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+}
+
+.sidebar-overlay.active {
+  display: block;
 }
 
 @media (max-width: 900px) {
@@ -526,48 +540,131 @@ a { text-decoration: none; color: inherit; }
 }
 
 @media (max-width: 768px) {
-  #sidebar-toggle { display: block; }
+  html { font-size: 14px; }
+
+  #sidebar-toggle { display: block; font-size: 18px; }
 
   .admin-sidebar {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+    z-index: 101;
+    width: 220px;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.2);
   }
 
   .admin-sidebar.open {
     transform: translateX(0);
   }
 
+  .sidebar-overlay.active {
+    display: block;
+  }
+
   .admin-main { margin-left: 0; }
 
-  .admin-content { padding: 16px; }
-  .admin-header { padding: 0 16px; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .stat-card { padding: 16px; }
-  .stat-icon { width: 40px; height: 40px; font-size: 1.2rem; }
-  .stat-info h3 { font-size: 1.3rem; }
-  .stat-info p { font-size: 0.7rem; }
+  .admin-content { padding: 10px; }
+  .admin-header {
+    padding: 0 8px;
+    height: 42px;
+    min-height: 42px;
+    gap: 4px;
+  }
+  .admin-header h1 { font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  .admin-table-wrap { overflow-x: auto; }
-  .admin-table { font-size: 0.82rem; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .stat-card { padding: 8px; gap: 6px; }
+  .stat-icon { width: 26px; height: 26px; font-size: 0.75rem; }
+  .stat-info h3 { font-size: 0.85rem; }
+  .stat-info p { font-size: 0.55rem; }
+
+  .admin-table-wrap {
+    overflow-x: auto;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  .admin-table { font-size: 0.68rem; }
   .admin-table th,
-  .admin-table td { padding: 10px 12px; }
+  .admin-table td { padding: 5px 6px; }
+  .admin-table th { white-space: nowrap; font-size: 0.6rem; }
+  .admin-table td .actions { flex-direction: column; gap: 2px; }
+  .admin-table td .actions .btn-small { width: 100%; text-align: center; font-size: 0.55rem; padding: 3px 5px; border-radius: 6px; }
+  .admin-table-wrap h3 { padding: 8px 10px; font-size: 0.78rem; }
 
-  .admin-filters { flex-direction: column; }
+  .admin-filters { flex-direction: column; gap: 6px; margin-bottom: 10px; }
   .admin-filters input,
-  .admin-filters select { width: 100%; min-width: 0; }
+  .admin-filters select { width: 100%; min-width: 0; padding: 6px 8px; font-size: 0.75rem; }
 
-  .quick-actions { grid-template-columns: repeat(2, 1fr); }
-  .menu-form-actions { flex-direction: column; }
-  .menu-form-actions .btn { width: 100%; }
+  .quick-actions { grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 12px; }
+  .quick-action-btn { padding: 8px 10px; font-size: 0.7rem; gap: 6px; }
+  .quick-action-btn .qa-icon { font-size: 1.1rem; }
 
-  .sync-bar { flex-direction: column; align-items: stretch; }
-  .sync-bar .btn { width: 100%; }
+  .menu-form-card { padding: 10px; border-radius: 6px; margin-bottom: 12px; }
+  .menu-form-card h3 { font-size: 0.78rem; margin-bottom: 8px; padding-bottom: 4px; }
+  .menu-form { gap: 8px; }
+  .menu-form label { font-size: 0.7rem; }
+  .menu-form input,
+  .menu-form select,
+  .menu-form textarea { font-size: 0.75rem; padding: 5px; }
+  .menu-form-actions { flex-direction: column; gap: 4px; }
+  .menu-form-actions .btn { width: 100%; padding: 6px 12px; font-size: 0.75rem; }
+
+  .sync-bar { flex-direction: column; align-items: stretch; gap: 6px; margin-bottom: 10px; }
+  .sync-bar .btn { width: 100%; padding: 6px 12px; font-size: 0.75rem; }
+  .sync-bar span { font-size: 0.7rem; }
+
+  .empty-state { padding: 24px 10px; }
+  .empty-state p { font-size: 0.75rem; }
 }
 
 @media (max-width: 500px) {
-  .stats-grid { grid-template-columns: 1fr; }
-  .quick-actions { grid-template-columns: 1fr; }
-  .admin-content { padding: 12px; }
-  .admin-header h1 { font-size: 1rem; }
+  html { font-size: 13px; }
+
+  .stats-grid { grid-template-columns: 1fr; gap: 5px; }
+  .quick-actions { grid-template-columns: 1fr; gap: 5px; }
+  .admin-content { padding: 6px; }
+  .admin-header { padding: 0 6px; height: 38px; min-height: 38px; }
+  .admin-header h1 { font-size: 0.75rem; }
   .admin-user strong { display: none; }
+  .admin-user img { width: 22px; height: 22px; }
+  .admin-user { font-size: 0.65rem; gap: 4px; }
+  #sidebar-toggle { font-size: 16px; }
+
+  .admin-table { font-size: 0.6rem; }
+  .admin-table th,
+  .admin-table td { padding: 4px 5px; }
+  .admin-table th { font-size: 0.55rem; }
+  .admin-table td .actions { gap: 2px; }
+  .admin-table td .actions .btn-small { font-size: 0.5rem; padding: 2px 4px; border-radius: 4px; }
+  .admin-table-wrap h3 { font-size: 0.7rem; padding: 6px 8px; }
+  .admin-table-wrap { margin-bottom: 10px; }
+
+  .admin-filters { gap: 4px; margin-bottom: 8px; }
+  .admin-filters input,
+  .admin-filters select { padding: 4px 6px; font-size: 0.7rem; }
+
+  .menu-form-card { padding: 8px; margin-bottom: 10px; border-radius: 6px; }
+  .menu-form-card h3 { font-size: 0.72rem; }
+  .menu-form { gap: 6px; }
+  .menu-form label { font-size: 0.65rem; margin-bottom: 2px; }
+  .menu-form input,
+  .menu-form select,
+  .menu-form textarea { font-size: 0.7rem; padding: 4px; }
+  .menu-form-actions .btn { padding: 5px 10px; font-size: 0.7rem; }
+
+  .sync-bar { gap: 4px; margin-bottom: 8px; }
+  .sync-bar .btn { padding: 5px 10px; font-size: 0.7rem; }
+  .sync-bar span { font-size: 0.65rem; }
+
+  .empty-state { padding: 20px 8px; }
+  .empty-state p { font-size: 0.7rem; }
+
+  .admin-sidebar { width: 200px; }
+
+  .sidebar-brand { padding: 8px 10px; }
+  .sidebar-brand img { width: 24px; height: 24px; }
+  .sidebar-brand span { font-size: 0.75rem; }
+  .sidebar-nav a { padding: 8px 10px; font-size: 0.7rem; gap: 6px; }
+  .sidebar-nav a .icon { font-size: 0.85rem; }
+  .sidebar-footer { padding: 8px 10px; }
+  .sidebar-footer button { padding: 5px; font-size: 0.7rem; }
 }
