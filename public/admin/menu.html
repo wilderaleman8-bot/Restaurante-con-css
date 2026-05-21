@@ -102,6 +102,10 @@
           <span id="sync-status"></span>
         </div>
 
+        <div class="admin-filters">
+          <input type="text" id="search-input" placeholder="Buscar platillo por nombre, categoría o descripción...">
+        </div>
+
         <div class="admin-table-wrap">
           <h3>Todos los platillos</h3>
           <div style="overflow-x:auto;">
@@ -314,6 +318,21 @@
       }
     }
 
+    function filterPlatillos() {
+      const q = document.getElementById('search-input').value.toLowerCase().trim();
+      if (!q) {
+        renderPlatillos(platillosData);
+        return;
+      }
+      const filtered = platillosData.filter(p =>
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.category && p.category.toLowerCase().includes(q)) ||
+        (p.subcategory && p.subcategory.toLowerCase().includes(q)) ||
+        (p.description && p.description.toLowerCase().includes(q))
+      );
+      renderPlatillos(filtered);
+    }
+
     function updateImagePreview(url) {
       const wrap = document.getElementById('imagen-preview-wrap');
       const img = document.getElementById('imagen-preview');
@@ -356,6 +375,8 @@
       document.getElementById('menu-form').addEventListener('submit', savePlatillo);
       document.getElementById('form-cancel-btn').addEventListener('click', resetForm);
       document.getElementById('sync-btn').addEventListener('click', syncMenu);
+
+      document.getElementById('search-input').addEventListener('input', filterPlatillos);
 
       document.getElementById('menu-body').addEventListener('click', e => {
         const btn = e.target.closest('button');
