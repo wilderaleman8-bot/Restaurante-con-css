@@ -48,21 +48,33 @@ restaurante-con-css/
 │   ├── app.js                    # Punto de entrada, middlewares, rutas, WebSocket
 │   ├── lib/
 │   │   └── supabaseClient.js     # Cliente de Supabase
-│   ├── middleware/
+│   ├── middlewares/
 │   │   ├── auth.js               # JWT: generarToken, verificarToken, verificarAdmin
 │   │   └── upload.js             # Multer: configuración de subida de imágenes
-│   ├── routes/
-│   │   ├── usuarios.js           # Registro, login, listado de usuarios
-│   │   ├── platillos.js          # CRUD del menú, seed inicial
-│   │   ├── pedidos.js            # Crear/consultar pedidos, cambiar estado
-│   │   ├── reservas.js           # Crear/consultar reservas
-│   │   ├── opiniones.js          # Crear/consultar opiniones
-│   │   ├── valoraciones.js       # Crear/consultar valoraciones (1-5 estrellas)
-│   │   ├── admin.js              # Endpoints protegidos para admin
-│   │   ├── upload.js             # Subida de imágenes para menú
-│   │   └── password-reset.js     # Recuperación de contraseña
-│   └── services/
-│       └── email.js              # Nodemailer (Ethereal dev / SMTP real)
+│   ├── controllers/              # Lógica de negocio separada de rutas
+│   │   ├── usuariosController.js
+│   │   ├── platillosController.js
+│   │   ├── pedidosController.js
+│   │   ├── reservasController.js
+│   │   ├── opinionesController.js
+│   │   ├── valoracionesController.js
+│   │   ├── adminController.js
+│   │   ├── uploadController.js
+│   │   └── passwordResetController.js
+│   ├── routes/                   # Rutas delgadas, solo definen endpoints
+│   │   ├── usuarios.js
+│   │   ├── platillos.js
+│   │   ├── pedidos.js
+│   │   ├── reservas.js
+│   │   ├── opiniones.js
+│   │   ├── valoraciones.js
+│   │   ├── admin.js
+│   │   ├── upload.js
+│   │   └── password-reset.js
+│   ├── services/
+│   │   └── email.js              # Nodemailer (Ethereal dev / SMTP real)
+│   └── utils/
+│       └── validation.js         # Validaciones reutilizables (email, nombre)
 ├── public/                       # Frontend (estático)
 │   ├── index.html                # Landing page
 │   ├── menu.html                 # Menú interactivo con carrito y pedido
@@ -231,7 +243,7 @@ El servidor arranca en `http://localhost:3000`.
 ### Frontend público
 - **Landing page** con hero, historia, testimonios dinámicos, valoraciones agregadas, tarjeta del mapa, enlaces a redes sociales, botón "volver arriba"
 - **Menú interactivo** con 4 categorías (entradas, platos principales, postres, bebidas), subcategorías para bebidas, búsqueda en vivo, carrito de compras con cálculo de IVA (15%), formulario de pago con detección de marca de tarjeta, ticket PDF, historial de pedidos del usuario
-- **Reservas** con selector de fecha y hora (grid visual de 9 AM a 12 AM), máximo 15 personas
+- **Reservas** con selector de fecha y hora (grid visual de 9 AM a 12 PM), máximo 15 personas. Las horas se envían con zona horaria local para evitar desfases al visualizarlas
 - **Valoraciones** con sistema de estrellas (1-5) y comentario
 - **Opiniones** de clientes
 - **Recuperación de contraseña** con enlace por correo

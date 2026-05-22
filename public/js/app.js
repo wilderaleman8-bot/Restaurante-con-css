@@ -563,8 +563,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (formReserva) {
     formReserva.addEventListener("submit", async e => {
       e.preventDefault();
+      const offset = -new Date().getTimezoneOffset();
+      const signo = offset >= 0 ? '+' : '-';
+      const pad = n => String(Math.abs(n)).padStart(2, '0');
+      const zona = `${signo}${pad(Math.floor(offset / 60))}:${pad(offset % 60)}`;
       const fechaHora = e.target.hora.value
-        ? `${e.target.fecha.value}T${e.target.hora.value}:00`
+        ? `${e.target.fecha.value}T${e.target.hora.value}:00${zona}`
         : e.target.fecha.value;
       const result = await guardarReserva(
         e.target.nombre.value,
