@@ -29,10 +29,10 @@ Sitio web completo para restaurante nicaragüense con menú interactivo, carrito
 ### Frontend
 - HTML5 semántico, CSS3 con custom properties
 - JavaScript vanilla (sin frameworks)
-- Supabase JS Client (CDN)
-- Socket.io Client (CDN)
-- jsPDF para generación de PDF (ticket de pedido)
-- Google Fonts: Playfair Display + Poppins
+- Google Fonts: Playfair Display + Poppins (vía `@import` en CSS)
+- Supabase JS Client — `cdn.jsdelivr.net/npm/@supabase/supabase-js`
+- Socket.io Client — `cdn.socket.io/4.7.5/socket.io.min.js` (panel admin)
+- jsPDF — `cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js` (ticket PDF en pedidos)
 
 ### Base de datos
 - **Supabase** (PostgreSQL)
