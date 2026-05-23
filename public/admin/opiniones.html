@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sabores Ancestrales | Opiniones</title>
+  <link rel="icon" href="../imagenes/Logo.jpg" type="image/jpeg">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .tab-bar {
+      display: flex; gap: 4px; margin-bottom: 20px;
+      background: var(--card); border-radius: var(--radius);
+      padding: 6px; box-shadow: 0 6px 18px var(--shadow);
+    }
+    .tab-btn {
+      flex: 1; padding: 10px 16px; border: none; border-radius: 10px;
+      font-weight: 600; font-size: 0.85rem; cursor: pointer;
+      background: transparent; color: var(--muted);
+      transition: var(--transition); font-family: var(--font-body);
+    }
+    .tab-btn.active {
+      background: var(--wood); color: #fff;
+    }
+    .tab-btn:hover:not(.active) { background: #f5ede6; }
+    .comment-text { max-width: 300px; white-space: normal; word-break: break-word; }
+    .stars { color: #f5a623; font-size: 1.1rem; letter-spacing: 2px; }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="../imagenes/Logo.jpg" alt="Logo">
+        <div>
+          <span>Sabores Ancestrales</span>
+          <small>Panel Admin</small>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html"><span class="icon">📊</span> Dashboard</a>
+        <a href="pedidos.html"><span class="icon">📋</span> Pedidos</a>
+        <a href="reservas.html"><span class="icon">📅</span> Reservas</a>
+        <a href="menu.html"><span class="icon">🍽️</span> Menú</a>
+        <a href="usuarios.html"><span class="icon">👥</span> Usuarios</a>
+        <a href="opiniones.html"><span class="icon">💬</span> Opiniones</a>
+        <a href="reportes.html"><span class="icon">📈</span> Reportes</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn">Cerrar sesión</button>
+      </div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <button id="sidebar-toggle">☰</button>
+        <h1>Opiniones y Valoraciones</h1>
+        <div class="admin-user" id="admin-user-info"></div>
+      </header>
+
+      <div class="admin-content">
+        <div class="tab-bar">
+          <button class="tab-btn active" data-tab="opiniones">💬 Opiniones</button>
+          <button class="tab-btn" data-tab="valoraciones">⭐ Valoraciones</button>
+        </div>
+
+        <div id="tab-opiniones">
+          <div class="admin-table-wrap">
+            <h3>Opiniones de clientes</h3>
+            <div style="overflow-x:auto;">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Comentario</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="opiniones-body">
+                  <tr><td colspan="4" class="empty-state"><p>Cargando...</p></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-valoraciones" style="display:none;">
+          <div class="admin-table-wrap">
+            <h3>Valoraciones de clientes</h3>
+            <div style="overflow-x:auto;">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Calificación</th>
+                    <th>Comentario</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="valoraciones-body">
+                  <tr><td colspan="5" class="empty-state"><p>Cargando...</p></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    function renderStars(n) {
+      return '<span class="stars">' + '★'.repeat(n) + '☆'.repeat(5 - n) + '</span>';
+    }
+
+    async function loadOpiniones() {
+      const tbody = document.getElementById('opiniones-body');
+      try {
+        const data = await apiFetch('/api/admin/opiniones');
+        const opiniones = Array.isArray(data) ? data : [];
+        if (!opiniones.length) {
+          tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><p>No hay opiniones</p></td></tr>';
+          return;
+        }
+        tbody.innerHTML = opiniones.map(o => `
+          <tr>
+            <td>${o.created_at ? new Date(o.created_at).toLocaleString('es-ES') : '—'}</td>
+            <td>${o.nombre || o.usuario?.nombre || '—'} ${o.apellido || ''}</td>
+            <td class="comment-text">${o.comentario || '—'}</td>
+            <td>
+              <button class="btn-small danger btn-del-opinion" data-id="${o.id}">🗑️</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><p>Error al cargar</p></td></tr>';
+      }
+    }
+
+    async function loadValoraciones() {
+      const tbody = document.getElementById('valoraciones-body');
+      try {
+        const data = await apiFetch('/api/admin/valoraciones/todas');
+        const valoraciones = Array.isArray(data) ? data : [];
+        if (!valoraciones.length) {
+          tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><p>No hay valoraciones</p></td></tr>';
+          return;
+        }
+        tbody.innerHTML = valoraciones.map(v => `
+          <tr>
+            <td>${v.created_at ? new Date(v.created_at).toLocaleString('es-ES') : '—'}</td>
+            <td>${v.usuario?.nombre || v.nombre || '—'}</td>
+            <td>${renderStars(v.calificacion)}</td>
+            <td class="comment-text">${v.comentario || '—'}</td>
+            <td>
+              <button class="btn-small danger btn-del-valoracion" data-id="${v.id}">🗑️</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><p>Error al cargar</p></td></tr>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadOpiniones();
+      loadValoraciones();
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById('tab-opiniones').style.display = 'none';
+          document.getElementById('tab-valoraciones').style.display = 'none';
+          document.getElementById(`tab-${btn.dataset.tab}`).style.display = 'block';
+        });
+      });
+
+      document.getElementById('opiniones-body').addEventListener('click', async e => {
+        const btn = e.target.closest('.btn-del-opinion');
+        if (!btn) return;
+        if (!confirm('¿Eliminar esta opinión?')) return;
+        try {
+          await apiFetch(`/api/admin/opiniones/${btn.dataset.id}`, { method: 'DELETE' });
+          showToast('Opinión eliminada', 'success');
+          loadOpiniones();
+        } catch (e) {
+          showToast(e.message || 'Error', 'error');
+        }
+      });
+
+      document.getElementById('valoraciones-body').addEventListener('click', async e => {
+        const btn = e.target.closest('.btn-del-valoracion');
+        if (!btn) return;
+        if (!confirm('¿Eliminar esta valoración?')) return;
+        try {
+          await apiFetch(`/api/admin/valoraciones/${btn.dataset.id}`, { method: 'DELETE' });
+          showToast('Valoración eliminada', 'success');
+          loadValoraciones();
+        } catch (e) {
+          showToast(e.message || 'Error', 'error');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

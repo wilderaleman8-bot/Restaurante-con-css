@@ -12,11 +12,18 @@ function generarToken(usuario) {
 
 function verificarToken(req, res, next) {
   const header = req.headers.authorization;
-  if (!header || !header.startsWith('Bearer ')) {
+  let token = null;
+
+  if (header && header.startsWith('Bearer ')) {
+    token = header.split(' ')[1];
+  } else if (req.cookies && req.cookies.token) {
+    token = req.cookies.token;
+  }
+
+  if (!token) {
     return res.status(401).json({ error: 'Token requerido' });
   }
 
-  const token = header.split(' ')[1];
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.usuario = decoded;

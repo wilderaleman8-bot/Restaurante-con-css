@@ -16,6 +16,7 @@ function setToken(token) {
 }
 
 function logout() {
+  fetch(`${BACKEND_URL}/api/usuarios/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});
   localStorage.removeItem('usuario');
   localStorage.removeItem('saboresUser');
   localStorage.removeItem('saboresToken');
@@ -264,7 +265,8 @@ async function login(email, password) {
     const response = await fetch(`${backendUrl}/api/usuarios/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
+      credentials: 'include'
     });
 
     const result = await response.json();
@@ -291,7 +293,6 @@ async function login(email, password) {
 
     localStorage.setItem('usuario', JSON.stringify(sessionUser));
     localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
-    if (result.token) setToken(result.token);
     showToast('Bienvenido ' + usuario.nombre, 'success');
     const redirectUrl = usuario.rol === 'admin' ? './admin/index.html' : './menu.html';
     setTimeout(() => { window.location.href = redirectUrl; }, 500);
@@ -320,7 +321,8 @@ async function registrar(formData) {
   try {
     const response = await fetch(`${backendUrl}/api/usuarios/registro`, {
       method: 'POST',
-      body: formData
+      body: formData,
+      credentials: 'include'
     });
 
     const result = await response.json();
@@ -389,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!input) return;
     const show = input.type === 'password';
     input.type = show ? 'text' : 'password';
-    btn.textContent = show ? '👁' : '👁';
+    btn.textContent = show ? '🙈' : '👁';
   });
 
   const registerImageInput = document.getElementById('register-image');
@@ -438,7 +440,8 @@ async function guardarReserva(nombre, apellido, personas, fecha, mensaje) {
     const response = await fetch(`${backendUrl}/api/reservas`, {
       method: 'POST',
       headers,
-      body: JSON.stringify(bodyData)
+      body: JSON.stringify(data),
+      credentials: 'include'
     });
     const body = await response.json();
     if (!response.ok) throw new Error(body.error || 'Error en reserva');
@@ -473,7 +476,8 @@ async function guardarPedido(pedidoData) {
       method: 'POST',
       headers,
       body: JSON.stringify(pedidoData),
-      signal: controller.signal
+      signal: controller.signal,
+      credentials: 'include'
     });
     clearTimeout(timeout);
     const body = await response.json();

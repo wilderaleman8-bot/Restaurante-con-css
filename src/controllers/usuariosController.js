@@ -3,6 +3,14 @@ const bcrypt = require('bcrypt');
 const { generarToken } = require('../middlewares/auth');
 const { validarEmail, validarNombre } = require('../utils/validation');
 
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  sameSite: 'strict',
+  secure: process.env.NODE_ENV === 'production',
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+  path: '/'
+};
+
 async function registro(req, res) {
   const { nombre, email, password } = req.body;
 
@@ -30,6 +38,7 @@ async function registro(req, res) {
   if (error) return res.status(500).json({ error: error.message });
 
   const token = generarToken(data);
+  res.cookie('token', token, COOKIE_OPTIONS);
   res.status(201).json({ message: 'Usuario creado correctamente', usuario: data, token });
 }
 
@@ -57,6 +66,7 @@ async function login(req, res) {
 
   const { password: _, ...usuario } = data;
   const token = generarToken(data);
+  res.cookie('token', token, COOKIE_OPTIONS);
   res.json({ message: 'Login exitoso', usuario, token });
 }
 
@@ -66,4 +76,9 @@ async function listar(req, res) {
   res.json(data);
 }
 
-module.exports = { registro, login, listar };
+async function logout(req, res) {
+  res.clearCookie('token', { path: '/' });
+  res.json({ message: 'Sesión cerrada' });
+}
+
+module.exports = { registro, login, listar, logout };

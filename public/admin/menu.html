@@ -22,6 +22,9 @@
         <a href="pedidos.html"><span class="icon">📋</span> Pedidos</a>
         <a href="reservas.html"><span class="icon">📅</span> Reservas</a>
         <a href="menu.html"><span class="icon">🍽️</span> Menú</a>
+        <a href="usuarios.html"><span class="icon">👥</span> Usuarios</a>
+        <a href="opiniones.html"><span class="icon">💬</span> Opiniones</a>
+        <a href="reportes.html"><span class="icon">📈</span> Reportes</a>
       </nav>
       <div class="sidebar-footer">
         <button class="logout-btn">Cerrar sesión</button>
@@ -122,7 +125,7 @@
                 </tr>
               </thead>
               <tbody id="menu-body">
-                <tr><td colspan="6" class="empty-state"><p>Cargando...</p></td></tr>
+                <tr><td colspan="6" style="padding:0;border:none;"><div id="menu-skeleton"><div class="skeleton-row"><div class="skeleton-cell w-25"></div><div class="skeleton-cell w-15"></div><div class="skeleton-cell w-15"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-20"></div></div><div class="skeleton-row"><div class="skeleton-cell w-25"></div><div class="skeleton-cell w-15"></div><div class="skeleton-cell w-15"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-20"></div></div><div class="skeleton-row"><div class="skeleton-cell w-25"></div><div class="skeleton-cell w-15"></div><div class="skeleton-cell w-15"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-20"></div></div></div></td></tr>
               </tbody>
             </table>
           </div>
@@ -158,6 +161,7 @@
                 <button class="btn-small ${activo ? 'danger' : 'primary'} btn-toggle" data-id="${id}" data-activo="${activo}">
                   ${activo ? '🗑️ Desactivar' : '✅ Activar'}
                 </button>
+                <button class="btn-small danger btn-delete" data-id="${id}">❌ Eliminar</button>
               </div>
             </td>
           </tr>
@@ -278,10 +282,10 @@
     }
 
     async function deletePlatillo(id) {
-      if (!confirm('¿Eliminar este platillo permanentemente?')) return;
+      if (!confirm('¿Desactivar este platillo?')) return;
       try {
         await apiFetch(`/api/platillos/${id}`, { method: 'DELETE' });
-        showToast('Platillo eliminado', 'success');
+        showToast('Platillo desactivado', 'success');
         await loadPlatillos();
       } catch (e) {
         showToast(e.message || 'Error al eliminar', 'error');
@@ -387,6 +391,8 @@
           editPlatillo(btn.dataset.id);
         } else if (btn.classList.contains('btn-toggle')) {
           togglePlatillo(btn.dataset.id, btn.dataset.activo === 'true' ? false : true);
+        } else if (btn.classList.contains('btn-delete')) {
+          deletePlatillo(btn.dataset.id);
         }
       });
     });

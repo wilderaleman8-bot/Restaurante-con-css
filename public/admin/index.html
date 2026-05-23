@@ -22,6 +22,9 @@
         <a href="pedidos.html"><span class="icon">📋</span> Pedidos</a>
         <a href="reservas.html"><span class="icon">📅</span> Reservas</a>
         <a href="menu.html"><span class="icon">🍽️</span> Menú</a>
+        <a href="usuarios.html"><span class="icon">👥</span> Usuarios</a>
+        <a href="opiniones.html"><span class="icon">💬</span> Opiniones</a>
+        <a href="reportes.html"><span class="icon">📈</span> Reportes</a>
       </nav>
       <div class="sidebar-footer">
         <button class="logout-btn">Cerrar sesión</button>
@@ -57,7 +60,7 @@
               </tr>
             </thead>
             <tbody id="recent-orders-body">
-              <tr><td colspan="5" class="empty-state"><p>Cargando...</p></td></tr>
+              <tr><td colspan="5" style="padding:0;border:none;"><div id="recent-skeleton"><div class="skeleton-row"><div class="skeleton-cell w-25"></div><div class="skeleton-cell w-30"></div><div class="skeleton-cell w-20"></div><div class="skeleton-cell w-20"></div><div class="skeleton-cell w-20"></div></div><div class="skeleton-row"><div class="skeleton-cell w-25"></div><div class="skeleton-cell w-30"></div><div class="skeleton-cell w-20"></div><div class="skeleton-cell w-20"></div><div class="skeleton-cell w-20"></div></div><div class="skeleton-row"><div class="skeleton-cell w-25"></div><div class="skeleton-cell w-30"></div><div class="skeleton-cell w-20"></div><div class="skeleton-cell w-20"></div><div class="skeleton-cell w-20"></div></div></div></td></tr>
             </tbody>
           </table>
         </div>
@@ -67,6 +70,9 @@
           <button class="quick-action-btn" data-href="pedidos.html"><span class="qa-icon">📋</span> Ver pedidos</button>
           <button class="quick-action-btn" data-href="reservas.html"><span class="qa-icon">📅</span> Ver reservas</button>
           <button class="quick-action-btn" data-href="menu.html"><span class="qa-icon">🍽️</span> Gestionar menú</button>
+          <button class="quick-action-btn" data-href="usuarios.html"><span class="qa-icon">👥</span> Usuarios</button>
+          <button class="quick-action-btn" data-href="opiniones.html"><span class="qa-icon">💬</span> Opiniones</button>
+          <button class="quick-action-btn" data-href="reportes.html"><span class="qa-icon">📈</span> Reportes</button>
           <button class="quick-action-btn" data-href="../menu.html" data-target="_blank"><span class="qa-icon">🔍</span> Vista previa menú</button>
         </div>
       </div>
@@ -112,7 +118,7 @@
 
         tbody.innerHTML = recentOrders.map(o => {
           const fecha = o.created_at ? new Date(o.created_at).toLocaleString('es-ES') : (o.fecha || '—');
-          const cliente = o.nombre || o.cliente || o.usuario_nombre || '—';
+          const cliente = o.usuario?.nombre || o.nombre || o.cliente || o.usuario_nombre || '—';
           const total = o.total ? `C$${Number(o.total).toFixed(2)}` : '—';
           const metodo = o.metodo_pago || '—';
           const status = o.status || 'pendiente';

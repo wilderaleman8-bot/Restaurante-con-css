@@ -48,10 +48,11 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-app.use(cors());               // Permite peticiones desde otros dominios
+app.use(cors({ credentials: true, origin: true })); // Permite peticiones desde otros dominios
 app.use(compression());        // Comprime las respuestas para mejorar velocidad
 app.use(express.json());       // Parsea cuerpos JSON en las peticiones
 app.use(express.urlencoded({ extended: true })); // Parsea cuerpos URL-encoded
+app.use(require('cookie-parser')());
 
 // Archivos estáticos con caché de 7 días
 const cacheOptions = { maxAge: '7d', immutable: true };

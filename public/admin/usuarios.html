@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sabores Ancestrales | Usuarios</title>
+  <link rel="icon" href="../imagenes/Logo.jpg" type="image/jpeg">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .user-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .user-stat {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px 18px;
+      box-shadow: 0 4px 14px var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: var(--transition);
+    }
+    .user-stat:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    .user-stat .us-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .user-stat .us-icon.total { background: #e8eaf6; color: #283593; }
+    .user-stat .us-icon.admin { background: #fff3e0; color: #e65100; }
+    .user-stat .us-icon.client { background: #e8f5e9; color: #2e7d32; }
+    .user-stat .us-num {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--wood);
+      line-height: 1.1;
+    }
+    .user-stat .us-label {
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      font-weight: 600;
+    }
+
+    .search-wrap {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .search-wrap input {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      border-radius: 12px;
+      border: 1.5px solid #e8e4df;
+      outline: none;
+      font-size: 0.9rem;
+      font-family: var(--font-body);
+      background: var(--card);
+      transition: var(--transition);
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    .search-wrap input:focus {
+      border-color: var(--olive);
+      box-shadow: 0 0 0 3px rgba(158,179,132,0.15), 0 2px 8px var(--shadow);
+    }
+    .search-wrap .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .user-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px;
+    }
+
+    .user-card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 14px var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: var(--transition);
+      border: 1px solid transparent;
+      position: relative;
+    }
+    .user-card:hover {
+      border-color: #e8e4df;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    .user-card .uc-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f5ede6, #e8e4df);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--wood);
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+    .user-card .uc-avatar.admin-avatar {
+      background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+      color: #e65100;
+    }
+
+    .user-card .uc-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .user-card .uc-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .user-card .uc-email {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-card .uc-date {
+      font-size: 0.7rem;
+      color: #aaa;
+      margin-top: 2px;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .role-badge.admin {
+      background: #fff3e0;
+      color: #e65100;
+    }
+    .role-badge.client {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .uc-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .btn-role {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font-body);
+      white-space: nowrap;
+    }
+    .btn-role:hover {
+      transform: translateY(-1px);
+    }
+    .btn-role.promote {
+      background: #fff3e0;
+      color: #e65100;
+    }
+    .btn-role.promote:hover {
+      background: #ffe0b2;
+    }
+    .btn-role.demote {
+      background: #e8eaf6;
+      color: #283593;
+    }
+    .btn-role.demote:hover {
+      background: #c5cae9;
+    }
+
+    .empty-state-modern {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .empty-state-modern .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+    .empty-state-modern p {
+      font-size: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .user-grid { grid-template-columns: 1fr; gap: 8px; }
+      .user-card { padding: 12px 14px; gap: 12px; }
+      .user-card .uc-avatar { width: 38px; height: 38px; font-size: 1rem; }
+      .user-card .uc-name { font-size: 0.85rem; }
+      .user-card .uc-email { font-size: 0.72rem; }
+      .user-stats { gap: 6px; }
+      .user-stat { padding: 10px 12px; }
+      .user-stat .us-icon { width: 30px; height: 30px; font-size: 0.9rem; }
+      .user-stat .us-num { font-size: 1.1rem; }
+      .user-stat .us-label { font-size: 0.55rem; }
+      .search-wrap { margin-bottom: 12px; }
+      .search-wrap input { padding: 10px 12px 10px 36px; font-size: 0.8rem; }
+      .search-wrap .search-icon { left: 10px; font-size: 0.9rem; }
+      .uc-actions { flex-direction: column; gap: 4px; }
+      .btn-role { padding: 4px 10px; font-size: 0.65rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="../imagenes/Logo.jpg" alt="Logo">
+        <div>
+          <span>Sabores Ancestrales</span>
+          <small>Panel Admin</small>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html"><span class="icon">📊</span> Dashboard</a>
+        <a href="pedidos.html"><span class="icon">📋</span> Pedidos</a>
+        <a href="reservas.html"><span class="icon">📅</span> Reservas</a>
+        <a href="menu.html"><span class="icon">🍽️</span> Menú</a>
+        <a href="usuarios.html"><span class="icon">👥</span> Usuarios</a>
+        <a href="opiniones.html"><span class="icon">💬</span> Opiniones</a>
+        <a href="reportes.html"><span class="icon">📈</span> Reportes</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn">Cerrar sesión</button>
+      </div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <button id="sidebar-toggle">☰</button>
+        <h1>Gestión de Usuarios</h1>
+        <div class="admin-user" id="admin-user-info"></div>
+      </header>
+
+      <div class="admin-content">
+        <div class="user-stats" id="user-stats">
+          <div class="user-stat">
+            <div class="us-icon total">👥</div>
+            <div>
+              <div class="us-num" id="stat-total">—</div>
+              <div class="us-label">Total</div>
+            </div>
+          </div>
+          <div class="user-stat">
+            <div class="us-icon admin">👑</div>
+            <div>
+              <div class="us-num" id="stat-admins">—</div>
+              <div class="us-label">Administradores</div>
+            </div>
+          </div>
+          <div class="user-stat">
+            <div class="us-icon client">👤</div>
+            <div>
+              <div class="us-num" id="stat-clients">—</div>
+              <div class="us-label">Clientes</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="Buscar usuarios por nombre o correo...">
+        </div>
+
+        <div id="users-container">
+          <div class="user-grid" id="user-grid"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    let usersData = [];
+
+    function getInitials(name) {
+      if (!name) return '?';
+      return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    }
+
+    function renderUsers(users) {
+      const grid = document.getElementById('user-grid');
+      const container = document.getElementById('users-container');
+
+      if (!users.length) {
+        container.innerHTML = `
+          <div class="admin-table-wrap">
+            <div class="empty-state-modern">
+              <div class="empty-icon">👥</div>
+              <p>No hay usuarios registrados</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = users.map(u => {
+        const isAdmin = u.rol === 'admin';
+        return `
+          <div class="user-card">
+            <div class="uc-avatar ${isAdmin ? 'admin-avatar' : ''}">${getInitials(u.nombre)}</div>
+            <div class="uc-info">
+              <div class="uc-name">
+                ${u.nombre || '—'}
+                <span class="role-badge ${isAdmin ? 'admin' : 'client'}">${isAdmin ? '👑 Admin' : '👤 Cliente'}</span>
+              </div>
+              <div class="uc-email">${u.email || '—'}</div>
+              <div class="uc-date">${u.created_at ? 'Desde ' + new Date(u.created_at).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}</div>
+            </div>
+            <div class="uc-actions">
+              ${isAdmin
+                ? `<button class="btn-role demote" data-id="${u.id}" data-name="${u.nombre || 'Usuario'}">⬇ Hacer cliente</button>`
+                : `<button class="btn-role promote" data-id="${u.id}" data-name="${u.nombre || 'Usuario'}">⬆ Hacer admin</button>`
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateStats(users) {
+      const total = users.length;
+      const admins = users.filter(u => u.rol === 'admin').length;
+      const clients = total - admins;
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-admins').textContent = admins;
+      document.getElementById('stat-clients').textContent = clients;
+    }
+
+    function filterUsers() {
+      const q = document.getElementById('search-input').value.toLowerCase().trim();
+      if (!q) {
+        renderUsers(usersData);
+        updateStats(usersData);
+        return;
+      }
+      const filtered = usersData.filter(u =>
+        (u.nombre && u.nombre.toLowerCase().includes(q)) ||
+        (u.email && u.email.toLowerCase().includes(q))
+      );
+      renderUsers(filtered);
+      updateStats(filtered);
+    }
+
+    async function cambiarRol(id, nuevoRol, nombre) {
+      const accion = nuevoRol === 'admin' ? 'ascender' : 'descender';
+      if (!confirm(`¿Estás seguro de ${accion} a "${nombre}" a ${nuevoRol}?`)) return;
+      try {
+        await apiFetch(`/api/admin/usuarios/${id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ rol: nuevoRol })
+        });
+        showToast(`✅ ${nombre} ahora es ${nuevoRol}`, 'success');
+        await loadUsers();
+      } catch (e) {
+        showToast(e.message || 'Error al actualizar', 'error');
+      }
+    }
+
+    async function loadUsers() {
+      try {
+        const data = await apiFetch('/api/admin/usuarios');
+        usersData = Array.isArray(data) ? data : [];
+        renderUsers(usersData);
+        updateStats(usersData);
+      } catch (e) {
+        document.getElementById('users-container').innerHTML = `
+          <div class="admin-table-wrap">
+            <div class="empty-state-modern">
+              <div class="empty-icon">⚠️</div>
+              <p>Error al cargar usuarios</p>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadUsers();
+
+      document.getElementById('search-input').addEventListener('input', filterUsers);
+
+      document.getElementById('users-container').addEventListener('click', e => {
+        const btn = e.target.closest('.btn-role');
+        if (!btn) return;
+        const id = btn.dataset.id;
+        const name = btn.dataset.name;
+        if (btn.classList.contains('promote')) {
+          cambiarRol(id, 'admin', name);
+        } else if (btn.classList.contains('demote')) {
+          cambiarRol(id, 'cliente', name);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

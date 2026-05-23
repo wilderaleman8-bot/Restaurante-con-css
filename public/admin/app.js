@@ -16,6 +16,10 @@ function redirectLogin() {
 function checkAuth() {
   const token = getToken();
   if (!token) redirectLogin();
+  const usuario = getUsuario();
+  if (!usuario || usuario.rol !== 'admin') {
+    logout();
+  }
   return token;
 }
 
@@ -26,7 +30,7 @@ function apiFetch(path, options = {}) {
   if (!(options.body instanceof FormData)) {
     headers['Content-Type'] = 'application/json';
   }
-  return fetch(`${BACKEND_URL}${path}`, { ...options, headers })
+  return fetch(`${BACKEND_URL}${path}`, { ...options, headers, credentials: 'include' })
     .then(res => {
       if (res.status === 401) {
         logout();
@@ -40,6 +44,7 @@ function apiFetch(path, options = {}) {
 }
 
 function logout() {
+  fetch(`${BACKEND_URL}/api/usuarios/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});
   localStorage.removeItem('usuario');
   localStorage.removeItem('saboresUser');
   localStorage.removeItem('saboresToken');
@@ -150,6 +155,27 @@ function setLoading(btn, loading) {
     btn.textContent = btn._originalText || btn.textContent;
     btn.style.opacity = '1';
   }
+}
+
+function renderSkeletonTable(rows, cols) {
+  let html = '';
+  for (let r = 0; r < rows; r++) {
+    html += '<div class="skeleton-row">';
+    for (let c = 0; c < cols; c++) {
+      const w = ['w-20', 'w-25', 'w-30', 'w-40'][c % 4];
+      html += `<div class="skeleton-cell ${w}"></div>`;
+    }
+    html += '</div>';
+  }
+  return html;
+}
+
+function renderSkeletonCards(count) {
+  let html = '';
+  for (let i = 0; i < count; i++) {
+    html += '<div class="skeleton-card"></div>';
+  }
+  return html;
 }
 
 function setupSocket() {

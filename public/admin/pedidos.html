@@ -22,6 +22,9 @@
         <a href="pedidos.html"><span class="icon">📋</span> Pedidos</a>
         <a href="reservas.html"><span class="icon">📅</span> Reservas</a>
         <a href="menu.html"><span class="icon">🍽️</span> Menú</a>
+        <a href="usuarios.html"><span class="icon">👥</span> Usuarios</a>
+        <a href="opiniones.html"><span class="icon">💬</span> Opiniones</a>
+        <a href="reportes.html"><span class="icon">📈</span> Reportes</a>
       </nav>
       <div class="sidebar-footer">
         <button class="logout-btn">Cerrar sesión</button>
@@ -64,7 +67,7 @@
                 </tr>
               </thead>
               <tbody id="orders-body">
-                <tr><td colspan="7" class="empty-state"><p>Cargando...</p></td></tr>
+                <tr><td colspan="7" style="padding:0;border:none;"><div id="orders-skeleton"><div class="skeleton-row"><div class="skeleton-cell w-20"></div><div class="skeleton-cell w-20"></div><div class="skeleton-cell w-25"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-15"></div></div><div class="skeleton-row"><div class="skeleton-cell w-20"></div><div class="skeleton-cell w-20"></div><div class="skeleton-cell w-25"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-15"></div></div><div class="skeleton-row"><div class="skeleton-cell w-20"></div><div class="skeleton-cell w-20"></div><div class="skeleton-cell w-25"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-10"></div><div class="skeleton-cell w-15"></div></div></div></td></tr>
               </tbody>
             </table>
           </div>
@@ -87,7 +90,7 @@
 
       tbody.innerHTML = orders.map(o => {
         const fecha = o.created_at ? new Date(o.created_at).toLocaleString('es-ES') : (o.fecha || '—');
-        const cliente = o.nombre || o.cliente || o.usuario_nombre || '—';
+        const cliente = o.usuario?.nombre || o.nombre || o.cliente || o.usuario_nombre || '—';
         const total = o.total ? `C$${Number(o.total).toFixed(2)}` : '—';
         const metodo = o.metodo_pago || '—';
         const status = o.status || 'pendiente';
@@ -127,7 +130,7 @@
       let filtered = ordersData;
       if (search) {
         filtered = filtered.filter(o => {
-          const cliente = (o.nombre || o.cliente || o.usuario_nombre || '').toLowerCase();
+          const cliente = (o.usuario?.nombre || o.nombre || o.cliente || o.usuario_nombre || '').toLowerCase();
           return cliente.includes(search);
         });
       }

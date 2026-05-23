@@ -1,7 +1,7 @@
 const dns = require('dns').promises;
 
 async function validarEmail(email) {
-  if (typeof email !== 'string' || email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (typeof email !== 'string' || email.length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return 'Email inválido';
   }
   const dominio = email.split('@')[1];

@@ -70,4 +70,104 @@ async function listarValoracionesStats(req, res) {
   res.json({ total, promedio: parseFloat(promedio), conteo });
 }
 
-module.exports = { listarPedidos, listarReservas, listarUsuarios, actualizarPedido, listarValoracionesStats };
+async function listarOpiniones(req, res) {
+  const { data, error } = await supabase
+    .from('opiniones')
+    .select('*, usuario:usuario_id(id, nombre, email)')
+    .order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+}
+
+async function listarValoracionesFull(req, res) {
+  const { data, error } = await supabase
+    .from('valoraciones')
+    .select('*, usuario:usuario_id(id, nombre, email)')
+    .order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+}
+
+async function reportes(req, res) {
+  const { data: pedidos, error } = await supabase
+    .from('pedidos')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  const totalOrders = pedidos.length;
+  const ordersToday = pedidos.filter(o => (o.created_at || '').slice(0, 10) === today);
+  const completedOrders = pedidos.filter(o => o.status === 'servido');
+
+  const totalRevenue = completedOrders.reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
+  const revenueToday = ordersToday
+    .filter(o => o.status !== 'cancelado')
+    .reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
+
+  const byStatus = { pendiente: 0, preparando: 0, servido: 0, cancelado: 0 };
+  pedidos.forEach(o => { byStatus[o.status] = (byStatus[o.status] || 0) + 1; });
+
+  const itemCount = {};
+  pedidos.forEach(o => {
+    if (Array.isArray(o.detalle)) {
+      o.detalle.forEach(d => {
+        const name = d.nombre || d.name || '?';
+        itemCount[name] = (itemCount[name] || 0) + (d.cantidad || 1);
+      });
+    }
+  });
+
+  const popularItems = Object.entries(itemCount)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  res.json({
+    totalOrders,
+    ordersToday: ordersToday.length,
+    completedOrders: completedOrders.length,
+    totalRevenue,
+    revenueToday,
+    byStatus,
+    popularItems
+  });
+}
+
+async function actualizarUsuario(req, res) {
+  const { id } = req.params;
+  const { rol } = req.body;
+
+  if (!['admin', 'cliente'].includes(rol)) {
+    return res.status(400).json({ error: 'Rol inválido' });
+  }
+
+  const { data, error } = await supabase
+    .from('usuarios')
+    .update({ rol })
+    .eq('id', id)
+    .select('id, nombre, email, rol')
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  if (!data) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+  res.json(data);
+}
+
+async function eliminarOpinion(req, res) {
+  const { id } = req.params;
+  const { error } = await supabase.from('opiniones').delete().eq('id', id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ message: 'Opinión eliminada' });
+}
+
+async function eliminarValoracion(req, res) {
+  const { id } = req.params;
+  const { error } = await supabase.from('valoraciones').delete().eq('id', id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ message: 'Valoración eliminada' });
+}
+
+module.exports = { listarPedidos, listarReservas, listarUsuarios, actualizarPedido, listarValoracionesStats, listarOpiniones, listarValoracionesFull, reportes, actualizarUsuario, eliminarOpinion, eliminarValoracion };
