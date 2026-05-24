@@ -282,10 +282,10 @@
     }
 
     async function deletePlatillo(id) {
-      if (!confirm('¿Desactivar este platillo?')) return;
+      if (!confirm('¿Eliminar este platillo permanentemente?')) return;
       try {
         await apiFetch(`/api/platillos/${id}`, { method: 'DELETE' });
-        showToast('Platillo desactivado', 'success');
+        showToast('Platillo eliminado', 'success');
         await loadPlatillos();
       } catch (e) {
         showToast(e.message || 'Error al eliminar', 'error');

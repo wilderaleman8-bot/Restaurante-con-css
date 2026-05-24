@@ -84,7 +84,7 @@ async function eliminar(req, res) {
 
   const { data, error } = await supabase
     .from('platillos')
-    .update({ active: false })
+    .delete()
     .eq('id', id)
     .select()
     .single();
@@ -92,7 +92,7 @@ async function eliminar(req, res) {
   if (error) return res.status(500).json({ error: error.message });
   if (!data) return res.status(404).json({ error: 'Platillo no encontrado' });
 
-  res.json({ message: 'Platillo desactivado correctamente', platillo: data });
+  res.json({ message: 'Platillo eliminado correctamente', platillo: data });
 }
 
 async function seed(req, res) {

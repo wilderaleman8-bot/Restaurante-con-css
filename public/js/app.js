@@ -2,8 +2,12 @@
 const BACKEND_URL = window.location.origin;
 
 function getUsuario() {
-  const stored = localStorage.getItem('usuario') || localStorage.getItem('saboresUser');
-  return stored ? JSON.parse(stored) : null;
+  try {
+    const stored = localStorage.getItem('usuario') || localStorage.getItem('saboresUser');
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
 }
 
 function getToken() {
@@ -20,6 +24,7 @@ function logout() {
   localStorage.removeItem('usuario');
   localStorage.removeItem('saboresUser');
   localStorage.removeItem('saboresToken');
+  localStorage.removeItem('saboresRole');
   window.location.href = './index.html';
 }
 
@@ -293,6 +298,8 @@ async function login(email, password) {
 
     localStorage.setItem('usuario', JSON.stringify(sessionUser));
     localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
+    localStorage.setItem('saboresRole', usuario.rol);
+    if (result.token) setToken(result.token);
     showToast('Bienvenido ' + usuario.nombre, 'success');
     const redirectUrl = usuario.rol === 'admin' ? './admin/index.html' : './menu.html';
     setTimeout(() => { window.location.href = redirectUrl; }, 500);
@@ -377,6 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         localStorage.setItem('usuario', JSON.stringify(sessionUser));
         localStorage.setItem('saboresUser', JSON.stringify(sessionUser));
+        localStorage.setItem('saboresRole', usuario.rol);
         showToast('Usuario creado con éxito', 'success');
         const redirectUrl = usuario.rol === 'admin' ? './admin/index.html' : './menu.html';
         setTimeout(() => { window.location.href = redirectUrl; }, 500);

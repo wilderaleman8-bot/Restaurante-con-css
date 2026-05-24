@@ -5,8 +5,12 @@ function getToken() {
 }
 
 function getUsuario() {
-  const stored = localStorage.getItem('usuario') || localStorage.getItem('saboresUser');
-  return stored ? JSON.parse(stored) : null;
+  try {
+    const stored = localStorage.getItem('usuario') || localStorage.getItem('saboresUser');
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
 }
 
 function redirectLogin() {
@@ -15,12 +19,17 @@ function redirectLogin() {
 
 function checkAuth() {
   const token = getToken();
-  if (!token) redirectLogin();
-  const usuario = getUsuario();
-  if (!usuario || usuario.rol !== 'admin') {
-    logout();
+  if (!token) { redirectLogin(); return null; }
+
+  let role = localStorage.getItem('saboresRole');
+  if (role !== 'admin') {
+    const usuario = getUsuario();
+    role = usuario?.rol || null;
+    if (role === 'admin') localStorage.setItem('saboresRole', 'admin');
   }
-  return token;
+
+  if (role === 'admin') return token;
+  logout();
 }
 
 function apiFetch(path, options = {}) {
@@ -48,6 +57,7 @@ function logout() {
   localStorage.removeItem('usuario');
   localStorage.removeItem('saboresUser');
   localStorage.removeItem('saboresToken');
+  localStorage.removeItem('saboresRole');
   window.location.href = '../login.html';
 }
 

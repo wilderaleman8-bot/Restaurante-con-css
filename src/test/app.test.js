@@ -1,3 +1,5 @@
+//Funcionamiento del test con: Npm test.
+
 const { describe, it, before, after } = require('node:test');
 const assert = require('node:assert');
 const app = require('../app');
