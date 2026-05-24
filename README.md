@@ -230,7 +230,7 @@ El servidor arranca en `http://localhost:3000`.
 | `valoraciones` | Valoraciones numéricas (calificacion 1-5, comentario) |
 | `pedidos` | Pedidos (detalle JSONB, total, metodo_pago, card_last4, card_brand, status) |
 
-> **Nota:** RLS está deshabilitado en todas las tablas. La autenticación y autorización se manejan exclusivamente desde el backend con JWT + bcrypt.
+> **Nota:** RLS está habilitado en Supabase con políticas para permitir registro y consulta anónima en la tabla `usuarios`. La autenticación y autorización se manejan desde el backend con JWT + bcrypt.
 
 ### Roles de usuario
 - `cliente` — Usuario normal (puede hacer pedidos, reservas, opiniones, valoraciones)

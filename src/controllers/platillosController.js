@@ -1,23 +1,35 @@
 const supabase = require('../lib/supabaseClient');
 
 async function listar(req, res) {
+  const page = Math.max(0, parseInt(req.query.page) || 0);
+  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
+  const from = page * limit;
+  const to = from + limit - 1;
+
   const { data, error } = await supabase
     .from('platillos')
     .select('*')
     .eq('active', true)
     .order('order', { ascending: true })
-    .order('name', { ascending: true });
+    .order('name', { ascending: true })
+    .range(from, to);
 
   if (error) return res.status(500).json({ error: error.message });
   res.json(data || []);
 }
 
 async function listarAdmin(req, res) {
+  const page = Math.max(0, parseInt(req.query.page) || 0);
+  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
+  const from = page * limit;
+  const to = from + limit - 1;
+
   const { data, error } = await supabase
     .from('platillos')
     .select('*')
     .order('order', { ascending: true })
-    .order('name', { ascending: true });
+    .order('name', { ascending: true })
+    .range(from, to);
 
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);

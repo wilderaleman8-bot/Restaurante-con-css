@@ -25,7 +25,16 @@ async function crear(req, res) {
 }
 
 async function listar(req, res) {
-  const { data, error } = await supabase.from('valoraciones').select('*').order('created_at', { ascending: false });
+  const page = Math.max(0, parseInt(req.query.page) || 0);
+  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
+  const from = page * limit;
+  const to = from + limit - 1;
+
+  const { data, error } = await supabase
+    .from('valoraciones')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .range(from, to);
 
   if (error) {
     return res.status(500).json({ error: error.message });

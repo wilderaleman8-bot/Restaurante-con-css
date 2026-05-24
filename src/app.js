@@ -87,6 +87,15 @@ app.use((req, res) => {
 // Manejo global de errores del servidor
 app.use((err, req, res, next) => {
   console.error(err);
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({ error: 'La imagen no puede exceder 5 MB' });
+  }
+  if (err.message === 'Solo se permiten archivos de imagen') {
+    return res.status(400).json({ error: err.message });
+  }
+  if (err.name === 'MulterError') {
+    return res.status(400).json({ error: `Error al subir archivo: ${err.message}` });
+  }
   res.status(500).json({ error: 'Error interno del servidor' });
 });
 

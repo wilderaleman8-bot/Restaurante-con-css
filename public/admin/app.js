@@ -21,14 +21,19 @@ function checkAuth() {
   const token = getToken();
   if (!token) { redirectLogin(); return null; }
 
-  let role = localStorage.getItem('saboresRole');
-  if (role !== 'admin') {
-    const usuario = getUsuario();
-    role = usuario?.rol || null;
-    if (role === 'admin') localStorage.setItem('saboresRole', 'admin');
+  const usuario = getUsuario();
+  let role = localStorage.getItem('saboresRole') || usuario?.rol || null;
+
+  if (role === 'admin') {
+    localStorage.setItem('saboresRole', 'admin');
+    return token;
   }
 
-  if (role === 'admin') return token;
+  if (usuario?.rol === 'admin') {
+    localStorage.setItem('saboresRole', 'admin');
+    return token;
+  }
+
   logout();
 }
 

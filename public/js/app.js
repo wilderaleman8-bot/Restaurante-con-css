@@ -448,7 +448,7 @@ async function guardarReserva(nombre, apellido, personas, fecha, mensaje) {
     const response = await fetch(`${backendUrl}/api/reservas`, {
       method: 'POST',
       headers,
-      body: JSON.stringify(data),
+      body: JSON.stringify(bodyData),
       credentials: 'include'
     });
     const body = await response.json();

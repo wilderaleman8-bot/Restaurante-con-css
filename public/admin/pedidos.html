@@ -158,7 +158,7 @@
 
     async function loadOrders() {
       try {
-        const data = await apiFetch('/api/pedidos');
+        const data = await apiFetch('/api/admin/pedidos');
         ordersData = Array.isArray(data) ? data : [];
         filterOrders();
       } catch (e) {

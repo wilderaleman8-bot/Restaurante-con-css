@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { verificarToken, verificarAdmin } = require('../middlewares/auth');
-const { listarPedidos, listarReservas, listarUsuarios, actualizarPedido, listarValoracionesStats, listarOpiniones, listarValoracionesFull, reportes, actualizarUsuario, eliminarOpinion, eliminarValoracion } = require('../controllers/adminController');
+const { listarPedidos, listarReservas, listarUsuarios, actualizarPedido, listarValoracionesStats, listarOpiniones, listarValoracionesFull, reportes, actualizarUsuario, eliminarOpinion, eliminarValoracion, eliminarReserva, eliminarUsuario } = require('../controllers/adminController');
 
 router.use(verificarToken, verificarAdmin);
 
@@ -15,5 +15,7 @@ router.get('/reportes', reportes);
 router.patch('/usuarios/:id', actualizarUsuario);
 router.delete('/opiniones/:id', eliminarOpinion);
 router.delete('/valoraciones/:id', eliminarValoracion);
+router.delete('/reservas/:id', eliminarReserva);
+router.delete('/usuarios/:id', eliminarUsuario);
 
 module.exports = router;

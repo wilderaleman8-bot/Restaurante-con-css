@@ -1,30 +1,48 @@
 const supabase = require('../lib/supabaseClient');
 
 async function listarPedidos(req, res) {
+  const page = Math.max(0, parseInt(req.query.page) || 0);
+  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
+  const from = page * limit;
+  const to = from + limit - 1;
+
   const { data, error } = await supabase
     .from('pedidos')
     .select('*, usuario:usuario_id(id, nombre, email)')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
 
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
 }
 
 async function listarReservas(req, res) {
+  const page = Math.max(0, parseInt(req.query.page) || 0);
+  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
+  const from = page * limit;
+  const to = from + limit - 1;
+
   const { data, error } = await supabase
     .from('reservas')
-    .select('*')
-    .order('created_at', { ascending: false });
+    .select('*, usuario:usuario_id(id, nombre, email)')
+    .order('created_at', { ascending: false })
+    .range(from, to);
 
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
 }
 
 async function listarUsuarios(req, res) {
+  const page = Math.max(0, parseInt(req.query.page) || 0);
+  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
+  const from = page * limit;
+  const to = from + limit - 1;
+
   const { data, error } = await supabase
     .from('usuarios')
     .select('id, nombre, email, rol, image_path, created_at')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
 
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
@@ -71,19 +89,31 @@ async function listarValoracionesStats(req, res) {
 }
 
 async function listarOpiniones(req, res) {
+  const page = Math.max(0, parseInt(req.query.page) || 0);
+  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
+  const from = page * limit;
+  const to = from + limit - 1;
+
   const { data, error } = await supabase
     .from('opiniones')
     .select('*, usuario:usuario_id(id, nombre, email)')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
 }
 
 async function listarValoracionesFull(req, res) {
+  const page = Math.max(0, parseInt(req.query.page) || 0);
+  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
+  const from = page * limit;
+  const to = from + limit - 1;
+
   const { data, error } = await supabase
     .from('valoraciones')
     .select('*, usuario:usuario_id(id, nombre, email)')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
 }
@@ -170,4 +200,18 @@ async function eliminarValoracion(req, res) {
   res.json({ message: 'Valoración eliminada' });
 }
 
-module.exports = { listarPedidos, listarReservas, listarUsuarios, actualizarPedido, listarValoracionesStats, listarOpiniones, listarValoracionesFull, reportes, actualizarUsuario, eliminarOpinion, eliminarValoracion };
+async function eliminarReserva(req, res) {
+  const { id } = req.params;
+  const { error } = await supabase.from('reservas').delete().eq('id', id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ message: 'Reserva eliminada' });
+}
+
+async function eliminarUsuario(req, res) {
+  const { id } = req.params;
+  const { error } = await supabase.from('usuarios').delete().eq('id', id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ message: 'Usuario eliminado' });
+}
+
+module.exports = { listarPedidos, listarReservas, listarUsuarios, actualizarPedido, listarValoracionesStats, listarOpiniones, listarValoracionesFull, reportes, actualizarUsuario, eliminarOpinion, eliminarValoracion, eliminarReserva, eliminarUsuario };

@@ -98,7 +98,7 @@
         });
         const pending = (Array.isArray(orders) ? orders : []).filter(o => o.status === 'pendiente');
         const reservasToday = (Array.isArray(reservas) ? reservas : []).filter(r => {
-          const d = r.fecha || '';
+          const d = r.fecha_reserva || '';
           return d.slice(0, 10) === today;
         });
         const userCount = Array.isArray(users) ? users.length : 0;
