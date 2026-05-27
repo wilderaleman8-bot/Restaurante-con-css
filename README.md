@@ -308,28 +308,25 @@ El servidor arranca en `http://localhost:3000`.
 
 ## Correos electrónicos
 
-### Desarrollo (Ethereal)
-Por defecto usa **Ethereal** (servicio de correos de prueba). Los correos no se entregan realmente, pero se genera una URL en la consola del servidor para verlos:
+El proyecto usa **Nodemailer** con Gmail SMTP. Si no se configuran variables SMTP, usa **Ethereal** (correos de prueba con URL en consola).
 
-```
-Correo de prueba (Ethereal) URL: https://ethereal.email/message/...
-```
-
-### Producción (SMTP real)
-Configurar en `.env`:
+### Configuración actual (Gmail SMTP)
 ```env
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_SECURE=false
-SMTP_USER=tu-correo@gmail.com
-SMTP_PASS=tu-contraseña-de-aplicacion
-SMTP_FROM="Sabores Ancestrales" <tu-correo@gmail.com>
+SMTP_USER=saboresancestrales@gmail.com
+SMTP_FROM="Sabores Ancestrales" <saboresancestrales@gmail.com>
 ```
-
-> Para Gmail necesitás una [contraseña de aplicación](https://myaccount.google.com/apppasswords).
 
 ### Flujos que envían correo
 - Recuperación de contraseña (solicitar-reset → enlace con token)
+
+### Cambiar a Ethereal (desarrollo)
+Eliminar o comentar las variables `SMTP_*` del `.env` y el servidor usará Ethereal automáticamente. La URL de prueba aparecerá en la consola:
+```
+Correo de prueba (Ethereal) URL: https://ethereal.email/message/...
+```
 
 ---
 
