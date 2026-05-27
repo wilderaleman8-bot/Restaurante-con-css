@@ -1,4 +1,4 @@
-// Importaciones de dependencias externas
+// ─── Dependencias externas ──────────────────────────────────────────
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -8,7 +8,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
-// Importaciones de rutas locales
+// ─── Rutas locales de la API ────────────────────────────────────────
 const usuariosRoutes = require('./routes/usuarios');
 const reservasRoutes = require('./routes/reservas');
 const pedidosRoutes = require('./routes/pedidos');
@@ -23,7 +23,9 @@ const path = require('path');
 
 const app = express();
 
-// Middlewares de seguridad y logging
+// ─── Middlewares globales ───────────────────────────────────────────
+
+// Helmet CSP: define qué orígenes y recursos puede cargar el navegador
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -36,9 +38,9 @@ app.use(helmet({
     },
   },
 }));
-app.use(morgan('dev'));
+app.use(morgan('dev')); // Logging de peticiones HTTP
 
-// Límite de peticiones para evitar abusos
+// Rate limit: máximo 100 peticiones por 15 minutos en /api/
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -48,24 +50,25 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-app.use(cors({ credentials: true, origin: true })); // Permite peticiones desde otros dominios
-app.use(compression());        // Comprime las respuestas para mejorar velocidad
-app.use(express.json());       // Parsea cuerpos JSON en las peticiones
-app.use(express.urlencoded({ extended: true })); // Parsea cuerpos URL-encoded
+app.use(cors({ credentials: true, origin: true }));
+app.use(compression());                    // Comprime respuestas con gzip
+app.use(express.json());                   // Parsea JSON del cuerpo de la petición
+app.use(express.urlencoded({ extended: true }));
 app.use(require('cookie-parser')());
 
-// Archivos estáticos con caché de 7 días
+// ─── Archivos estáticos ─────────────────────────────────────────────
+// Se sirven con caché de 7 días para mejorar rendimiento
 const cacheOptions = { maxAge: '7d', immutable: true };
 app.use('/uploads/menu', express.static('uploads/menu', cacheOptions));
 app.use('/uploads', express.static('uploads', cacheOptions));
 app.use(express.static('public', cacheOptions));
 
-// Ruta raíz: sirve el index.html del frontend
+// Ruta raíz: sirve el index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Montaje de rutas de la API
+// ─── Rutas de la API ────────────────────────────────────────────────
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/reservas', reservasRoutes);
 app.use('/api/pedidos', pedidosRoutes);
@@ -76,7 +79,7 @@ app.use('/api/platillos', platillosRoutes);
 app.use('/api/password-reset', passwordResetRoutes);
 app.use('/api/upload', uploadRoutes);
 
-// Manejo de rutas no encontradas (404)
+// ─── 404: rutas no encontradas ──────────────────────────────────────
 app.use((req, res) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'Endpoint no encontrado' });
@@ -84,7 +87,7 @@ app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, '../public/404.html'));
 });
 
-// Manejo global de errores del servidor
+// ─── Manejador global de errores ────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error(err);
   if (err.code === 'LIMIT_FILE_SIZE') {
@@ -99,7 +102,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Error interno del servidor' });
 });
 
-// Servidor HTTP y WebSockets
+// ─── Servidor HTTP + WebSockets ─────────────────────────────────────
 const port = process.env.PORT || 3000;
 if (process.env.NODE_ENV !== 'test') {
   const server = http.createServer(app);

@@ -1,0 +1,21 @@
+{
+  "name": "Sabores Ancestrales",
+  "short_name": "S. Ancestrales",
+  "description": "Restaurante de comida tradicional nicaragüense. Platillos auténticos, ingredientes locales y recetas familiares.",
+  "start_url": "/index.html",
+  "id": "/index.html",
+  "display": "standalone",
+  "background_color": "#F7F3ED",
+  "theme_color": "#7C543F",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "imagenes/Logo.jpg",
+      "sizes": "225x225",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["restaurant", "food"],
+  "lang": "es"
+}

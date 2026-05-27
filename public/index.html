@@ -5,20 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sabores Ancestrales | Inicio</title>
   <meta name="description" content="Sabores Ancestrales - Restaurante de comida tradicional nicaragüense. Platillos auténticos, ingredientes locales y recetas familiares.">
+  <meta property="og:title" content="Sabores Ancestrales | Inicio">
+  <meta property="og:description" content="Restaurante de comida tradicional nicaragüense. Platillos auténticos, ingredientes locales y recetas familiares.">
+  <meta property="og:type" content="restaurant.menu">
+  <meta property="og:url" content="https://saboresancestrales.com">
+  <meta property="og:image" content="https://saboresancestrales.com/imagenes/hero.webp">
+  <meta property="og:locale" content="es_NI">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sabores Ancestrales">
+  <meta name="twitter:description" content="Comida tradicional nicaragüense auténtica.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="icon" href="imagenes/Logo.jpg" type="image/jpeg">
+  <link rel="apple-touch-icon" href="imagenes/Logo.jpg">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preload" href="css/style.css" as="style">
   <link rel="stylesheet" href="css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Sabores Ancestrales",
+    "description": "Restaurante de comida tradicional nicaragüense. Platillos auténticos, ingredientes locales y recetas familiares.",
+    "url": "https://saboresancestrales.com",
+    "telephone": "+50588888888",
+    "servesCuisine": "Nicaragüense",
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Masaya",
+      "addressCountry": "NI"
+    },
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "10:00", "closes": "22:00" }
+    ],
+    "image": "https://saboresancestrales.com/imagenes/hero.webp"
+  }
+  </script>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
   <header>
     <div class="container navbar">
       <div class="logo">
         <img src="imagenes/Logo.jpg" alt="Logo Sabores Ancestrales" width="34" height="34">
         <span>Sabores Ancestrales</span>
       </div>
-      <button id="menu-toggle">☰</button>
-      <ul id="nav-links" class="nav-links">
+      <button id="menu-toggle" aria-label="Abrir menú de navegación">☰</button>
+      <ul id="nav-links" class="nav-links" role="navigation" aria-label="Navegación principal">
         <li><a href="index.html" class="active">Inicio</a></li>
         <li><a href="informacion.html">Información</a></li>
         <li><a href="menu.html">Platillos</a></li>
@@ -30,11 +64,11 @@
     </div>
   </header>
 
-  <section class="hero">
+  <section id="main-content" tabindex="-1" class="hero">
     <picture>
-      <source media="(max-width: 576px)" srcset="imagenes/hero.webp" sizes="100vw">
-      <source media="(max-width: 1024px)" srcset="imagenes/hero.webp" sizes="100vw">
-      <img src="imagenes/hero.webp" alt="Portada Sabores Ancestrales" class="hero-bg" width="1920" height="922" loading="eager" fetchpriority="high" sizes="100vw" srcset="imagenes/hero.webp 1920w">
+      <source type="image/webp" srcset="imagenes/hero.webp 1920w" sizes="100vw">
+      <source type="image/jpeg" srcset="imagenes/Portada.jpg 1920w" sizes="100vw">
+      <img src="imagenes/Portada.jpg" alt="Portada Sabores Ancestrales" class="hero-bg" width="1920" height="922" loading="eager" fetchpriority="high">
     </picture>
     <div class="hero-content">
       <h1>Bienvenido a Sabores Ancestrales</h1>
@@ -127,7 +161,11 @@
         <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">◉</a>
         <a href="https://wa.me/50588888888" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
       </div>
-      <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
+      <div class="footer-legal">
+        <a href="privacidad.html">Política de Privacidad</a>
+        <a href="terminos.html">Términos del Servicio</a>
+      </div>
+      <p>&copy; 2026 Sabores Ancestrales. Todos los derechos reservados.</p>
     </div>
   </footer>
 

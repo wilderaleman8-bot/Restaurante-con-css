@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="icon" href="imagenes/Logo.jpg" type="image/jpeg">
+  <link rel="apple-touch-icon" href="imagenes/Logo.jpg">
+  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="css/style.css">
   <style>
     .error-page{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:100px 20px 60px}
@@ -18,14 +20,15 @@
   </style>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
   <header>
     <div class="container navbar">
       <div class="logo">
         <img src="imagenes/Logo.jpg" alt="Logo Sabores Ancestrales" width="34" height="34">
         <span>Sabores Ancestrales</span>
       </div>
-      <button id="menu-toggle">☰</button>
-      <ul id="nav-links" class="nav-links">
+      <button id="menu-toggle" aria-label="Abrir menú de navegación">☰</button>
+      <ul id="nav-links" class="nav-links" role="navigation" aria-label="Navegación principal">
         <li><a href="index.html">Inicio</a></li>
         <li><a href="informacion.html">Información</a></li>
         <li><a href="menu.html">Platillos</a></li>
@@ -37,7 +40,7 @@
     </div>
   </header>
 
-  <section class="error-page">
+  <section id="main-content" tabindex="-1" class="error-page">
     <h1>404</h1>
     <h2>Esta página no está en el menú</h2>
     <p>Parece que te desviaste del camino. La página que buscas no existe o fue movida. Volvé al inicio para seguir disfrutando.</p>
@@ -51,7 +54,11 @@
         <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">◉</a>
         <a href="https://wa.me/50588888888" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
       </div>
-      <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
+      <div class="footer-legal">
+        <a href="privacidad.html">Política de Privacidad</a>
+        <a href="terminos.html">Términos del Servicio</a>
+      </div>
+      <p>&copy; 2026 Sabores Ancestrales. Todos los derechos reservados.</p>
     </div>
   </footer>
   <button id="back-to-top" aria-label="Volver arriba">↑</button>

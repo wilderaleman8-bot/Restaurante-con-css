@@ -1,9 +1,12 @@
+// URL base del backend (mismo origen)
 const BACKEND_URL = window.location.origin;
 
+// Obtiene el token JWT guardado en localStorage
 function getToken() {
   return localStorage.getItem('saboresToken');
 }
 
+// Obtiene los datos del usuario desde localStorage (cualquier clave que exista)
 function getUsuario() {
   try {
     const stored = localStorage.getItem('usuario') || localStorage.getItem('saboresUser');
@@ -13,10 +16,13 @@ function getUsuario() {
   }
 }
 
+// Redirige al login si no hay sesión
 function redirectLogin() {
   window.location.href = '../login.html';
 }
 
+// Verifica que el usuario esté autenticado y tenga rol admin
+// Si no es admin, cierra la sesión
 function checkAuth() {
   const token = getToken();
   if (!token) { redirectLogin(); return null; }
@@ -37,6 +43,8 @@ function checkAuth() {
   logout();
 }
 
+// Fetch con autenticación automática (incluye JWT en headers)
+// Si la respuesta es 401, cierra sesión automáticamente
 function apiFetch(path, options = {}) {
   const token = getToken();
   const headers = options.headers || {};
@@ -57,6 +65,7 @@ function apiFetch(path, options = {}) {
     });
 }
 
+// Cierra sesión: elimina datos locales y redirige al login
 function logout() {
   fetch(`${BACKEND_URL}/api/usuarios/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});
   localStorage.removeItem('usuario');
@@ -66,6 +75,8 @@ function logout() {
   window.location.href = '../login.html';
 }
 
+// Muestra un toast flotante en la parte superior de la pantalla
+// type: 'success' (verde), 'error' (rojo), cualquier otro (gris)
 function showToast(message, type) {
   const existing = document.getElementById('admin-toast');
   if (existing) existing.remove();
@@ -92,6 +103,7 @@ function showToast(message, type) {
   }, 3000);
 }
 
+// Marca el enlace de la página actual en la barra lateral como activo
 function setActiveLink() {
   const current = window.location.pathname.split('/').pop();
   document.querySelectorAll('.sidebar-nav a').forEach(a => {
@@ -102,6 +114,7 @@ function setActiveLink() {
   });
 }
 
+// Renderiza la foto y nombre del usuario en el header del admin
 function renderUserInfo() {
   const container = document.getElementById('admin-user-info');
   if (!container) return;
@@ -116,11 +129,12 @@ function renderUserInfo() {
       ? `${BACKEND_URL}/uploads/${usuario.image_path}`
       : '../imagenes/Logo.jpg');
   container.innerHTML = `
-    <img src="${imgSrc}" alt="" onerror="this.src='../imagenes/Logo.jpg'">
+    <img src="${imgSrc}" alt="">
     <strong>${usuario.nombre || 'Admin'}</strong>
   `;
 }
 
+// Renderiza el nombre del usuario en el pie de la barra lateral
 function renderSidebarUser() {
   const el = document.getElementById('sidebar-user-name');
   if (!el) return;
@@ -128,6 +142,7 @@ function renderSidebarUser() {
   el.textContent = u ? (u.nombre || 'Admin') : 'Invitado';
 }
 
+// Configura el botón hamburguesa para mostrar/ocultar la sidebar en móvil
 function setupSidebarToggle() {
   const btn = document.getElementById('sidebar-toggle');
   const sidebar = document.querySelector('.admin-sidebar');
@@ -158,6 +173,7 @@ function setupSidebarToggle() {
   });
 }
 
+// Muestra "Cargando..." en un botón y lo deshabilita
 function setLoading(btn, loading) {
   if (!btn) return;
   if (loading) {
@@ -172,6 +188,7 @@ function setLoading(btn, loading) {
   }
 }
 
+// Genera HTML de filas esqueleto para simular una tabla cargando
 function renderSkeletonTable(rows, cols) {
   let html = '';
   for (let r = 0; r < rows; r++) {
@@ -185,6 +202,7 @@ function renderSkeletonTable(rows, cols) {
   return html;
 }
 
+// Genera HTML de tarjetas esqueleto para estados de carga
 function renderSkeletonCards(count) {
   let html = '';
   for (let i = 0; i < count; i++) {
@@ -193,6 +211,8 @@ function renderSkeletonCards(count) {
   return html;
 }
 
+// Conecta con Socket.io para recibir notificaciones en tiempo real
+// Eventos: new-order, new-reservation, order-status
 function setupSocket() {
   if (typeof io === 'undefined') return;
   const socket = io(BACKEND_URL);
@@ -212,7 +232,52 @@ function setupSocket() {
   });
 }
 
+// Banner de consentimiento de cookies (GDPR)
+function initCookieConsent() {
+  if (localStorage.getItem('cookieConsent')) return;
+  const banner = document.createElement('div');
+  banner.className = 'cookie-consent';
+  banner.innerHTML = `
+    <div class="cc-inner">
+      <div class="cc-header">🍪 Cookies</div>
+      <p>Usamos cookies para mejorar tu experiencia. Al continuar, aceptás nuestra <a href="../privacidad.html">política de privacidad</a>.</p>
+      <div class="cc-btns">
+        <button class="cc-btn reject" data-action="reject">Rechazar</button>
+        <button class="cc-btn accept" data-action="accept">Aceptar todas</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(banner);
+  requestAnimationFrame(() => banner.classList.add('active'));
+  banner.addEventListener('click', (e) => {
+    const btn = e.target.closest('.cc-btn');
+    if (!btn) return;
+    localStorage.setItem('cookieConsent', btn.dataset.action);
+    banner.classList.remove('active');
+    setTimeout(() => banner.remove(), 400);
+  });
+}
+
+// Registra el Service Worker para funcionalidad offline (PWA)
+function registerSW() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('../service-worker.js').catch(() => {});
+  }
+}
+
+// Inicialización al cargar el DOM
 document.addEventListener('DOMContentLoaded', () => {
+  // Manejador global de errores en imágenes (reemplaza onerror inline por CSP)
+  document.addEventListener('error', e => {
+    const t = e.target;
+    if (t.tagName === 'IMG' && !t.dataset.errorFallback) {
+      t.dataset.errorFallback = '1';
+      t.src = '../imagenes/Logo.jpg';
+    }
+  }, true);
+
+  initCookieConsent();
+  registerSW();
   checkAuth();
   setActiveLink();
   renderUserInfo();

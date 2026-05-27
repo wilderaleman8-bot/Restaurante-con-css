@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="icon" href="imagenes/Logo.jpg" type="image/jpeg">
+  <link rel="apple-touch-icon" href="imagenes/Logo.jpg">
+  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="css/style.css">
   <style>
     /* Estilos generales */
@@ -537,14 +539,15 @@
   </style>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
   <header>
     <div class="container navbar">
       <div class="logo">
         <img src="imagenes/Logo.jpg" alt="Logo Sabores Ancestrales" width="34" height="34">
         <span>Sabores Ancestrales</span>
       </div>
-      <button id="menu-toggle">☰</button>
-      <ul id="nav-links" class="nav-links">
+      <button id="menu-toggle" aria-label="Abrir menú de navegación">☰</button>
+      <ul id="nav-links" class="nav-links" role="navigation" aria-label="Navegación principal">
         <li><a href="index.html">Inicio</a></li>
         <li><a href="informacion.html">Información</a></li>
         <li><a href="menu.html" class="active">Platillos</a></li>
@@ -556,7 +559,7 @@
     </div>
   </header>
 
-  <section>
+  <section id="main-content" tabindex="-1">
     <div class="container">
       <h2>Nuestros Platillos</h2>
       <p class="lead">Explora nuestras categorías y descubre los sabores que preparamos con pasión y tradición.</p>
@@ -642,7 +645,11 @@
         <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">◉</a>
         <a href="https://wa.me/50588888888" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
       </div>
-      <p>&copy; 2025 Sabores Ancestrales. Todos los derechos reservados.</p>
+      <div class="footer-legal">
+        <a href="privacidad.html">Política de Privacidad</a>
+        <a href="terminos.html">Términos del Servicio</a>
+      </div>
+      <p>&copy; 2026 Sabores Ancestrales. Todos los derechos reservados.</p>
     </div>
   </footer>
   <button id="back-to-top" aria-label="Volver arriba">↑</button>
@@ -655,18 +662,18 @@
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    // Referencias a elementos del DOM (Document Object Model)
+    // ─── Referencias al DOM ───────────────────────────────────────────
     const categoryButtons = document.querySelectorAll('.category-btn');
     const menuItemsContainer = document.getElementById('menu-items');
     const pedidoList = document.getElementById('pedido-list');
     const totalEl = document.getElementById('total');
     const ticketEl = document.getElementById('ticket');
 
-    // Estado del carrito de compras
+    // ─── Estado global del carrito ─────────────────────────────────────
+    // total: suma acumulada sin IVA, pedido: array de { item, quantity }
     let total = 0;
     let pedido = [];
-
-    const MAX_POR_ITEM = 5;
+    const MAX_POR_ITEM = 5; // Límite por producto para evitar abusos
 
     function guardarCarrito() {
       localStorage.setItem('saboresPedido', JSON.stringify(pedido));
@@ -692,18 +699,15 @@
     }
     restaurarCarrito();
 
-    /**
-     * Muestra u oculta los campos de tarjeta de crédito según el método de pago seleccionado.
-     */
+    // ─── Gestión de métodos de pago ──────────────────────────────────
+    // Muestra/oculta los campos de tarjeta según selección
     function mostrarCardDetails() {
       const pago = document.getElementById('pago').value;
       const cardDetails = document.getElementById('card-details');
       cardDetails.style.display = pago === 'tarjeta' ? 'block' : 'none';
     }
 
-    /**
-     * Valida que los datos de la tarjeta de crédito tengan el formato correcto y no esté expirada.
-     */
+    // Valida formato y vigencia de la tarjeta
     function validarTarjeta(cardNumber, cvv, expDate) {
       const normalized = cardNumber.replace(/\s+/g, '');
       if (!/^[0-9]{13,19}$/.test(normalized)) return 'Número de tarjeta inválido.';
@@ -719,14 +723,13 @@
       return null;
     }
 
-    /**
-     * Extrae los últimos 4 dígitos de una tarjeta para almacenamiento seguro.
-     */
+    // Extrae solo los últimos 4 dígitos (nunca almacenamos el número completo)
     function obtenerUltimos4(cardNumber) {
       const normalized = cardNumber.replace(/\D/g, '');
       return normalized.slice(-4);
     }
 
+    // Detecta la marca según el prefijo del número de tarjeta (BIN)
     function detectarMarcaTarjeta(cardNumber) {
       const n = cardNumber.replace(/\D/g, '');
       if (/^4/.test(n)) return 'Visa';
@@ -736,7 +739,10 @@
       return 'Visa/MC';
     }
 
-    // Cargar datos del menú desde la API
+    // ─── Carga del menú desde la API ──────────────────────────────────
+    // menuData: estructura según categoría
+    //   - 'bebidas' → { subcategoria: [items] }
+    //   - otras     → [items]
     let menuData = {};
     let menuLoaded = false;
     const API_BASE = window.location.origin;
@@ -749,6 +755,7 @@
       menuItemsContainer.innerHTML = '<p class="lead" style="grid-column:1/-1;text-align:center;padding:40px 0">No hay platillos disponibles en este momento.</p>';
     }
 
+    // Fetch a la API, organiza los datos en menuData por categoría/subcategoría
     async function cargarMenu() {
       mostrarCargando();
       try {
@@ -773,6 +780,7 @@
             currency: item.currency || 'C$',
             image: item.image || 'imagenes/descarga.png'
           };
+          // Las bebidas se agrupan por subcategoría; el resto van en un array plano
           if (cat === 'bebidas') {
             if (!menuData[cat] || Array.isArray(menuData[cat])) menuData[cat] = {};
             const key = sub || '_general';
@@ -792,12 +800,12 @@
       }
     }
 
-    /**
-     * Renderiza los platillos en la cuadrícula según la categoría seleccionada.
-     */
+    // ─── Renderizado del menú ────────────────────────────────────────
+    // categoriaActual y subcategoriaActual controlan qué vista se muestra
     let categoriaActual = 'entradas';
     let subcategoriaActual = 'todas';
 
+    // Renderiza la cuadrícula de platillos filtrada por categoría y búsqueda
     function loadMenuItems(category) {
       categoriaActual = category;
       menuItemsContainer.innerHTML = '';
@@ -810,6 +818,7 @@
       if (Array.isArray(data)) {
         data.forEach(item => renderItem(item, searchTerm));
       } else {
+        // Categorías con subcategorías (bebidas): itera cada subgrupo
         Object.keys(data).forEach(sub => {
           if (subcategoriaActual !== 'todas' && sub !== subcategoriaActual) return;
           const items = data[sub].filter(item =>
@@ -825,12 +834,13 @@
       }
     }
 
+    // Crea una tarjeta visual para cada platillo (imagen, nombre, precio, selector de cantidad)
     function renderItem(item, searchTerm) {
       if (searchTerm && !item.name.toLowerCase().includes(searchTerm) && !item.description.toLowerCase().includes(searchTerm)) return;
       const div = document.createElement('div');
       div.className = 'menu-item';
       div.innerHTML = `
-        <img src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.onerror=null;this.src='imagenes/descarga.png'">
+        <img src="${item.image}" alt="${item.name}" loading="lazy">
         <div class="content">
           <h4>${item.name} <span class="price">${item.currency}${item.price.toFixed(2)}</span></h4>
           <p>${item.description}</p>
@@ -849,11 +859,10 @@
       menuItemsContainer.appendChild(div);
     }
 
-    const IVA_RATE = 0.15;
+    // ─── Carrito de compras ───────────────────────────────────────────
+    const IVA_RATE = 0.15; // 15% de IVA en Nicaragua
 
-    /**
-     * Añade un producto al carrito (máximo MAX_POR_ITEM por producto).
-     */
+    // Agrega items al carrito respetando el límite MAX_POR_ITEM
     function agregarAlPedido(item, cantidad = 1) {
       const existing = pedido.find(p => p.item.name === item.name);
       const actual = existing ? existing.quantity : 0;
@@ -877,9 +886,7 @@
       actualizarPedido();
     }
 
-    /**
-     * Elimina completamente un producto del carrito.
-     */
+    // Elimina completamente un producto del carrito por su índice
     function eliminarDelPedido(index) {
       const entry = pedido[index];
       total -= entry.item.price * entry.quantity;
@@ -887,13 +894,13 @@
       actualizarPedido();
     }
 
+    // Cuenta el total de unidades en el carrito
     function contarItems() {
       return pedido.reduce((sum, p) => sum + p.quantity, 0);
     }
 
-    /**
-     * Actualiza la lista visual del resumen del pedido y el total.
-     */
+    // Reconstruye el listado visual del carrito con controles de cantidad (+/-) y eliminar
+    // También actualiza subtotal, IVA y total en el DOM
     function actualizarPedido() {
       pedidoList.innerHTML = '';
       pedido.forEach((p, index) => {
@@ -950,6 +957,7 @@
       guardarCarrito();
     }
 
+    // Ajusta la cantidad de un item en el carrito (delta: +1 o -1)
     function cambiarCantidad(index, delta) {
       const entry = pedido[index];
       const nueva = entry.quantity + delta;
@@ -964,6 +972,8 @@
       actualizarPedido();
     }
 
+    // ─── Historial de pedidos del usuario ────────────────────────────
+    // Muestra los últimos 10 pedidos del usuario logueado
     async function cargarHistorialPedidos() {
       const usuario = getUsuario();
       if (!usuario || !usuario.id) return;
@@ -1001,9 +1011,9 @@
       }
     }
 
-    /**
-     * Carga una imagen para ser usada dentro de la generación del PDF.
-     */
+    // ─── Generación de PDF ────────────────────────────────────────────
+    // Convierte una imagen del DOM a base64 para insertarla en el PDF
+    // (jsPDF no soporta rutas de archivo directamente en el navegador)
     function cargarImagenPDF(src) {
       return new Promise((resolve) => {
         const img = new Image();
@@ -1019,13 +1029,13 @@
       });
     }
 
-    /**
-     * Genera y descarga un archivo PDF con el resumen del pedido.
-     */
+    // ─── Generación de PDF ────────────────────────────────────────────
+    // Almacena el último pedido confirmado para permitir descargar PDF después
     let ultimoPedido = null;
     let ultimoTotal = 0;
     let ultimoIVA = 0;
 
+    // Desagrupa el pedido: de { item, quantity: 3 } a [item, item, item]
     function aplanarPedido(pedidoArr) {
       const flat = [];
       pedidoArr.forEach(p => {
@@ -1034,6 +1044,7 @@
       return flat;
     }
 
+    // Genera y descarga un PDF con el resumen del pedido usando jsPDF
     async function descargarPDF() {
       const items = pedido.length > 0 ? aplanarPedido(pedido) : aplanarPedido(ultimoPedido || []);
       const subtotal = pedido.length > 0 ? total : ultimoTotal;
@@ -1044,7 +1055,7 @@
       const doc = new jsPDF();
       const user = getUsuario() || { nombre: 'Cliente', name: 'Cliente', tableNumber: 'S/N' };
       
-      // Imagen de logo para el encabezado del PDF
+      // Inserta el logo como imagen base64 en el encabezado
       const logoData = await cargarImagenPDF('imagenes/Logo.jpg');
       if (logoData) doc.addImage(logoData, 'JPEG', 14, 14, 30, 30);
       
@@ -1080,15 +1091,17 @@
       doc.save('pedido-sabores.pdf');
     }
 
-    // Navegación rápida al resumen del pedido al hacer clic en el carrito flotante
+    // ─── Eventos de interacción ────────────────────────────────────────
+
+    // Carrito flotante: scroll suave al resumen del pedido
     const ball = document.getElementById('cart-ball');
     ball.addEventListener('click', () => document.getElementById('pedido').scrollIntoView({behavior:'smooth'}));
 
-    // Eventos de botones principales
+    // Botones principales
     document.getElementById('download-pdf').addEventListener('click', descargarPDF);
     document.getElementById('pago').addEventListener('change', mostrarCardDetails);
 
-    // Formato y detección de marca de tarjeta en tiempo real
+    // Input de tarjeta: formato "xxxx xxxx xxxx xxxx" y detección de marca
     const cardInput = document.getElementById('card_number');
     const brandBadge = document.getElementById('card-brand-badge');
     if (cardInput) {
@@ -1103,6 +1116,7 @@
         brandBadge.title = brand;
       });
     }
+    // Campos CVV y expiración: solo dígitos
     ['cvv', 'exp_date'].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
@@ -1112,9 +1126,8 @@
       }
     });
 
-    /**
-     * Finaliza el pedido enviando la información al servidor.
-     */
+    // ─── Finalizar pedido ─────────────────────────────────────────────
+    // Valida, envía al servidor y muestra ticket de confirmación
     document.getElementById('finalizar').addEventListener('click', async () => {
       if (pedido.length === 0) return showToast('Pedido vacío', 'error');
 

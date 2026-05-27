@@ -204,7 +204,60 @@ function initBackToTop() {
   });
 }
 
+// ===============================
+// Cookie Consent (GDPR)
+// ===============================
+// Crea un banner al inicio, lo muestra con animación y guarda la decisión
+function initCookieConsent() {
+  if (localStorage.getItem('cookieConsent')) return; // Ya respondió antes
+
+  const banner = document.createElement('div');
+  banner.className = 'cookie-consent';
+  banner.innerHTML = `
+    <div class="cc-inner">
+      <div class="cc-header">🍪 Cookies</div>
+      <p>Usamos cookies para mejorar tu experiencia. Al continuar navegando, aceptás nuestra <a href="privacidad.html">política de privacidad</a> y <a href="terminos.html">términos de servicio</a>.</p>
+      <div class="cc-btns">
+        <button class="cc-btn reject" data-action="reject">Rechazar</button>
+        <button class="cc-btn accept" data-action="accept">Aceptar todas</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(banner);
+
+  requestAnimationFrame(() => banner.classList.add('active'));
+
+  banner.addEventListener('click', (e) => {
+    const btn = e.target.closest('.cc-btn');
+    if (!btn) return;
+    localStorage.setItem('cookieConsent', btn.dataset.action);
+    banner.classList.remove('active');
+    setTimeout(() => banner.remove(), 400);
+  });
+}
+
+// ===============================
+// Service Worker (PWA)
+// ===============================
+function registerSW() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  // Manejador global de errores en imágenes (CSP: reemplaza onerror inline)
+  // Usa dataset.errorFallback para evitar bucles infinitos si la imagen de fallback también falla
+  document.addEventListener('error', e => {
+    const t = e.target;
+    if (t.tagName === 'IMG' && !t.dataset.errorFallback) {
+      t.dataset.errorFallback = '1';
+      t.src = './imagenes/Logo.jpg';
+    }
+  }, true);
+
+  initCookieConsent();
+  registerSW();
   initScrollReveal();
   initBackToTop();
   cargarTestimonios();
@@ -224,10 +277,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       userPanel.innerHTML = `
         <div class="user-box">
-          <img src="${imgPath}" alt="Avatar" onerror="this.src='./imagenes/Logo.jpg'">
+          <img src="${imgPath}" alt="Avatar">
           <div class="user-labels">
-          <span>${usuario.nombre}${usuario.rol === 'admin' ? '<a href="./admin/index.html" class="admin-link"> ⚙ Admin</a>' : ''}</span>
-          <button id="logout-btn">Cerrar sesión</button>
+            <span>${usuario.nombre}${usuario.rol === 'admin' ? '<a href="./admin/index.html" class="admin-link"> ⚙ Admin</a>' : ''}</span>
+            <button id="logout-btn">Cerrar sesión</button>
           </div>
         </div>
       `;

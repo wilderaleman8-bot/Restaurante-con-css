@@ -86,13 +86,21 @@ restaurante-con-css/
 │   ├── informacion.html          # Información del restaurante
 │   ├── solicitar-reset.html      # Solicitar recuperación de contraseña
 │   ├── resetear-password.html    # Restablecer contraseña
+│   ├── privacidad.html           # Política de Privacidad
+│   ├── terminos.html             # Términos del Servicio
 │   ├── 404.html                  # Página personalizada de error
 │   ├── template.html             # Template para nuevas páginas
+│   ├── robots.txt                # Control de crawlers (SEO)
+│   ├── manifest.json             # Manifiesto PWA
+│   ├── service-worker.js         # Service Worker (offline + caché)
 │   ├── admin/                    # Panel de administración
 │   │   ├── index.html            # Dashboard con estadísticas
 │   │   ├── pedidos.html          # Gestión de pedidos
 │   │   ├── reservas.html         # Gestión de reservas
 │   │   ├── menu.html             # CRUD del menú (con subida de imágenes)
+│   │   ├── usuarios.html         # Gestión de usuarios
+│   │   ├── opiniones.html        # Gestión de opiniones
+│   │   ├── reportes.html         # Reportes
 │   │   ├── app.js                # JS compartido del admin
 │   │   └── style.css             # Estilos del admin
 │   ├── css/
@@ -256,12 +264,45 @@ El servidor arranca en `http://localhost:3000`.
 - **Menú** — CRUD completo: crear, editar, desactivar/activar platillos, subir imágenes, sincronizar desde datos precargados
 - **Notificaciones en tiempo real** vía WebSocket (socket.io): toast al recibir nuevo pedido, nueva reserva o cambio de estado
 
-### Seguridad
-- Helmet CSP para prevenir XSS
-- Rate limiting (100 peticiones/15 minutos en `/api/`)
-- Contraseñas encriptadas con bcrypt
-- JWT con expiración de 7 días
-- Validación de dominio de email (registro)
+### Páginas legales
+- **`privacidad.html`** — Política de Privacidad con 8 secciones: información recopilada, uso de datos, cookies, derechos del usuario, contacto, etc.
+- **`terminos.html`** — Términos del Servicio con 9 secciones: uso del sitio, pedidos, reservas, responsabilidad, ley aplicable, etc.
+
+### PWA (Progressive Web App)
+- **`manifest.json`** — Configuración completa: nombre corto/largo, íconos, theme_color (`#7C543F`), background_color (`#F7F3ED`), display standalone, orientación
+- **`service-worker.js`** — Precarga y caché de assets estáticos (HTML, CSS, JS, imágenes, fuentes). Estrategia: `CacheFirst` para archivos estáticos, solo intercepta peticiones same-origin. Sirve contenido cacheados en modo offline
+- Instalable desde Chrome/Edge con prompt "Agregar a pantalla de inicio"
+
+### Accesibilidad
+- **Skip-link** en todas las páginas (`Saltar al contenido principal`) — visible al enfocar con Tab
+- **`role="navigation"` y `aria-label`** en todos los menús de navegación
+- **`aria-label`** en botones hamburguesa y enlaces de redes sociales
+- **`id="main-content" tabindex="-1"`** en la sección principal de cada página para navegación por teclado
+- **`:focus-visible`** con outline de 3px sólido color oliva en elementos interactivos
+- Contraste de colores suficiente en todos los componentes
+
+### SEO
+- **`robots.txt`** — Permite crawling completo con hint de sitemap
+- **Open Graph** — Meta tags `og:title`, `og:description`, `og:type`, `og:url`, `og:image`, `og:locale` en `index.html`
+- **Twitter Card** — `summary_large_image` con título y descripción
+- **JSON-LD Structured Data** — Schema.org tipo `Restaurant` con dirección, horarios, teléfono, tipo de cocina y precio
+- **`<link rel="preconnect">`** para Google Fonts y **`<link rel="preload">`** para CSS crítico
+
+### Rendimiento
+- **WebP con fallback JPEG** en hero image mediante `<picture>` con `type="image/webp"` y `type="image/jpeg"`
+- **`loading="lazy"`** en todas las imágenes del sitio
+- **`fetchpriority="high"`** en la hero image (LCP)
+- **Preconnect** a orígenes de terceros (Google Fonts)
+- **Preload** de hoja de estilos crítica
+
+### Seguridad (CSP)
+- Helmet CSP configurado con `script-src-attr 'none'` — todos los inline event handlers (`onerror`, etc.) fueron reemplazados por event delegation global en JS
+- Imágenes con error se manejan mediante `document.addEventListener('error', ...)` en lugar de `onerror="..."` en HTML
+- Service Worker omite peticiones a orígenes externos (Google Fonts, CDNs) para no violar `connect-src`
+
+### Legal / Privacidad
+- **Cookie Consent Banner** (GDPR) — aparece en la primera visita con opciones "Aceptar todas" / "Rechazar". La preferencia se guarda en `localStorage` con la clave `cookieConsent`
+- **Footer legal** en todas las páginas con enlaces a Política de Privacidad y Términos del Servicio
 
 ---
 
@@ -327,4 +368,15 @@ npm start
 
 El servidor se recarga automáticamente al modificar archivos del backend. Los cambios en archivos estáticos (`public/`) solo requieren recargar el navegador.
 
+---
 
+## TODO / Mejoras pendientes
+
+- [ ] `sitemap.xml` — Generar mapa del sitio con todas las URLs públicas
+- [ ] WebP para todas las imágenes (no solo hero) con fallback JPEG/PNG
+- [ ] Página offline personalizada en el Service Worker
+- [ ] Pruebas de accesibilidad con axe DevTools / Lighthouse
+- [ ] Analytics / consentimiento granular de cookies
+- [ ] Compresión y optimización automática de imágenes subidas
+- [ ] i18n — Soporte multi-idioma (es/en)
+- [ ] Tests automatizados (frontend y backend)

@@ -1,5 +1,7 @@
+/* Fuente: Inter para cuerpo, Playfair Display para títulos */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;600;700&display=swap');
 
+/* ─── Variables globales ──────────────────────────────────────────── */
 :root {
   --bg: #F7F3ED;
   --card: #FFFFFF;
@@ -27,6 +29,8 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { height: 100%; -webkit-font-smoothing: antialiased; }
+:focus-visible{outline:3px solid var(--olive);outline-offset:2px}
+/* Reset y estilos base */
 body {
   font-family: var(--font-body);
   background: var(--bg);
@@ -36,6 +40,7 @@ body {
 }
 a { text-decoration: none; color: inherit; }
 
+/* Layout principal: sidebar fija + contenido flexible */
 .admin-layout { display: flex; min-height: 100vh; }
 
 /* ─── SIDEBAR ─── */

@@ -240,6 +240,7 @@
   </style>
 </head>
 <body>
+  <a href="#admin-main" class="skip-link" style="position:fixed;top:-100%;left:50%;z-index:9999;transform:translateX(-50%);background:#5a4036;color:#fff;padding:12px 24px;border-radius:0 0 12px 12px;font-weight:700;font-size:0.95rem;text-decoration:none;transition:top .2s ease">Saltar al contenido principal</a>
   <div class="admin-layout">
     <aside class="admin-sidebar">
       <div class="sidebar-brand">
@@ -249,7 +250,7 @@
           <small>Panel Admin</small>
         </div>
       </div>
-      <nav class="sidebar-nav">
+      <nav class="sidebar-nav" aria-label="Navegación del panel">
         <a href="index.html"><span class="icon">📊</span> Dashboard</a>
         <a href="pedidos.html"><span class="icon">📋</span> Pedidos</a>
         <a href="reservas.html"><span class="icon">📅</span> Reservas</a>
@@ -264,7 +265,7 @@
     </aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <main class="admin-main">
+    <main class="admin-main" id="admin-main" tabindex="-1">
       <header class="admin-header">
         <button id="sidebar-toggle">☰</button>
         <h1>Gestión de Usuarios</h1>
