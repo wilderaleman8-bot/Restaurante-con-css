@@ -1,5 +1,6 @@
 
 const BACKEND_URL = window.location.origin;
+const PUSH_PUBLIC_KEY = 'BAfknhirOkYpWfeUxGw2Jf1ZGQyaPnvEgnAXbgRV2qSAdrZCuCFJjxNHx1lgnLg_CBaVGb0QLpJ3vH8jnXij7Qo';
 
 function getUsuario() {
   try {
@@ -31,6 +32,147 @@ function logout() {
 // ===============================
 // Notificaciones, loading states, etc.
 // ===============================
+
+function showEmptyState(container, icon, title, desc, btnText, btnLink) {
+  container.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">${icon}</div>
+      <h3>${title}</h3>
+      <p>${desc}</p>
+      ${btnText && btnLink ? `<a href="${btnLink}" class="btn">${btnText}</a>` : ''}
+    </div>
+  `;
+}
+
+function initFormValidation(formEl, rules) {
+  if (!formEl) return;
+  Object.keys(rules).forEach(name => {
+    const rule = rules[name];
+    const input = formEl.querySelector(`[name="${name}"]`);
+    if (!input) return;
+    const msgEl = document.createElement('div');
+    msgEl.className = 'field-error';
+    msgEl.id = `error-${name}`;
+    input.parentNode.insertBefore(msgEl, input.nextSibling);
+    const validate = () => {
+      const val = input.value.trim();
+      let error = '';
+      if (rule.required && !val) error = rule.requiredMsg || 'Este campo es obligatorio';
+      else if (rule.minLength && val.length < rule.minLength) error = (rule.minLengthMsg || `Mínimo ${rule.minLength} caracteres`);
+      else if (rule.email && val && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) error = 'Ingresa un correo válido';
+      else if (rule.match) {
+        const matchEl = formEl.querySelector(`[name="${rule.match}"]`);
+        if (matchEl && val !== matchEl.value) error = rule.matchMsg || 'No coinciden';
+      }
+      msgEl.textContent = error;
+      msgEl.classList.toggle('show', !!error);
+      input.classList.toggle('error', !!error);
+      input.classList.toggle('success', !error && val.length > 0);
+    };
+    input.addEventListener('blur', validate);
+    input.addEventListener('input', validate);
+    if (rule.match) {
+      const matchEl = formEl.querySelector(`[name="${rule.match}"]`);
+      if (matchEl) matchEl.addEventListener('input', validate);
+    }
+  });
+}
+
+function suscribirPush() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+  if (Notification.permission === 'granted') return;
+  if (Notification.permission === 'denied') return;
+  if (localStorage.getItem('pushPrompted')) return;
+  const div = document.createElement('div');
+  div.className = 'notif-prompt';
+  div.innerHTML = `
+    <div class="notif-icon">🔔</div>
+    <div class="notif-text">
+      <strong>¿Recibir notificaciones?</strong>
+      <span>Te avisamos cuando tu pedido cambie de estado</span>
+    </div>
+    <div class="notif-actions">
+      <button class="notif-btn" id="push-yes">Activar</button>
+      <button class="notif-btn-secondary" id="push-no">Ahora no</button>
+    </div>
+  `;
+  document.body.appendChild(div);
+  div.querySelector('#push-yes').onclick = async () => {
+    try {
+      const perm = await Notification.requestPermission();
+      if (perm === 'granted') {
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(PUSH_PUBLIC_KEY) });
+        const token = getToken();
+        if (token) fetch('/api/notificaciones/suscribir', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ subscription: sub.toJSON(), usuario_id: getUsuario()?.id }) }).catch(() => {});
+      }
+    } catch {}
+    div.remove();
+    localStorage.setItem('pushPrompted', '1');
+  };
+  div.querySelector('#push-no').onclick = () => { div.remove(); localStorage.setItem('pushPrompted', '1'); };
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const b64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+}
+
+let _socketInstance = null;
+
+function conectarSocketParaTracking() {
+  if (typeof io === 'undefined') return;
+  if (_socketInstance) return _socketInstance;
+  const socket = io(window.location.origin, { transports: ['websocket', 'polling'] });
+  socket.on('order-status', data => {
+    const stepper = document.querySelector(`.order-stepper[data-pedido="${data.id}"]`);
+    if (stepper) actualizarStepper(stepper, data.status);
+    const ticket = document.querySelector(`#ticket[data-pedido-id="${data.id}"]`);
+    if (ticket) {
+      const s = ticket.querySelector('.order-stepper');
+      if (s) actualizarStepper(s, data.status);
+    }
+  });
+  _socketInstance = socket;
+  return socket;
+}
+
+function actualizarStepper(stepper, status) {
+  const pasos = ['pendiente', 'preparando', 'servido'];
+  const idx = pasos.indexOf(status);
+  stepper.querySelectorAll('.stepper-step').forEach((step, i) => {
+    step.classList.remove('active', 'done', 'canceled');
+    if (status === 'cancelado') {
+      step.classList.add('canceled');
+      stepper.querySelector('.step-label') && (() => {})();
+    } else if (i < idx) step.classList.add('done');
+    else if (i === idx) step.classList.add('active');
+  });
+  if (status === 'cancelado') {
+    const dots = stepper.querySelectorAll('.step-dot');
+    dots.forEach(d => { d.textContent = '✕'; });
+  }
+}
+
+function renderStepperHTML(pedidoId, status) {
+  const pasos = [
+    { key: 'pendiente', label: 'Pedido', icon: '📋' },
+    { key: 'preparando', label: 'Cocina', icon: '👨‍🍳' },
+    { key: 'servido', label: 'Listo', icon: '🍽️' }
+  ];
+  return `
+    <div class="order-stepper" data-pedido="${pedidoId}">
+      ${pasos.map((p, i) => `
+        <div class="stepper-step ${status === p.key ? 'active' : ''} ${pasos.findIndex(x => x.key === status) > i ? 'done' : ''} ${status === 'cancelado' ? 'canceled' : ''}">
+          <div class="step-dot">${status === 'cancelado' ? '✕' : p.icon}</div>
+          <div class="step-line"></div>
+          <span class="step-label">${p.label}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
 
 function showToast(message, type) {
   const existing = document.getElementById('app-toast');
@@ -258,7 +400,7 @@ function initCookieConsent() {
 // ===============================
 function registerSW() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js?v=2').catch(() => {});
+    navigator.serviceWorker.register('/service-worker.js?v=3').catch(() => {});
   }
 }
 
@@ -313,6 +455,11 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       userPanel.innerHTML = '<a href="login.html">Iniciar sesión</a>';
     }
+  }
+
+  if (getUsuario()) {
+    suscribirPush();
+    conectarSocketParaTracking();
   }
 
   const menuToggle = document.getElementById('menu-toggle');
@@ -426,6 +573,10 @@ async function registrar(formData) {
 document.addEventListener('DOMContentLoaded', () => {
   const formLogin = document.querySelector("#login-form");
   if (formLogin) {
+    initFormValidation(formLogin, {
+      email: { required: true, email: true, requiredMsg: 'Ingresa tu correo' },
+      password: { required: true, minLength: 6, requiredMsg: 'Ingresa tu contraseña', minLengthMsg: 'Mínimo 6 caracteres' }
+    });
     formLogin.addEventListener("submit", e => {
       e.preventDefault();
       const email = e.target.email.value;
@@ -436,6 +587,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const formRegistro = document.querySelector("#register-form");
   if (formRegistro) {
+    initFormValidation(formRegistro, {
+      nombre: { required: true, minLength: 3, requiredMsg: 'Ingresa tu nombre', minLengthMsg: 'Mínimo 3 caracteres' },
+      email: { required: true, email: true, requiredMsg: 'Ingresa tu correo' },
+      password: { required: true, minLength: 6, requiredMsg: 'Crea una contraseña', minLengthMsg: 'Mínimo 6 caracteres' },
+      confirm_password: { required: true, match: 'password', requiredMsg: 'Confirma tu contraseña', matchMsg: 'Las contraseñas no coinciden' }
+    });
     formRegistro.addEventListener("submit", async e => {
       e.preventDefault();
       const formData = new FormData(e.target);
@@ -647,6 +804,11 @@ async function guardarValoracion(nombre, apellido, calificacion, comentario) {
 document.addEventListener('DOMContentLoaded', () => {
   const formReserva = document.querySelector("#reserva-form");
   if (formReserva) {
+    initFormValidation(formReserva, {
+      nombre: { required: true, minLength: 2, requiredMsg: 'Ingresa tu nombre' },
+      apellido: { required: true, minLength: 2, requiredMsg: 'Ingresa tu apellido' },
+      personas: { required: true, requiredMsg: 'Indica cuántas personas' }
+    });
     formReserva.addEventListener("submit", async e => {
       e.preventDefault();
       const offset = -new Date().getTimezoneOffset();
@@ -686,6 +848,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const formOpinion = document.querySelector("#opinion-form");
   if (formOpinion) {
+    initFormValidation(formOpinion, {
+      nombre: { required: true, requiredMsg: 'Ingresa tu nombre' },
+      comentario: { required: true, minLength: 10, requiredMsg: 'Escribe un comentario', minLengthMsg: 'Mínimo 10 caracteres' }
+    });
     formOpinion.addEventListener("submit", async e => {
       e.preventDefault();
       const result = await guardarOpinion(
@@ -699,6 +865,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const formValoracion = document.querySelector("#valoracion-form");
   if (formValoracion) {
+    initFormValidation(formValoracion, {
+      nombre: { required: true, requiredMsg: 'Ingresa tu nombre' },
+      comentario: { required: true, minLength: 10, requiredMsg: 'Escribe un comentario', minLengthMsg: 'Mínimo 10 caracteres' }
+    });
     formValoracion.addEventListener("submit", async e => {
       e.preventDefault();
       const result = await guardarValoracion(

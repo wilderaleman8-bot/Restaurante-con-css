@@ -98,6 +98,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/platillos', platillosRoutes);
 app.use('/api/password-reset', passwordResetRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/notificaciones', require('./routes/notificaciones'));
 
 // ─── 404: rutas no encontradas ──────────────────────────────────────
 app.use((req, res) => {

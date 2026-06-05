@@ -1,4 +1,5 @@
 const supabase = require('../lib/supabaseClient');
+const { enviarAUsuario } = require('./notificacionesController');
 
 async function listarPedidos(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
@@ -61,11 +62,22 @@ async function actualizarPedido(req, res) {
     .from('pedidos')
     .update({ status })
     .eq('id', id)
-    .select('id, status')
+    .select('id, status, usuario_id')
     .single();
 
   if (error) return res.status(500).json({ error: error.message });
   if (!data) return res.status(404).json({ error: 'Pedido no encontrado' });
+
+  const io = req.app.get('io');
+  if (io) io.emit('order-status', { id: data.id, status: data.status });
+
+  const mensajes = {
+    preparando: { titulo: '👨‍🍳 Tu pedido está en cocina', cuerpo: 'Ya estamos preparando tu orden.' },
+    servido: { titulo: '🍽️ Tu pedido está listo', cuerpo: 'Puedes pasar a recogerlo. ¡Buen provecho!' },
+    cancelado: { titulo: '❌ Pedido cancelado', cuerpo: 'Tu pedido ha sido cancelado.' }
+  };
+  const msg = mensajes[status];
+  if (msg) enviarAUsuario(data.usuario_id, msg.titulo, msg.cuerpo, '/menu.html');
 
   res.json({ message: 'Estado actualizado', id: data.id, status: data.status });
 }

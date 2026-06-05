@@ -631,7 +631,8 @@
         <div class="ticket" id="ticket" style="display:none;"></div>
 
         <div class="historial-pedidos" id="historial-pedidos" style="display:none;">
-          <h3>Mis Pedidos Anteriores</h3>
+          <h3>Mis Pedidos</h3>
+          <div class="live-badge" id="live-badge" style="display:none"><span class="pulse"></span> En vivo</div>
           <div id="historial-lista"></div>
         </div>
       </div>
@@ -832,6 +833,16 @@
           items.forEach(item => renderItem(item, searchTerm));
         });
       }
+
+      if (searchTerm && menuItemsContainer.children.length === 0) {
+        menuItemsContainer.innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1">
+            <div class="empty-icon">🔍</div>
+            <h3>Sin resultados</h3>
+            <p>No encontramos platillos que coincidan con "<strong>${searchTerm}</strong>"</p>
+          </div>
+        `;
+      }
     }
 
     // Crea una tarjeta visual para cada platillo (imagen, nombre, precio, selector de cantidad)
@@ -973,13 +984,13 @@
     }
 
     // ─── Historial de pedidos del usuario ────────────────────────────
-    // Muestra los últimos 10 pedidos del usuario logueado
     async function cargarHistorialPedidos() {
       const usuario = getUsuario();
       if (!usuario || !usuario.id) return;
 
       const historialDiv = document.getElementById('historial-pedidos');
       const historialLista = document.getElementById('historial-lista');
+      const liveBadge = document.getElementById('live-badge');
 
       const backendUrl = window.location.origin;
       const token = getToken();
@@ -991,25 +1002,34 @@
         if (!Array.isArray(pedidos)) return;
         const misPedidos = pedidos.filter(p => p.usuario_id === usuario.id);
 
-        if (misPedidos.length === 0) return;
+        if (misPedidos.length === 0) {
+          showEmptyState(historialLista, '📭', 'Sin pedidos aún', 'Todavía no has hecho ningún pedido. ¡Explora nuestro menú!', 'Ver menú', '#menu-section');
+          historialDiv.style.display = 'block';
+          return;
+        }
 
         historialDiv.style.display = 'block';
-        const estadosColores = { pendiente: '#e67e22', preparando: '#3498db', servido: '#27ae60', cancelado: '#e74c3c' };
+        const activos = misPedidos.filter(p => p.status === 'pendiente' || p.status === 'preparando');
+        if (activos.length > 0) liveBadge.style.display = 'flex';
+
         historialLista.innerHTML = misPedidos.slice(0, 10).map(p => {
           const detalle = Array.isArray(p.detalle)
             ? p.detalle.map(d => `<li>${d.nombre || d.name} - C$${(d.precio || d.price || 0).toFixed(2)}</li>`).join('')
             : '<li>Detalle no disponible</li>';
           const fecha = p.created_at ? new Date(p.created_at).toLocaleString() : '';
-          const color = estadosColores[p.status] || '#888';
-          const statusLabel = { pendiente: 'Pendiente', preparando: 'Preparando', servido: 'Servido', cancelado: 'Cancelado' };
+          const stepper = typeof renderStepperHTML === 'function' ? renderStepperHTML(p.id, p.status) : '';
+          const activo = p.status === 'pendiente' || p.status === 'preparando';
           return `
             <div class="pedido-card">
-              <div class="fecha">${fecha} <span class="status-badge" style="background:${color};color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:10px;margin-left:8px;display:inline-block">${statusLabel[p.status] || p.status}</span></div>
+              <div class="fecha">${fecha}</div>
+              ${stepper}
               <ul class="items">${detalle}</ul>
               <div class="total-pedido">Total: C$${(p.total || 0).toFixed(2)} — ${p.metodo_pago || ''}</div>
             </div>
           `;
         }).join('');
+
+        if (typeof conectarSocketParaTracking === 'function') conectarSocketParaTracking();
       } catch (e) {
         console.error('Error al cargar historial:', e);
       }
@@ -1173,16 +1193,32 @@
         const result = await guardarPedido(pedidoData);
         
         if (result) {
-          const pedidoId = result.id ? result.id.slice(0, 8) : Math.floor(Math.random() * 100000);
+          const pedidoId = result.id || Date.now().toString(36);
+          const stepperHtml = typeof renderStepperHTML === 'function' ? renderStepperHTML(pedidoId, 'pendiente') : '';
           ticketEl.style.display = 'block';
+          ticketEl.dataset.pedidoId = pedidoId;
           ticketEl.innerHTML = `
-            <h4>✅ Pedido #${pedidoId} Confirmado</h4>
+            <h4>✅ Pedido #${pedidoId.slice(0, 8)} Confirmado</h4>
+            ${stepperHtml}
             <p>Subtotal: C$${subtotal.toFixed(2)}</p>
             <p>IVA (15%): C$${iva.toFixed(2)}</p>
             <p><strong>Total: C$${totalConIVA.toFixed(2)}</strong></p>
-            <p>Estado: <span style="color:#e67e22;font-weight:600">Pendiente</span></p>
-            <p>Gracias por preferir Sabores Ancestrales.</p>
+            <p class="live-badge" style="justify-content:center;margin-top:8px"><span class="pulse"></span> Actualizando en vivo</p>
+            <p style="margin-top:8px;color:#888;font-size:.85rem">Gracias por preferir Sabores Ancestrales.</p>
           `;
+          
+          if (typeof conectarSocketParaTracking === 'function') {
+            const socket = conectarSocketParaTracking();
+            const handler = data => {
+              if (data.id === pedidoId) {
+                const stepper = ticketEl.querySelector('.order-stepper');
+                if (stepper) actualizarStepper(stepper, data.status);
+              }
+            };
+            socket.on('order-status', handler);
+            socket._ticketHandlers = socket._ticketHandlers || [];
+            socket._ticketHandlers.push(handler);
+          }
           
           ultimoPedido = pedido.map(p => ({ item: {...p.item}, quantity: p.quantity }));
           ultimoTotal = subtotal;
@@ -1233,7 +1269,8 @@
     // Cargar la categoría por defecto al iniciar
     cargarMenu();
   </script>
-  <script src="js/app.js?v=2"></script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="js/app.js?v=3"></script>
   <script>cargarHistorialPedidos();</script>
 </body>
 </html>

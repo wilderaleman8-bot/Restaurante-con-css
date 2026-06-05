@@ -516,3 +516,58 @@ footer{background:linear-gradient(90deg, rgba(86,59,45,0.95), rgba(107,76,59,0.9
   .form-card{padding:12px}
   input,select,textarea{padding:8px;font-size:0.9rem}
 }
+
+/* ─── Page transition ─── */
+html{animation:pageFadeIn .35s ease}
+@keyframes pageFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── Empty states ─── */
+.empty-state{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty-state .empty-icon{font-size:3rem;margin-bottom:12px;opacity:.5}
+.empty-state h3{font-family:var(--font-heading);color:var(--wood);margin:0 0 6px;font-size:1.1rem}
+.empty-state p{font-size:.88rem;color:#a99988;margin:0 0 18px;max-width:360px;margin-left:auto;margin-right:auto}
+.empty-state .btn{display:inline-block;padding:10px 24px;background:var(--wood);color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:.85rem;transition:var(--transition)}
+.empty-state .btn:hover{background:#6a4532;transform:translateY(-1px)}
+
+/* ─── Inline form validation ─── */
+.field-error{color:#e74c3c;font-size:.78rem;margin-top:2px;margin-bottom:10px;display:none;align-items:center;gap:4px}
+.field-error.show{display:flex}
+.field-error::before{content:'⚠️';font-size:.7rem}
+input.error{border-color:#e74c3c!important;background:#fff5f5!important}
+input.success{border-color:#27ae60!important}
+input.error:focus{box-shadow:0 0 0 3px rgba(231,76,60,.12)!important}
+
+/* ─── Order status stepper ─── */
+.order-stepper{display:flex;align-items:flex-start;justify-content:center;gap:0;margin:20px 0;padding:0 10px;flex-wrap:nowrap}
+.stepper-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;text-align:center;min-width:0}
+.stepper-step .step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;background:#e0dbd5;transition:var(--transition);position:relative;z-index:1;flex-shrink:0}
+.stepper-step.active .step-dot{background:var(--accent);box-shadow:0 0 0 4px rgba(193,122,86,.15)}
+.stepper-step.done .step-dot{background:var(--olive)}
+.stepper-step .step-line{position:absolute;top:14px;left:calc(50% + 18px);right:calc(-50% + 18px);height:3px;background:#e0dbd5;transition:var(--transition)}
+.stepper-step.done .step-line{background:var(--olive)}
+.stepper-step:last-child .step-line{display:none}
+.stepper-step .step-label{font-size:.68rem;color:#a99988;margin-top:6px;font-weight:500;white-space:nowrap}
+.stepper-step.active .step-label{color:var(--accent);font-weight:600}
+.stepper-step.done .step-label{color:var(--olive);font-weight:600}
+.stepper-step.canceled .step-dot{background:#e74c3c}
+.stepper-step.canceled .step-label{color:#e74c3c}
+.stepper-step.canceled .step-line{background:#e74c3c}
+
+/* ─── Real-time badge ─── */
+.live-badge{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;color:var(--olive);font-weight:600;margin-bottom:10px}
+.live-badge .pulse{width:8px;height:8px;border-radius:50%;background:var(--olive);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* ─── Notification permission toast ─── */
+.notif-prompt{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#fff,#faf7f2);color:var(--wood);padding:18px 22px;border-radius:16px;box-shadow:0 10px 40px rgba(90,64,54,.18);z-index:9998;display:flex;align-items:center;gap:16px;font-size:.88rem;max-width:92vw;animation:slideUp .4s cubic-bezier(.22,1,.36,1);border:1px solid rgba(158,179,132,.2);backdrop-filter:blur(10px)}
+.notif-prompt .notif-icon{font-size:1.6rem;flex-shrink:0;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--olive),#b8c9a0);border-radius:12px}
+.notif-prompt .notif-text{flex:1;line-height:1.4}
+.notif-prompt .notif-text strong{display:block;font-size:.92rem;margin-bottom:2px}
+.notif-prompt .notif-text span{font-size:.78rem;color:#a99988}
+.notif-prompt .notif-actions{display:flex;gap:8px;flex-shrink:0}
+.notif-prompt .notif-btn{background:linear-gradient(135deg,var(--wood),#6a4532);border:none;color:#fff;padding:9px 18px;border-radius:10px;font-weight:600;cursor:pointer;font-size:.8rem;transition:var(--transition);white-space:nowrap}
+.notif-prompt .notif-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(90,64,54,.25)}
+.notif-prompt .notif-btn-secondary{background:transparent;border:1.5px solid #e0dbd5;color:var(--muted);padding:9px 14px;border-radius:10px;font-weight:500;cursor:pointer;font-size:.8rem;transition:var(--transition);white-space:nowrap}
+.notif-prompt .notif-btn-secondary:hover{border-color:var(--muted);color:var(--wood)}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(24px) scale(.96)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+@media(max-width:480px){.notif-prompt{flex-wrap:wrap;gap:12px;padding:16px}.notif-prompt .notif-actions{width:100%;justify-content:flex-end}}

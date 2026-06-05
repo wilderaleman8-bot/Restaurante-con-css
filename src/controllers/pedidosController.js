@@ -1,4 +1,5 @@
 const supabase = require('../lib/supabaseClient');
+const { enviarAUsuario } = require('./notificacionesController');
 
 async function crear(req, res) {
   const { detalle, total, metodo_pago, card_last4, card_exp, card_brand, usuario_id } = req.body;
@@ -38,6 +39,8 @@ async function crear(req, res) {
 
   const io = req.app.get('io');
   if (io) io.emit('new-order', { id: data.id, total: req.body.total, metodo_pago: req.body.metodo_pago, status: 'pendiente' });
+
+  enviarAUsuario(usuario_id, '✅ Pedido confirmado', 'Tu pedido está en proceso. Te avisaremos cuando esté listo.', `/menu.html`);
 
   res.status(201).json({ message: 'Pedido creado correctamente', id: data.id, status: 'pendiente' });
 }
@@ -79,7 +82,7 @@ async function actualizarEstado(req, res) {
     .from('pedidos')
     .update({ status })
     .eq('id', id)
-    .select('id, status')
+    .select('id, status, usuario_id')
     .single();
 
   if (error) {
@@ -88,6 +91,14 @@ async function actualizarEstado(req, res) {
 
   const io = req.app.get('io');
   if (io) io.emit('order-status', { id: data.id, status: data.status });
+
+  const mensajes = {
+    preparando: { titulo: '👨‍🍳 Tu pedido está en cocina', cuerpo: 'Ya estamos preparando tu orden.' },
+    servido: { titulo: '🍽️ Tu pedido está listo', cuerpo: 'Puedes pasar a recogerlo. ¡Buen provecho!' },
+    cancelado: { titulo: '❌ Pedido cancelado', cuerpo: 'Tu pedido ha sido cancelado.' }
+  };
+  const msg = mensajes[status];
+  if (msg) enviarAUsuario(data.usuario_id, msg.titulo, msg.cuerpo, '/menu.html');
 
   res.json({ message: 'Estado actualizado', id: data.id, status: data.status });
 }
