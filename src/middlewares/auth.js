@@ -1,16 +1,17 @@
 const jwt = require('jsonwebtoken');
+const supabase = require('../lib/supabaseClient');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 
 function generarToken(usuario) {
   return jwt.sign(
-    { id: usuario.id, email: usuario.email, nombre: usuario.nombre, rol: usuario.rol || 'cliente' },
+    { id: usuario.id, email: usuario.email, nombre: usuario.nombre, rol: usuario.rol || 'cliente', token_version: usuario.token_version || 0 },
     JWT_SECRET,
     { expiresIn: '7d' }
   );
 }
 
-function verificarToken(req, res, next) {
+async function verificarToken(req, res, next) {
   const header = req.headers.authorization;
   let token = null;
 
@@ -26,10 +27,24 @@ function verificarToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+
+    const { data: usuario } = await supabase
+      .from('usuarios')
+      .select('token_version')
+      .eq('id', decoded.id)
+      .single();
+
+    if (!usuario || usuario.token_version !== decoded.token_version) {
+      return res.status(401).json({ error: 'Sesión expirada. Inicia sesión nuevamente.' });
+    }
+
     req.usuario = decoded;
     next();
   } catch (err) {
-    return res.status(401).json({ error: 'Token inválido o expirado' });
+    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Token inválido o expirado' });
+    }
+    return res.status(500).json({ error: 'Error al verificar autenticación' });
   }
 }
 

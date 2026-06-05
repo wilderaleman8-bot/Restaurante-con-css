@@ -1,4 +1,5 @@
 const supabase = require('../lib/supabaseClient');
+const { sanitizar } = require('../utils/validation');
 
 async function crear(req, res) {
   const { nombre, apellido, personas, fecha, mensaje, usuario_id } = req.body;
@@ -23,11 +24,11 @@ async function crear(req, res) {
 
   const { error } = await supabase.from('reservas').insert([{
     usuario_id,
-    nombre,
-    apellido,
+    nombre: sanitizar(nombre),
+    apellido: sanitizar(apellido),
     personas: numPersonas,
     fecha_reserva: fecha,
-    mensaje: typeof mensaje === 'string' ? mensaje.slice(0, 500) : mensaje
+    mensaje: typeof mensaje === 'string' ? sanitizar(mensaje).slice(0, 500) : mensaje
   }]);
 
   if (error) {

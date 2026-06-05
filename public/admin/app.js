@@ -173,18 +173,17 @@ function setupSidebarToggle() {
   });
 }
 
-// Muestra "Cargando..." en un botón y lo deshabilita
 function setLoading(btn, loading) {
   if (!btn) return;
   if (loading) {
-    btn._originalText = btn.textContent;
+    btn._originalText = btn.innerHTML;
     btn.disabled = true;
-    btn.textContent = 'Cargando...';
-    btn.style.opacity = '0.7';
+    btn.classList.add('btn-loading');
+    btn.innerHTML = '<span class="spinner"></span><span class="btn-text">Cargando...</span>';
   } else {
     btn.disabled = false;
-    btn.textContent = btn._originalText || btn.textContent;
-    btn.style.opacity = '1';
+    btn.classList.remove('btn-loading');
+    btn.innerHTML = btn._originalText || '';
   }
 }
 

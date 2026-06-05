@@ -57,7 +57,20 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-app.use(cors({ credentials: true, origin: true }));
+// Rate limit específico para login: máximo 5 intentos por minuto
+const loginLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+  message: { error: 'Demasiados intentos de inicio de sesión. Intenta de nuevo en 1 minuto.' }
+});
+app.use('/api/usuarios/login', loginLimiter);
+
+const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
+const corsOrigins = corsOrigin.split(',').map(s => s.trim());
+app.use(cors({ credentials: true, origin: corsOrigins }));
 app.use(compression());                    // Comprime respuestas con gzip
 app.use(express.json());                   // Parsea JSON del cuerpo de la petición
 app.use(express.urlencoded({ extended: true }));
@@ -113,7 +126,7 @@ app.use((err, req, res, next) => {
 const port = process.env.PORT || 3000;
 if (process.env.NODE_ENV !== 'test') {
   const server = http.createServer(app);
-  const io = new Server(server, { cors: { origin: '*' } });
+  const io = new Server(server, { cors: { origin: corsOrigins } });
 
   io.on('connection', (socket) => {
     console.log('🔌 Admin conectado:', socket.id);

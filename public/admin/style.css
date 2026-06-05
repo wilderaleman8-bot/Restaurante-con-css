@@ -542,6 +542,12 @@ a { text-decoration: none; color: inherit; }
   .admin-user strong { display: none; }
 }
 
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:18px;height:18px;border:2.5px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+.btn-loading{pointer-events:none;position:relative}
+.btn-loading .spinner{position:absolute;left:50%;top:50%;margin:-9px 0 0 -9px;border-color:currentColor;border-right-color:transparent}
+.btn-loading .btn-text{opacity:0}
+
 @media (max-width: 500px) {
   .admin-content { padding: 10px; }
   .stats-grid { grid-template-columns: 1fr; gap: 6px; }

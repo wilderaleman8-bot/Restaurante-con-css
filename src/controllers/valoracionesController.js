@@ -1,4 +1,5 @@
 const supabase = require('../lib/supabaseClient');
+const { sanitizar } = require('../utils/validation');
 
 async function crear(req, res) {
   const { nombre, apellido, calificacion, comentario, usuario_id } = req.body;
@@ -14,7 +15,7 @@ async function crear(req, res) {
   }
 
   const { error } = await supabase.from('valoraciones').insert([
-    { usuario_id, nombre, apellido, calificacion, comentario }
+    { usuario_id, nombre: sanitizar(nombre), apellido: sanitizar(apellido), calificacion, comentario: comentario ? sanitizar(comentario) : null }
   ]);
 
   if (error) {

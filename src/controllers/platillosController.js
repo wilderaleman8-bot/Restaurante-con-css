@@ -1,4 +1,5 @@
 const supabase = require('../lib/supabaseClient');
+const { sanitizar } = require('../utils/validation');
 
 async function listar(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
@@ -47,7 +48,7 @@ async function crear(req, res) {
 
   const { data, error } = await supabase
     .from('platillos')
-    .insert([{ category, subcategory, name, description, price, currency: currency || 'C$', image }])
+    .insert([{ category, subcategory, name: sanitizar(name), description: description ? sanitizar(description) : null, price, currency: currency || 'C$', image }])
     .select()
     .single();
 

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sabores Ancestrales | Sin conexión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="imagenes/Logo.jpg" type="image/jpeg">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .offline-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;padding:40px 20px}
+    .offline-icon{font-size:4rem;margin-bottom:16px;opacity:.6;filter:grayscale(.3)}
+    .offline-wrap h1{font-family:var(--font-heading);color:var(--wood);font-size:2rem;margin-bottom:8px}
+    .offline-wrap p{color:var(--muted);font-size:1rem;max-width:400px;margin-bottom:24px;line-height:1.6}
+    .offline-wrap .btn{display:inline-block;background:var(--wood);color:#fff;padding:12px 32px;border-radius:10px;text-decoration:none;font-weight:600;transition:var(--transition)}
+    .offline-wrap .btn:hover{background:#6a4532;transform:translateY(-2px)}
+    @media(max-width:480px){.offline-wrap h1{font-size:1.5rem}.offline-icon{font-size:3rem}}
+  </style>
+</head>
+<body>
+  <div class="offline-wrap">
+    <div class="offline-icon">📡</div>
+    <h1>Sin conexión</h1>
+    <p>Parece que has perdido la conexión a internet. Vuelve a intentarlo cuando tengas señal.</p>
+    <a href="/" class="btn">Intentar de nuevo</a>
+  </div>
+</body>
+</html>

@@ -62,14 +62,14 @@ function showToast(message, type) {
 function setLoading(button, loading) {
   if (!button) return;
   if (loading) {
-    button._originalText = button.textContent;
+    button._originalText = button.innerHTML;
     button.disabled = true;
-    button.textContent = 'Cargando...';
-    button.style.opacity = '0.7';
+    button.classList.add('btn-loading');
+    button.innerHTML = '<span class="spinner"></span><span class="btn-text">Cargando...</span>';
   } else {
     button.disabled = false;
-    button.textContent = button._originalText || button.textContent;
-    button.style.opacity = '1';
+    button.classList.remove('btn-loading');
+    button.innerHTML = button._originalText || '';
   }
 }
 
@@ -101,6 +101,15 @@ function initScrollReveal() {
 async function cargarTestimonios() {
   const grid = document.getElementById('testimonials-grid');
   if (!grid) return;
+
+  grid.innerHTML = Array(3).fill(`
+    <div class="testimonial-card" style="pointer-events:none">
+      <div class="skeleton" style="height:16px;width:100px;margin:0 auto 12px"></div>
+      <div class="skeleton skeleton-text"></div>
+      <div class="skeleton skeleton-text short" style="margin-top:8px"></div>
+      <div class="skeleton" style="height:14px;width:120px;margin:12px auto 0"></div>
+    </div>
+  `).join('');
 
   try {
     const response = await fetch(`${BACKEND_URL}/api/opiniones`);
@@ -138,6 +147,14 @@ async function cargarTestimonios() {
 async function cargarValoraciones() {
   const container = document.getElementById('valoraciones-container');
   if (!container) return;
+
+  container.innerHTML = `
+    <div style="text-align:center;padding:20px">
+      <div class="skeleton" style="height:48px;width:120px;margin:0 auto 12px;border-radius:50%"></div>
+      <div class="skeleton" style="height:16px;width:180px;margin:0 auto 8px"></div>
+      <div class="skeleton skeleton-text short" style="margin:0 auto"></div>
+    </div>
+  `;
 
   try {
     const response = await fetch(`${BACKEND_URL}/api/valoraciones`);
@@ -241,7 +258,7 @@ function initCookieConsent() {
 // ===============================
 function registerSW() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+    navigator.serviceWorker.register('/service-worker.js?v=2').catch(() => {});
   }
 }
 
@@ -280,7 +297,11 @@ document.addEventListener('DOMContentLoaded', () => {
           <img src="${imgPath}" alt="Avatar">
           <div class="user-labels">
             <span>${usuario.nombre}${usuario.rol === 'admin' ? '<a href="./admin/index.html" class="admin-link"> ⚙ Admin</a>' : ''}</span>
-            <button id="logout-btn">Cerrar sesión</button>
+            <div class="user-links">
+              <a href="perfil.html" class="user-link">Perfil</a>
+              <span class="sep"></span>
+              <button class="user-btn" id="logout-btn">Salir</button>
+            </div>
           </div>
         </div>
       `;

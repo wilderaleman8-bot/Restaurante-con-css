@@ -9,8 +9,12 @@ create table if not exists usuarios (
     password text not null,
     image_path text,
     rol text not null default 'cliente' check (rol in ('cliente', 'admin')),
+    token_version int not null default 0,
     created_at timestamptz default now()
 );
+
+-- Si la tabla ya existía sin token_version, agregarla
+alter table usuarios add column if not exists token_version int not null default 0;
 
 -- Permitir a usuarios anónimos registrarse (INSERT)
 create policy "Permitir registro anónimo" on usuarios

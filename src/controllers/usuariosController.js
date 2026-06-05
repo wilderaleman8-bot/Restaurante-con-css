@@ -1,7 +1,9 @@
+const path = require('path');
 const supabase = require('../lib/supabaseClient');
 const bcrypt = require('bcrypt');
 const { generarToken } = require('../middlewares/auth');
-const { validarEmail, validarNombre } = require('../utils/validation');
+const { validarEmail, validarNombre, sanitizar } = require('../utils/validation');
+const { compressImage } = require('../utils/compressImage');
 const { sendEmail } = require('../services/email');
 
 const COOKIE_OPTIONS = {
@@ -26,14 +28,17 @@ async function registro(req, res) {
   }
 
   let imagePath = null;
-  if (req.file) imagePath = req.file.filename;
+  if (req.file) {
+    const result = await compressImage(req.file.path);
+    imagePath = result ? path.basename(result.compressed) : req.file.filename;
+  }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const { data, error } = await supabase
     .from('usuarios')
-    .insert([{ nombre, email, password: hashedPassword, image_path: imagePath, rol: 'cliente' }])
-    .select('id, nombre, email, image_path, rol')
+    .insert([{ nombre: sanitizar(nombre), email: sanitizar(email), password: hashedPassword, image_path: imagePath, rol: 'cliente' }])
+    .select('id, nombre, email, image_path, rol, token_version')
     .single();
 
   if (error) return res.status(500).json({ error: error.message });
@@ -94,7 +99,7 @@ async function login(req, res) {
 
   const { data, error } = await supabase
     .from('usuarios')
-    .select('id, nombre, email, image_path, rol, password')
+    .select('id, nombre, email, image_path, rol, password, token_version')
     .eq('email', email)
     .single();
 
@@ -120,8 +125,94 @@ async function listar(req, res) {
 }
 
 async function logout(req, res) {
+  const header = req.headers.authorization;
+  let token = null;
+  if (header && header.startsWith('Bearer ')) {
+    token = header.split(' ')[1];
+  } else if (req.cookies && req.cookies.token) {
+    token = req.cookies.token;
+  }
+  if (token) {
+    try {
+      const decoded = require('jsonwebtoken').verify(token, process.env.JWT_SECRET || 'fallback-secret');
+      const { data: current } = await supabase
+        .from('usuarios')
+        .select('token_version')
+        .eq('id', decoded.id)
+        .single();
+      if (current) {
+        await supabase
+          .from('usuarios')
+          .update({ token_version: current.token_version + 1 })
+          .eq('id', decoded.id);
+      }
+    } catch {
+      // token inválido o ya expirado
+    }
+  }
   res.clearCookie('token', { path: '/' });
   res.json({ message: 'Sesión cerrada' });
 }
 
-module.exports = { registro, login, listar, logout };
+async function perfil(req, res) {
+  const { data, error } = await supabase
+    .from('usuarios')
+    .select('id, nombre, email, image_path, rol, created_at')
+    .eq('id', req.usuario.id)
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  if (!data) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+  res.json(data);
+}
+
+async function actualizarPerfil(req, res) {
+  const { nombre, email } = req.body;
+  const userId = req.usuario.id;
+
+  if (nombre !== undefined) {
+    const errorNombre = require('../utils/validation').validarNombre(nombre);
+    if (errorNombre) return res.status(400).json({ error: errorNombre });
+  }
+
+  if (email !== undefined) {
+    const errorEmail = await require('../utils/validation').validarEmail(email);
+    if (errorEmail) return res.status(400).json({ error: errorEmail });
+
+    const { data: existente } = await supabase
+      .from('usuarios')
+      .select('id')
+      .eq('email', email)
+      .neq('id', userId)
+      .single();
+    if (existente) return res.status(400).json({ error: 'El email ya está en uso' });
+  }
+
+  const updates = {};
+  if (nombre !== undefined) updates.nombre = require('../utils/validation').sanitizar(nombre);
+  if (email !== undefined) updates.email = require('../utils/validation').sanitizar(email);
+  if (req.file) {
+    const result = await require('../utils/compressImage').compressImage(req.file.path);
+    updates.image_path = result ? require('path').basename(result.compressed) : req.file.filename;
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return res.status(400).json({ error: 'No hay campos para actualizar' });
+  }
+
+  const { data, error } = await supabase
+    .from('usuarios')
+    .update(updates)
+    .eq('id', userId)
+    .select('id, nombre, email, image_path, rol')
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+
+  const token = generarToken({ ...data, token_version: req.usuario.token_version });
+
+  res.json({ message: 'Perfil actualizado', usuario: data, token });
+}
+
+module.exports = { registro, login, listar, logout, perfil, actualizarPerfil };
