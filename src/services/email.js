@@ -27,7 +27,7 @@ async function createTransporter() {
 
 async function sendEmail({ to, subject, html }) {
   const transporter = await createTransporter();
-  const from = process.env.SMTP_FROM || '"Sabores Ancestrales" <noreply@saboresancestrales.com>';
+  const from = process.env.SMTP_FROM || '"Sabores Ancestrales" <saboresancestrales@gmail.com>';
 
   const info = await transporter.sendMail({ from, to, subject, html });
 

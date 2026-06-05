@@ -51,6 +51,14 @@
       border-color: #b89a7a;
       background: #f5ede6;
     }
+    .hora-btn input:disabled + span.pasada {
+      opacity: 0.35;
+      background: #f0ece6;
+      border-color: #ddd;
+      color: #aaa;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
     .hora-label {
       font-weight: 600;
       font-size: 0.85rem;
@@ -89,6 +97,7 @@
     <div class="container">
       <h2>Haz tu Reserva</h2>
       <p class="lead">Reserva tu mesa en pocos pasos y disfruta una experiencia única en Sabores Ancestrales.</p>
+      <p style="text-align:center;color:#888;font-size:0.85rem;margin-top:-30px;margin-bottom:30px;">🕐 Abierto todos los días de 10:00 AM a 10:00 PM</p>
 
       <form id="reserva-form" class="form-card">
         <div class="form-row">
@@ -141,10 +150,24 @@
         <div id="reserva-message" class="form-message"></div>
       </form>
 
-      <div id="confirmacion" class="ticket" style="display:none;">
-        <h4>✅ Reserva Confirmada</h4>
-        <p id="resumen"></p>
+      <div id="confirmacion" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s ease;">
+        <div style="background:linear-gradient(145deg, #fff, #fcf9f6);border-radius:24px;padding:40px 32px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.25);position:relative;overflow:hidden;animation:scaleIn .35s ease;">
+          <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle, rgba(158,179,132,0.15), transparent);border-radius:50%;"></div>
+          <div style="position:absolute;bottom:-30px;left:-30px;width:130px;height:130px;background:radial-gradient(circle, rgba(244,164,96,0.12), transparent);border-radius:50%;"></div>
+          <div style="font-size:3.6rem;margin-bottom:6px;line-height:1;">🎉</div>
+          <h3 style="color:var(--wood);font-family:var(--font-heading);font-size:1.6rem;margin:0 0 4px;">Reserva Confirmada</h3>
+          <div style="width:50px;height:3px;background:linear-gradient(90deg,var(--olive),var(--accent));border-radius:99px;margin:8px auto 18px;"></div>
+          <p id="resumen" style="color:#5a4036;font-size:0.95rem;line-height:1.7;margin:0;">Gracias, Kevin. Tu reserva para 7 persona(s) el 5 de junio de 2026 a las 11:00 AM ha sido registrada.</p>
+          <div style="margin-top:20px;padding-top:16px;border-top:1px dashed #e0dbd5;">
+            <p style="font-size:0.78rem;color:#999;margin:0;">Te esperamos en <strong style="color:var(--wood);">Sabores Ancestrales</strong><br>📍 Parque Masaya, Nicaragua</p>
+          </div>
+          <button id="cerrar-confirmacion" style="margin-top:18px;background:var(--wood);color:#fff;border:none;padding:10px 28px;border-radius:999px;font-weight:600;font-size:0.85rem;cursor:pointer;transition:transform .2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">Cerrar</button>
+        </div>
       </div>
+      <style>
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+      </style>
     </div>
   </section>
 
@@ -154,6 +177,9 @@
         <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M24 12.073c0-6.627-5.373-12-12-12S0 5.446 0 12.073c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
         <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
         <a href="https://wa.me/50588888888" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+      </div>
+      <div class="footer-contact">
+        <a href="https://wa.me/50588888888" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.8);font-size:0.82rem;text-decoration:none;margin-bottom:8px;">💬 Escríbenos a WhatsApp</a>
       </div>
       <div class="footer-legal">
         <a href="privacidad.html">Política de Privacidad</a>
@@ -165,6 +191,24 @@
   <button id="back-to-top" aria-label="Volver arriba">↑</button>
 
   <script>
+    function deshabilitarHorasPasadas() {
+      const fechaInput = document.getElementById('fecha');
+      const horaBtns = document.querySelectorAll('.hora-btn input');
+      if (!fechaInput) return;
+      const hoy = new Date();
+      const hoyStr = hoy.toISOString().slice(0, 10);
+      const esHoy = fechaInput.value === hoyStr;
+      horaBtns.forEach(input => {
+        if (!esHoy) { input.disabled = false; input.closest('.hora-btn')?.querySelector('span')?.classList.remove('pasada'); return; }
+        const [h, m] = input.value.split(':').map(Number);
+        const horaSlot = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), h, m);
+        const pasada = horaSlot <= hoy;
+        input.disabled = pasada;
+        input.closest('.hora-btn')?.querySelector('span')?.classList.toggle('pasada', pasada);
+        if (pasada && input.checked) input.checked = false;
+      });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const fechaInput = document.getElementById('fecha');
       if (fechaInput) {
@@ -173,6 +217,15 @@
         const mm = String(hoy.getMonth() + 1).padStart(2, '0');
         const dd = String(hoy.getDate()).padStart(2, '0');
         fechaInput.min = `${yyyy}-${mm}-${dd}`;
+        fechaInput.addEventListener('change', deshabilitarHorasPasadas);
+        setTimeout(deshabilitarHorasPasadas, 100);
+      }
+
+      const cerrarBtn = document.getElementById('cerrar-confirmacion');
+      const confirmacion = document.getElementById('confirmacion');
+      if (cerrarBtn && confirmacion) {
+        cerrarBtn.addEventListener('click', () => { confirmacion.style.display = 'none'; });
+        confirmacion.addEventListener('click', (e) => { if (e.target === confirmacion) confirmacion.style.display = 'none'; });
       }
 
       const mensajeInput = document.getElementById('mensaje');

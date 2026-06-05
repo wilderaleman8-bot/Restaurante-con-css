@@ -179,6 +179,12 @@
       setInterval(loadOrders, 30000);
       document.getElementById('search-input').addEventListener('input', filterOrders);
       document.getElementById('status-filter').addEventListener('change', filterOrders);
+
+      if (typeof io !== 'undefined') {
+        const socket = io(BACKEND_URL);
+        socket.on('new-order', () => { loadOrders(); });
+        socket.on('order-status', () => { loadOrders(); });
+      }
     });
   </script>
 </body>

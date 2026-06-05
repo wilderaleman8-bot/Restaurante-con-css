@@ -17,16 +17,19 @@ async function crear(req, res) {
     return res.status(400).json({ error: 'El comentario no puede exceder 2000 caracteres' });
   }
 
-  const { error } = await supabase.from('opiniones').insert([{
+  const { data: newOpinion, error } = await supabase.from('opiniones').insert([{
     usuario_id,
     nombre: sanitizar(nombre),
     apellido: sanitizar(apellido),
     comentario: sanitizar(comentario)
-  }]);
+  }]).select('id').single();
 
   if (error) {
     return res.status(500).json({ error: error.message });
   }
+
+  const io = req.app.get('io');
+  if (io) io.emit('new-opinion', { id: newOpinion.id, nombre, apellido });
 
   res.status(201).json({ message: 'Opinión guardada correctamente' });
 }

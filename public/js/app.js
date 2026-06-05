@@ -257,7 +257,7 @@ async function cargarTestimonios() {
     const response = await fetch(`${BACKEND_URL}/api/opiniones`);
     if (!response.ok) return;
     const opiniones = await response.json();
-    const ultimas = (Array.isArray(opiniones) ? opiniones : []).slice(-4).reverse();
+    const ultimas = (Array.isArray(opiniones) ? opiniones : []).slice(0, 4);
 
     if (ultimas.length === 0) {
       document.getElementById('testimonios-section')?.remove();
@@ -460,6 +460,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (getUsuario()) {
     suscribirPush();
     conectarSocketParaTracking();
+  }
+
+  if (typeof io !== 'undefined') {
+    const socket = io(window.location.origin, { transports: ['websocket', 'polling'] });
+    socket.on('new-valoracion', () => { cargarValoraciones(); });
   }
 
   const menuToggle = document.getElementById('menu-toggle');
@@ -839,7 +844,7 @@ document.addEventListener('DOMContentLoaded', () => {
             horaTexto = ` a las ${h12}:${m} ${ampm}`;
           }
           resumen.textContent = `Gracias, ${e.target.nombre.value}. Tu reserva para ${e.target.personas.value} persona(s) el ${e.target.fecha.value}${horaTexto} ha sido registrada.`;
-          confirmacion.style.display = 'block';
+          confirmacion.style.display = 'flex';
         }
         e.target.reset();
       }
@@ -859,7 +864,11 @@ document.addEventListener('DOMContentLoaded', () => {
         e.target.apellido.value,
         e.target.comentario.value
       );
-      if (result) e.target.reset();
+      if (result) {
+        e.target.reset();
+        const modal = document.getElementById('opinion-modal');
+        if (modal) modal.style.display = 'flex';
+      }
     });
   }
 
@@ -877,7 +886,11 @@ document.addEventListener('DOMContentLoaded', () => {
         e.target.estrellas.value,
         e.target.comentario.value
       );
-      if (result) e.target.reset();
+      if (result) {
+        e.target.reset();
+        const modal = document.getElementById('valoracion-modal');
+        if (modal) modal.style.display = 'flex';
+      }
     });
   }
 });

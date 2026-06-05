@@ -214,6 +214,67 @@
 
       cargarPerfil();
     })();
+
+    async function cargarHistorialPerfil() {
+      const token = getToken();
+      if (!token) return;
+      const headers = { 'Authorization': `Bearer ${token}` };
+
+      try {
+        const [pedidosRes, reservasRes] = await Promise.all([
+          fetch('/api/pedidos', { headers }),
+          fetch('/api/reservas', { headers })
+        ]);
+        const pedidos = await pedidosRes.json();
+        const reservas = await reservasRes.json();
+
+        const container = document.querySelector('.profile-wrap');
+        if (!container) return;
+
+        let html = '<div style="max-width:520px;margin:20px auto 36px;padding:0 16px">';
+        html += '<h3 style="color:var(--wood);font-family:var(--font-heading);margin-bottom:16px;">📋 Mis Pedidos</h3>';
+
+        const misPedidos = Array.isArray(pedidos) ? pedidos : [];
+        if (misPedidos.length === 0) {
+          html += '<div style="background:#fff;border-radius:14px;padding:24px;text-align:center;box-shadow:0 2px 14px rgba(90,64,54,.06);margin-bottom:24px;"><p style="color:#999;">No has realizado pedidos aún.</p><a href="menu.html" class="btn" style="display:inline-block;margin-top:10px;width:auto;">Ver menú</a></div>';
+        } else {
+          html += '<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">';
+          misPedidos.slice(0, 5).forEach(p => {
+            const fecha = p.created_at ? new Date(p.created_at).toLocaleString('es-ES') : '—';
+            const badge = p.status === 'servido' ? '✅' : p.status === 'cancelado' ? '❌' : p.status === 'preparando' ? '👨‍🍳' : '📋';
+            html += `<div style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 2px 14px rgba(90,64,54,.06);display:flex;justify-content:space-between;align-items:center;">
+              <div><strong>${badge} C$${(p.total || 0).toFixed(2)}</strong><br><span style="font-size:0.78rem;color:#999;">${fecha}</span></div>
+              <span style="font-size:0.72rem;background:${p.status === 'servido' ? '#e8f5e9' : '#fff3e0'};padding:4px 10px;border-radius:999px;font-weight:600;text-transform:capitalize;">${p.status}</span>
+            </div>`;
+          });
+          html += '</div>';
+        }
+
+        html += '<h3 style="color:var(--wood);font-family:var(--font-heading);margin-bottom:16px;">📅 Mis Reservas</h3>';
+        const misReservas = Array.isArray(reservas) ? reservas : [];
+        if (misReservas.length === 0) {
+          html += '<div style="background:#fff;border-radius:14px;padding:24px;text-align:center;box-shadow:0 2px 14px rgba(90,64,54,.06);margin-bottom:24px;"><p style="color:#999;">No tienes reservas aún.</p><a href="reservas.html" class="btn" style="display:inline-block;margin-top:10px;width:auto;">Reservar ahora</a></div>';
+        } else {
+          html += '<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">';
+          misReservas.slice(0, 5).forEach(r => {
+            const fecha = r.fecha_reserva ? new Date(r.fecha_reserva).toLocaleString('es-ES') : '—';
+            html += `<div style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 2px 14px rgba(90,64,54,.06);display:flex;justify-content:space-between;align-items:center;">
+              <div><strong>📅 ${r.personas} persona(s)</strong><br><span style="font-size:0.78rem;color:#999;">${fecha}</span></div>
+            </div>`;
+          });
+          html += '</div>';
+        }
+
+        html += '</div>';
+        container.insertAdjacentHTML('afterend', html);
+      } catch (e) {
+        console.error('Error cargando historial:', e);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (getToken()) cargarHistorialPerfil();
+    });
   </script>
 </body>
 </html>

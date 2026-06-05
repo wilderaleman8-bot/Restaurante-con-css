@@ -157,6 +157,13 @@
     document.addEventListener('DOMContentLoaded', () => {
       loadDashboard();
       setInterval(loadDashboard, 30000);
+
+      if (typeof io !== 'undefined') {
+        const socket = io(BACKEND_URL);
+        socket.on('new-order', () => { loadDashboard(); });
+        socket.on('order-status', () => { loadDashboard(); });
+        socket.on('new-reservation', () => { loadDashboard(); });
+      }
     });
   </script>
 </body>

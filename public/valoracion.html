@@ -35,8 +35,9 @@
 
   <section id="main-content" tabindex="-1">
     <div class="container">
-      <h2>Tu Valoración</h2>
-      <p class="lead">Cuéntanos qué te pareció tu experiencia en Sabores Ancestrales.</p>
+      <h2>Valora tu Experiencia</h2>
+      <p class="lead">Asigna una calificación numérica a tu visita. Esto nos ayuda a medir la calidad de nuestro servicio.</p>
+      <p style="text-align:center;color:#888;font-size:0.85rem;margin-top:-30px;margin-bottom:30px;">💡 ¿Quieres compartir un comentario más personal? <a href="opiniones.html" style="color:var(--wood);font-weight:600;">Deja una opinión aquí</a></p>
 
       <form id="valoracion-form" class="form-card">
         <div class="form-row">
@@ -70,6 +71,18 @@
         <button type="submit" class="btn">Enviar Valoración</button>
         <div id="valoracion-message" class="form-message"></div>
       </form>
+
+      <div id="valoracion-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
+        <div style="background:linear-gradient(145deg, #fff, #fcf9f6);border-radius:24px;padding:40px 32px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.25);position:relative;overflow:hidden;text-align:center;">
+          <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle, rgba(158,179,132,0.15), transparent);border-radius:50%;"></div>
+          <div style="position:absolute;bottom:-30px;left:-30px;width:130px;height:130px;background:radial-gradient(circle, rgba(244,164,96,0.12), transparent);border-radius:50%;"></div>
+          <div style="font-size:3.6rem;margin-bottom:6px;line-height:1;">⭐</div>
+          <h3 style="color:var(--wood);font-family:var(--font-heading);font-size:1.6rem;margin:0 0 4px;">¡Gracias por tu Valoración!</h3>
+          <div style="width:50px;height:3px;background:linear-gradient(90deg,var(--olive),var(--accent));border-radius:99px;margin:8px auto 18px;"></div>
+          <p style="color:#5a4036;font-size:0.95rem;line-height:1.7;margin:0;">Tu calificación nos ayuda a medir la calidad de nuestro servicio y a mejorar cada día.</p>
+          <button id="cerrar-valoracion" style="margin-top:20px;background:var(--wood);color:#fff;border:none;padding:10px 28px;border-radius:999px;font-weight:600;font-size:0.85rem;cursor:pointer;transition:transform .2s;">Cerrar</button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -89,7 +102,16 @@
   </footer>
   <button id="back-to-top" aria-label="Volver arriba">↑</button>
 
-  <!-- JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('valoracion-modal');
+      const cerrar = document.getElementById('cerrar-valoracion');
+      if (cerrar && modal) {
+        cerrar.addEventListener('click', () => { modal.style.display = 'none'; });
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+      }
+    });
+  </script>
   <script src="js/app.js?v=3"></script>
 </body>
 </html>

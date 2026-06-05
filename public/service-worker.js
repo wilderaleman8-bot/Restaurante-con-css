@@ -59,6 +59,10 @@ self.addEventListener('fetch', event => {
   }
 });
 
+self.addEventListener('message', event => {
+  event.waitUntil(Promise.resolve());
+});
+
 self.addEventListener('push', event => {
   let data = { titulo: 'Sabores Ancestrales', cuerpo: '', url: '/' };
   try {

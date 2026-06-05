@@ -14,13 +14,16 @@ async function crear(req, res) {
     return res.status(400).json({ error: 'El comentario no puede exceder 2000 caracteres' });
   }
 
-  const { error } = await supabase.from('valoraciones').insert([
+  const { data: newVal, error } = await supabase.from('valoraciones').insert([
     { usuario_id, nombre: sanitizar(nombre), apellido: sanitizar(apellido), calificacion, comentario: comentario ? sanitizar(comentario) : null }
-  ]);
+  ]).select('id').single();
 
   if (error) {
     return res.status(500).json({ error: error.message });
   }
+
+  const io = req.app.get('io');
+  if (io) io.emit('new-valoracion', { id: newVal.id, calificacion });
 
   res.status(201).json({ message: 'Valoración guardada correctamente' });
 }
