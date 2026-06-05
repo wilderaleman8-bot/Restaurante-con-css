@@ -55,6 +55,21 @@ describe('API - Auth', () => {
     const res = await fetch('http://localhost:3002/api/admin/usuarios');
     assert.strictEqual(res.status, 401);
   });
+
+  it('GET /api/usuarios - debe rechazar sin token', async () => {
+    const res = await fetch('http://localhost:3002/api/usuarios');
+    assert.strictEqual(res.status, 401);
+  });
+
+  it('GET /api/pedidos - debe rechazar sin token', async () => {
+    const res = await fetch('http://localhost:3002/api/pedidos');
+    assert.strictEqual(res.status, 401);
+  });
+
+  it('GET /api/reservas - debe rechazar sin token', async () => {
+    const res = await fetch('http://localhost:3002/api/reservas');
+    assert.strictEqual(res.status, 401);
+  });
 });
 
 describe('API - 404', () => {

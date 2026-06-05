@@ -20,6 +20,13 @@ const passwordResetRoutes = require('./routes/password-reset');
 const uploadRoutes = require('./routes/upload');
 
 const path = require('path');
+const fs = require('fs');
+
+['uploads', 'uploads/menu'].forEach(dir => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+});
 
 const app = express();
 

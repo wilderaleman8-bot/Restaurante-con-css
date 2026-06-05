@@ -8,7 +8,8 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'menu-' + uniqueSuffix + path.extname(file.originalname));
+    const prefix = req.baseUrl === '/api/upload' ? 'menu-' : 'profile-';
+    cb(null, prefix + uniqueSuffix + path.extname(file.originalname));
   }
 });
 

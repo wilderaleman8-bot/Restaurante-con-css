@@ -48,11 +48,16 @@ async function listar(req, res) {
   const from = page * limit;
   const to = from + limit - 1;
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('pedidos')
     .select('*')
-    .order('created_at', { ascending: false })
-    .range(from, to);
+    .order('created_at', { ascending: false });
+
+  if (req.usuario.rol !== 'admin') {
+    query = query.eq('usuario_id', req.usuario.id);
+  }
+
+  const { data, error } = await query.range(from, to);
 
   if (error) {
     return res.status(500).json({ error: error.message });

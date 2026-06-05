@@ -21,10 +21,7 @@ Sitio web completo para restaurante nicaragüense con menú interactivo, carrito
 | `multer` | ^2.1.1 | Subida de archivos |
 | `nodemailer` | ^8.0.7 | Envío de correos |
 | `socket.io` | ^4.8.3 | WebSockets en tiempo real |
-| `sharp` | ^0.34.5 | Procesamiento de imágenes |
 | `dotenv` | ^16.6.1 | Variables de entorno |
-| `date-fns` | ^4.1.0 | Manejo de fechas |
-| `express-validator` | ^7.3.2 | Validación de formularios |
 
 ### Frontend
 - HTML5 semántico, CSS3 con custom properties
@@ -376,4 +373,6 @@ El servidor se recarga automáticamente al modificar archivos del backend. Los c
 - [ ] Analytics / consentimiento granular de cookies
 - [ ] Compresión y optimización automática de imágenes subidas
 - [ ] i18n — Soporte multi-idioma (es/en)
-- [ ] Tests automatizados (frontend y backend)
+- [ ] Editar perfil de usuario (cambiar nombre, email, foto)
+- [ ] Cambiar contraseña desde sesión iniciada
+- [ ] Cancelar pedido/reserva por parte del usuario
