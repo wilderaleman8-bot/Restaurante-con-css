@@ -246,11 +246,12 @@ El servidor arranca en `http://localhost:3000`.
 ## Características principales
 
 ### Frontend público
-- **Landing page** con hero, historia, testimonios dinámicos, valoraciones agregadas, tarjeta del mapa, enlaces a redes sociales, botón "volver arriba"
+- **Landing page** con hero, historia, testimonios dinámicos, valoraciones agregadas, tarjeta del mapa, enlaces a redes sociales (iconos SVG), botón "volver arriba"
 - **Menú interactivo** con 4 categorías (entradas, platos principales, postres, bebidas), subcategorías para bebidas, búsqueda en vivo, carrito de compras con cálculo de IVA (15%), formulario de pago con detección de marca de tarjeta, ticket PDF, historial de pedidos del usuario
 - **Reservas** con selector de fecha y hora (grid visual de 9 AM a 12 PM), máximo 15 personas. Las horas se envían con zona horaria local para evitar desfases al visualizarlas
 - **Valoraciones** con sistema de estrellas (1-5) y comentario
 - **Opiniones** de clientes
+- **Perfil de usuario** — editar nombre, email y foto de perfil con vista previa
 - **Recuperación de contraseña** con enlace por correo
 - **Diseño responsive** con animaciones de scroll (IntersectionObserver)
 
@@ -267,8 +268,9 @@ El servidor arranca en `http://localhost:3000`.
 
 ### PWA (Progressive Web App)
 - **`manifest.json`** — Configuración completa: nombre corto/largo, íconos, theme_color (`#7C543F`), background_color (`#F7F3ED`), display standalone, orientación
-- **`service-worker.js`** — Precarga y caché de assets estáticos (HTML, CSS, JS, imágenes, fuentes). Estrategia: `CacheFirst` para archivos estáticos, solo intercepta peticiones same-origin. Sirve contenido cacheados en modo offline
-- Instalable desde Chrome/Edge con prompt "Agregar a pantalla de inicio"
+- **`service-worker.js`** — Precarga de assets estáticos (CSS, JS, imágenes). Estrategia: `NetworkFirst` para páginas HTML (siempre contenido fresco), `CacheFirst` para assets estáticos. Sirve `offline.html` como fallback sin conexión. Cache versionado (`v2`)
+- **Instalable** desde Chrome/Edge con prompt "Agregar a pantalla de inicio"
+- **Cache busting** — Scripts referenciados con `?v=2` para evitar servir versiones viejas en navegación normal
 
 ### Accesibilidad
 - **Skip-link** en todas las páginas (`Saltar al contenido principal`) — visible al enfocar con Tab
@@ -279,6 +281,7 @@ El servidor arranca en `http://localhost:3000`.
 - Contraste de colores suficiente en todos los componentes
 
 ### SEO
+- **`sitemap.xml`** — Mapa del sitio con todas las URLs públicas, prioridad y frecuencia de actualización
 - **`robots.txt`** — Permite crawling completo con hint de sitemap
 - **Open Graph** — Meta tags `og:title`, `og:description`, `og:type`, `og:url`, `og:image`, `og:locale` en `index.html`
 - **Twitter Card** — `summary_large_image` con título y descripción
@@ -287,6 +290,7 @@ El servidor arranca en `http://localhost:3000`.
 
 ### Rendimiento
 - **WebP con fallback JPEG** en hero image mediante `<picture>` con `type="image/webp"` y `type="image/jpeg"`
+- **Compresión automática de imágenes** al subir — redimensiona a 1200px y convierte a WebP calidad 80% con Sharp
 - **`loading="lazy"`** en todas las imágenes del sitio
 - **`fetchpriority="high"`** en la hero image (LCP)
 - **Preconnect** a orígenes de terceros (Google Fonts)
@@ -366,13 +370,15 @@ El servidor se recarga automáticamente al modificar archivos del backend. Los c
 
 ## TODO / Mejoras pendientes
 
-- [ ] `sitemap.xml` — Generar mapa del sitio con todas las URLs públicas
 - [ ] WebP para todas las imágenes (no solo hero) con fallback JPEG/PNG
-- [ ] Página offline personalizada en el Service Worker
+- [ ] Paginación en menú, opiniones y valoraciones
 - [ ] Pruebas de accesibilidad con axe DevTools / Lighthouse
 - [ ] Analytics / consentimiento granular de cookies
-- [ ] Compresión y optimización automática de imágenes subidas
 - [ ] i18n — Soporte multi-idioma (es/en)
-- [ ] Editar perfil de usuario (cambiar nombre, email, foto)
 - [ ] Cambiar contraseña desde sesión iniciada
 - [ ] Cancelar pedido/reserva por parte del usuario
+- [ ] Dashboard admin con estadísticas en tiempo real
+- [ ] Gestión de pedidos (lista completa, filtros, cambio de estado)
+- [ ] SEO — Open Graph, Twitter Cards, meta tags por página
+- [ ] Dark mode
+- [ ] Galería de imágenes del restaurante
