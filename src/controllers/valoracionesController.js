@@ -1,5 +1,6 @@
 const supabase = require('../lib/supabaseClient');
 const { sanitizar } = require('../utils/validation');
+const cache = require('../utils/cache');
 
 async function crear(req, res) {
   const { nombre, apellido, calificacion, comentario, usuario_id } = req.body;
@@ -22,6 +23,7 @@ async function crear(req, res) {
     return res.status(500).json({ error: error.message });
   }
 
+  cache.clear('valoraciones:');
   const io = req.app.get('io');
   if (io) io.emit('new-valoracion', { id: newVal.id, calificacion });
 
@@ -33,6 +35,13 @@ async function listar(req, res) {
   const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
   const from = page * limit;
   const to = from + limit - 1;
+  const cacheKey = `valoraciones:${page}:${limit}`;
+
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    res.set('Cache-Control', 'public, max-age=60');
+    return res.json(cached);
+  }
 
   const { data, error } = await supabase
     .from('valoraciones')
@@ -44,6 +53,8 @@ async function listar(req, res) {
     return res.status(500).json({ error: error.message });
   }
 
+  cache.set(cacheKey, data);
+  res.set('Cache-Control', 'public, max-age=60');
   res.json(data);
 }
 

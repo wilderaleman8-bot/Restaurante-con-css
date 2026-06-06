@@ -1,11 +1,19 @@
 const supabase = require('../lib/supabaseClient');
 const { sanitizar } = require('../utils/validation');
+const cache = require('../utils/cache');
 
 async function listar(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
   const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
   const from = page * limit;
   const to = from + limit - 1;
+  const cacheKey = `platillos:${page}:${limit}`;
+
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    res.set('Cache-Control', 'public, max-age=60');
+    return res.json(cached);
+  }
 
   const { data, error } = await supabase
     .from('platillos')
@@ -16,6 +24,8 @@ async function listar(req, res) {
     .range(from, to);
 
   if (error) return res.status(500).json({ error: error.message });
+  cache.set(cacheKey, data);
+  res.set('Cache-Control', 'public, max-age=60');
   res.json(data || []);
 }
 
@@ -53,6 +63,7 @@ async function crear(req, res) {
     .single();
 
   if (error) return res.status(500).json({ error: error.message });
+  cache.clear('platillos:');
   res.status(201).json(data);
 }
 
@@ -89,6 +100,7 @@ async function actualizar(req, res) {
   if (error) return res.status(500).json({ error: error.message });
   if (!data) return res.status(404).json({ error: 'Platillo no encontrado' });
 
+  cache.clear('platillos:');
   res.json(data);
 }
 
@@ -105,6 +117,7 @@ async function eliminar(req, res) {
   if (error) return res.status(500).json({ error: error.message });
   if (!data) return res.status(404).json({ error: 'Platillo no encontrado' });
 
+  cache.clear('platillos:');
   res.json({ message: 'Platillo eliminado correctamente', platillo: data });
 }
 
@@ -215,6 +228,7 @@ async function seed(req, res) {
   const { data, error } = await supabase.from('platillos').insert(rows).select();
 
   if (error) return res.status(500).json({ error: error.message });
+  cache.clear('platillos:');
   res.status(201).json({ message: 'Platillos insertados correctamente', count: data.length });
 }
 

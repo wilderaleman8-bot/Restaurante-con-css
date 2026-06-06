@@ -110,6 +110,9 @@ app.use((req, res) => {
 
 // ─── Manejador global de errores ────────────────────────────────────
 app.use((err, req, res, next) => {
+  if (err.message === 'Request aborted' || err.code === 'ECONNABORTED') {
+    return;
+  }
   console.error(err);
   if (err.code === 'LIMIT_FILE_SIZE') {
     return res.status(400).json({ error: 'La imagen no puede exceder 5 MB' });
