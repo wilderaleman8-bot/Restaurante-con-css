@@ -1,4 +1,4 @@
-﻿const CACHE = 'sabores-ancestrales-v3';
+﻿const CACHE = 'sabores-ancestrales-v4';
 const STATIC_ASSETS = [
   '/css/style.css',
   '/js/app.js?v=3',

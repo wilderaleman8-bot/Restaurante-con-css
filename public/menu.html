@@ -1123,7 +1123,7 @@
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const pw = doc.internal.pageSize.getWidth();
-      const user = getUsuario() || { nombre: 'Cliente', name: 'Cliente', tableNumber: 'S/N' };
+      const user = getUsuario() || { nombre: 'Cliente', name: 'Cliente' };
       const wood = '#5a382b', olive = '#9EB384', gold = '#c8956c';
       const ml = 16, mr = pw - 16;
 
@@ -1154,11 +1154,6 @@
       doc.text(`Cliente:`, ml, 54);
       doc.setTextColor('#555');
       doc.text(`${user.nombre || user.name}`, ml + 14, 54);
-
-      doc.setTextColor(wood);
-      doc.text(`Mesa:`, mr - 30, 54);
-      doc.setTextColor('#555');
-      doc.text(`${user.tableNumber || 'N/A'}`, mr - 22, 54, { align: 'right' });
 
       doc.setTextColor(wood);
       doc.text(`Hora:`, ml, 61);
@@ -1412,7 +1407,7 @@
     }
   </script>
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-  <script src="js/app.js?v=3"></script>
+  <script src="js/app.js?v=4"></script>
   <script>cargarHistorialPedidos();</script>
 </body>
 </html>
