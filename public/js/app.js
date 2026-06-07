@@ -121,6 +121,14 @@ function urlBase64ToUint8Array(base64String) {
 
 let _socketInstance = null;
 
+async function buscarEstadoPedido(id) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/pedidos/${id}`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch { return null; }
+}
+
 function conectarSocketParaTracking() {
   if (typeof io === 'undefined') return;
   if (_socketInstance) return _socketInstance;
@@ -135,7 +143,26 @@ function conectarSocketParaTracking() {
     }
   });
   _socketInstance = socket;
+  if (socket.connected && window._ultimoPedidoId) {
+    sincronizarTicketConServidor();
+  } else {
+    socket.on('connect', sincronizarTicketConServidor);
+  }
   return socket;
+}
+
+async function sincronizarTicketConServidor() {
+  if (!window._ultimoPedidoId) return;
+  const estado = await buscarEstadoPedido(window._ultimoPedidoId);
+  if (estado && estado.status) {
+    const stepper = document.querySelector(`.order-stepper[data-pedido="${window._ultimoPedidoId}"]`);
+    if (stepper) actualizarStepper(stepper, estado.status);
+    const ticket = document.querySelector(`#ticket[data-pedido-id="${window._ultimoPedidoId}"]`);
+    if (ticket) {
+      const s = ticket.querySelector('.order-stepper');
+      if (s) actualizarStepper(s, estado.status);
+    }
+  }
 }
 
 function actualizarStepper(stepper, status) {
@@ -459,8 +486,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (getUsuario()) {
     suscribirPush();
-    conectarSocketParaTracking();
   }
+  conectarSocketParaTracking();
 
   if (typeof io !== 'undefined') {
     const socket = io(window.location.origin, { transports: ['websocket', 'polling'] });

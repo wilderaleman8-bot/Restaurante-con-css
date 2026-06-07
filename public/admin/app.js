@@ -210,10 +210,11 @@ function renderSkeletonCards(count) {
   return html;
 }
 
-// Conecta con Socket.io para recibir notificaciones en tiempo real
-// Eventos: new-order, new-reservation, order-status
-function setupSocket() {
-  if (typeof io === 'undefined') return;
+let _adminSocket = null;
+
+function conectarSocketAdmin() {
+  if (typeof io === 'undefined') return null;
+  if (_adminSocket) return _adminSocket;
   const socket = io(BACKEND_URL);
 
   socket.on('new-order', (data) => {
@@ -229,7 +230,30 @@ function setupSocket() {
   socket.on('order-status', (data) => {
     showToast(`📋 Pedido #${data.id.slice(0,8)} → ${data.status}`, 'info');
   });
+
+  _adminSocket = socket;
+  window._adminSocket = socket;
+  return socket;
 }
+
+// Mantener compatibilidad con código existente
+function setupSocket() {
+  conectarSocketAdmin();
+}
+
+function escucharSocket(evento, handler) {
+  const socket = conectarSocketAdmin();
+  if (socket) socket.on(evento, handler);
+}
+
+addEventListener('beforeunload', () => {
+  if (_adminSocket) {
+    _adminSocket.removeAllListeners();
+    _adminSocket.close();
+    _adminSocket = null;
+    window._adminSocket = null;
+  }
+});
 
 // Banner de consentimiento de cookies (GDPR)
 function initCookieConsent() {

@@ -715,15 +715,7 @@
           ultimoPedido = data.items || [];
           ultimoTotal = data.subtotal || 0;
           ultimoIVA = data.iva || 0;
-          if (typeof conectarSocketParaTracking === 'function') {
-            const socket = conectarSocketParaTracking();
-            socket.on('order-status', function handler(ev) {
-              if (ev.id === data.id) {
-                const stepper = ticketEl.querySelector('.order-stepper');
-                if (stepper) actualizarStepper(stepper, ev.status);
-              }
-            });
-          }
+          window._ultimoPedidoId = data.id;
         }
       } catch(e) {}
     }
@@ -1312,32 +1304,33 @@
         
         if (result) {
           const pedidoId = result.id || Date.now().toString(36);
-          const stepperHtml = typeof renderStepperHTML === 'function' ? renderStepperHTML(pedidoId, 'pendiente') : '';
           ticketEl.style.display = 'block';
           ticketEl.dataset.pedidoId = pedidoId;
-          ticketEl.innerHTML = `
-            <h4>✅ Pedido #${pedidoId.slice(0, 8)} Confirmado</h4>
-            ${stepperHtml}
-            <p>Subtotal: C$${subtotal.toFixed(2)}</p>
-            <p>IVA (15%): C$${iva.toFixed(2)}</p>
-            <p><strong>Total: C$${totalConIVA.toFixed(2)}</strong></p>
-            <p class="live-badge" style="justify-content:center;margin-top:8px"><span class="pulse"></span> Actualizando en vivo</p>
-            <p style="margin-top:8px;color:#888;font-size:.85rem">Gracias por preferir Sabores Ancestrales.</p>
-          `;
-          
+          window._ultimoPedidoId = pedidoId;
+          ticketEl.innerHTML = [
+            '<h4>✅ Pedido #' + pedidoId.slice(0, 8) + ' Confirmado</h4>',
+            '<div class="order-stepper" data-pedido="' + pedidoId + '">',
+              '<div class="stepper-step active"><div class="step-dot">📋</div><div class="step-line"></div><span class="step-label">Pedido</span></div>',
+              '<div class="stepper-step"><div class="step-dot">👨‍🍳</div><div class="step-line"></div><span class="step-label">Cocina</span></div>',
+              '<div class="stepper-step"><div class="step-dot">🍽️</div><div class="step-line"></div><span class="step-label">Listo</span></div>',
+            '</div>',
+            '<p>Subtotal: C$' + subtotal.toFixed(2) + '</p>',
+            '<p>IVA (15%): C$' + iva.toFixed(2) + '</p>',
+            '<p><strong>Total: C$' + totalConIVA.toFixed(2) + '</strong></p>',
+            '<p class="live-badge" style="justify-content:center;margin-top:8px"><span class="pulse"></span> Actualizando en vivo</p>',
+            '<p style="margin-top:8px;color:#888;font-size:.85rem">Gracias por preferir Sabores Ancestrales.</p>'
+          ].join('');
+
           if (typeof conectarSocketParaTracking === 'function') {
             const socket = conectarSocketParaTracking();
-            const handler = data => {
+            socket.on('order-status', data => {
               if (data.id === pedidoId) {
                 const stepper = ticketEl.querySelector('.order-stepper');
                 if (stepper) actualizarStepper(stepper, data.status);
               }
-            };
-            socket.on('order-status', handler);
-            socket._ticketHandlers = socket._ticketHandlers || [];
-            socket._ticketHandlers.push(handler);
+            });
           }
-          
+
           ultimoPedido = pedido.map(p => ({ item: {...p.item}, quantity: p.quantity }));
           ultimoTotal = subtotal;
           ultimoIVA = iva;

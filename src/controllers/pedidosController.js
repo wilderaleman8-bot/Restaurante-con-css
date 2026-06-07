@@ -103,4 +103,20 @@ async function actualizarEstado(req, res) {
   res.json({ message: 'Estado actualizado', id: data.id, status: data.status });
 }
 
-module.exports = { crear, listar, actualizarEstado };
+async function obtenerEstado(req, res) {
+  const { id } = req.params;
+
+  const { data, error } = await supabase
+    .from('pedidos')
+    .select('id, status, total, metodo_pago, created_at')
+    .eq('id', id)
+    .single();
+
+  if (error || !data) {
+    return res.status(404).json({ error: 'Pedido no encontrado' });
+  }
+
+  res.json(data);
+}
+
+module.exports = { crear, listar, obtenerEstado, actualizarEstado };

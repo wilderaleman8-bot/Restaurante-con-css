@@ -171,10 +171,7 @@
       loadOpiniones();
       loadValoraciones();
 
-      if (typeof io !== 'undefined') {
-        const socket = io(BACKEND_URL);
-        socket.on('new-opinion', () => { loadOpiniones(); });
-      }
+      escucharSocket('new-opinion', loadOpiniones);
 
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {

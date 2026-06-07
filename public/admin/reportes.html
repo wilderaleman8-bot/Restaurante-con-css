@@ -364,11 +364,8 @@
       loadReportes();
       setInterval(loadReportes, 60000);
 
-      if (typeof io !== 'undefined') {
-        const socket = io(BACKEND_URL);
-        socket.on('new-order', () => { loadReportes(); });
-        socket.on('order-status', () => { loadReportes(); });
-      }
+      escucharSocket('new-order', loadReportes);
+      escucharSocket('order-status', loadReportes);
     });
   </script>
 </body>

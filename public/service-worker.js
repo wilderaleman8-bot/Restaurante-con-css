@@ -1,7 +1,7 @@
-﻿const CACHE = 'sabores-ancestrales-v4';
+﻿const CACHE = 'sabores-ancestrales-v5';
 const STATIC_ASSETS = [
   '/css/style.css',
-  '/js/app.js?v=3',
+  '/js/app.js',
   '/imagenes/Logo.jpg',
   '/imagenes/hero.webp',
   '/offline.html',
@@ -46,7 +46,7 @@ self.addEventListener('fetch', event => {
     );
   } else {
     event.respondWith(
-      caches.match(request)
+      caches.match(request, { ignoreSearch: true })
         .then(cached => cached || fetch(request).then(res => {
           if (res.ok) {
             const clone = res.clone();
@@ -54,7 +54,7 @@ self.addEventListener('fetch', event => {
           }
           return res;
         }))
-        .catch(() => new Response('', { status: 408 }))
+        .catch(() => fetch(request).catch(() => new Response('', { status: 408 })))
     );
   }
 });
