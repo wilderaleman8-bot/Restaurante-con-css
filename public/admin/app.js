@@ -215,7 +215,11 @@ let _adminSocket = null;
 function conectarSocketAdmin() {
   if (typeof io === 'undefined') return null;
   if (_adminSocket) return _adminSocket;
-  const socket = io(BACKEND_URL);
+  const socket = io(BACKEND_URL, { transports: ['polling', 'websocket'] });
+
+  socket.on('connect_error', (err) => {
+    console.warn('Socket.IO connect_error:', err.message);
+  });
 
   socket.on('new-order', (data) => {
     showToast(`🆕 Nuevo pedido — C$${(data.total || 0).toFixed(2)} (${data.metodo_pago || '—'})`, 'success');
@@ -284,7 +288,7 @@ function initCookieConsent() {
 // Registra el Service Worker para funcionalidad offline (PWA)
 function registerSW() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('../service-worker.js').catch(() => {});
+    navigator.serviceWorker.register('../service-worker.js?v=6').catch(() => {});
   }
 }
 

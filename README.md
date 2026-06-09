@@ -28,12 +28,13 @@ Sitio web completo para restaurante nicaragüense con menú interactivo, carrito
 - JavaScript vanilla (sin frameworks)
 - Google Fonts: Playfair Display + Poppins (vía `@import` en CSS)
 - Supabase JS Client — `cdn.jsdelivr.net/npm/@supabase/supabase-js`
-- Socket.io Client — `cdn.socket.io/4.7.5/socket.io.min.js` (panel admin)
+- Socket.io Client (v4.7.5) — carga desde CDN en admin y menú público
 - jsPDF — `cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js` (ticket PDF en pedidos)
 
 ### Base de datos
 - **Supabase** (PostgreSQL)
-- RLS deshabilitado — la autenticación se maneja desde el backend con JWT
+- RLS habilitado con políticas para registro y consulta anónima en `usuarios`
+- Autenticación y autorización desde el backend con JWT + bcrypt
 
 ---
 
@@ -257,7 +258,7 @@ El servidor arranca en `http://localhost:3000`.
 
 ### Panel de administración (`/admin/`)
 - **Dashboard** con estadísticas en tiempo real (pedidos hoy, pendientes, reservas hoy, total usuarios), últimos pedidos, acciones rápidas. Auto-refresh cada 30 segundos
-- **Pedidos** — Lista completa, filtro por cliente y estado, cambio de estado (pendiente → preparando → servido / cancelado)
+- **Pedidos** — Lista paginada (20 por página), filtro por cliente y estado, cambio de estado (pendiente → preparando → servido / cancelado)
 - **Reservas** — Lista con búsqueda, muestra fecha y hora
 - **Menú** — CRUD completo: crear, editar, desactivar/activar platillos, subir imágenes, sincronizar desde datos precargados
 - **Notificaciones en tiempo real** vía WebSocket (socket.io): toast al recibir nuevo pedido, nueva reserva o cambio de estado
@@ -267,10 +268,10 @@ El servidor arranca en `http://localhost:3000`.
 - **`terminos.html`** — Términos del Servicio con 9 secciones: uso del sitio, pedidos, reservas, responsabilidad, ley aplicable, etc.
 
 ### PWA (Progressive Web App)
-- **`manifest.json`** — Configuración completa: nombre corto/largo, íconos, theme_color (`#7C543F`), background_color (`#F7F3ED`), display standalone, orientación
-- **`service-worker.js`** — Precarga de assets estáticos (CSS, JS, imágenes). Estrategia: `NetworkFirst` para páginas HTML (siempre contenido fresco), `CacheFirst` para assets estáticos. Sirve `offline.html` como fallback sin conexión. Cache versionado (`v2`)
-- **Instalable** desde Chrome/Edge con prompt "Agregar a pantalla de inicio"
-- **Cache busting** — Scripts referenciados con `?v=2` para evitar servir versiones viejas en navegación normal
+- **`manifest.json`** — Configuración completa: nombre corto/largo, íconos (192×192, 512×512), theme_color (`#7C543F`), background_color (`#F7F3ED`), display standalone, orientación
+- **`service-worker.js`** — Precarga de todas las páginas HTML del sitio (públicas y admin), CSS, JS, imágenes. Estrategia: `NetworkFirst` para páginas (siempre contenido fresco), `CacheFirst` para assets estáticos. Sirve `offline.html` como fallback sin conexión. Caché versionado (`v6`)
+- **Instalable** desde Chrome/Edge/Brave con prompt "Agregar a pantalla de inicio"
+- **Cache busting** — Scripts referenciados con `?v=N` (actualmente `v6`) para forzar actualización al cambiar el Service Worker
 
 ### Accesibilidad
 - **Skip-link** en todas las páginas (`Saltar al contenido principal`) — visible al enfocar con Tab
@@ -296,10 +297,14 @@ El servidor arranca en `http://localhost:3000`.
 - **Preconnect** a orígenes de terceros (Google Fonts)
 - **Preload** de hoja de estilos crítica
 
-### Seguridad (CSP)
-- Helmet CSP configurado con `script-src-attr 'none'` — todos los inline event handlers (`onerror`, etc.) fueron reemplazados por event delegation global en JS
-- Imágenes con error se manejan mediante `document.addEventListener('error', ...)` en lugar de `onerror="..."` en HTML
-- Service Worker omite peticiones a orígenes externos (Google Fonts, CDNs) para no violar `connect-src`
+### Seguridad
+- **Helmet CSP** con `script-src-attr 'none'` — todos los inline event handlers (`onerror`, etc.) reemplazados por event delegation global en JS
+- Imágenes con error manejadas mediante `document.addEventListener('error', ...)` en lugar de `onerror="..."` en HTML
+- **Rate limiting** por endpoint: 100 req/15min en `/api/`, 5/min en login, 3/min en opiniones, 5/min en reservas y valoraciones
+- **Autorización** en cambio de estado de pedidos — el usuario solo puede modificar sus propios pedidos; admin puede modificar todos
+- **Detección de duplicados** en reservas — rechaza con 409 si ya existe una reserva en la misma fecha/hora
+- **bcrypt** con 10 rondas de salt (antes 8) para hash de contraseñas
+- Service Worker omite peticiones a orígenes externos (Google Fonts, CDNs), APIs, subidas de archivos y Socket.IO para no violar `connect-src`
 
 ### Legal / Privacidad
 - **Cookie Consent Banner** (GDPR) — aparece en la primera visita con opciones "Aceptar todas" / "Rechazar". La preferencia se guarda en `localStorage` con la clave `cookieConsent`
@@ -371,14 +376,10 @@ El servidor se recarga automáticamente al modificar archivos del backend. Los c
 ## TODO / Mejoras pendientes
 
 - [ ] WebP para todas las imágenes (no solo hero) con fallback JPEG/PNG
-- [ ] Paginación en menú, opiniones y valoraciones
 - [ ] Pruebas de accesibilidad con axe DevTools / Lighthouse
 - [ ] Analytics / consentimiento granular de cookies
 - [ ] i18n — Soporte multi-idioma (es/en)
 - [ ] Cambiar contraseña desde sesión iniciada
 - [ ] Cancelar pedido/reserva por parte del usuario
-- [ ] Dashboard admin con estadísticas en tiempo real
-- [ ] Gestión de pedidos (lista completa, filtros, cambio de estado)
-- [ ] SEO — Open Graph, Twitter Cards, meta tags por página
 - [ ] Dark mode
 - [ ] Galería de imágenes del restaurante

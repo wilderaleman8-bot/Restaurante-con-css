@@ -7,13 +7,14 @@ async function listarPedidos(req, res) {
   const from = page * limit;
   const to = from + limit - 1;
 
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from('pedidos')
-    .select('*, usuario:usuario_id(id, nombre, email)')
+    .select('*, usuario:usuario_id(id, nombre, email)', { count: 'exact', head: false })
     .order('created_at', { ascending: false })
     .range(from, to);
 
   if (error) return res.status(500).json({ error: error.message });
+  res.set('X-Total-Count', count);
   res.json(data);
 }
 

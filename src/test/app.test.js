@@ -72,6 +72,62 @@ describe('API - Auth', () => {
   });
 });
 
+describe('API - Pedidos públicos', () => {
+  it('GET /api/pedidos/:id - debe devolver 404 para ID inexistente', async () => {
+    const res = await fetch('http://localhost:3002/api/pedidos/00000000-0000-0000-0000-000000000000');
+    assert.strictEqual(res.status, 404);
+  });
+});
+
+describe('API - Seguridad', () => {
+  it('PATCH /api/pedidos/:id - debe rechazar sin token', async () => {
+    const res = await fetch('http://localhost:3002/api/pedidos/00000000-0000-0000-0000-000000000000', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'cancelado' })
+    });
+    assert.strictEqual(res.status, 401);
+  });
+});
+
+describe('API - Rate limiting', () => {
+  it('POST /api/reservas - rate limit tras muchas peticiones', async () => {
+    const body = JSON.stringify({ nombre: 'Test', apellido: 'Test', personas: 2, fecha: '2099-01-01T12:00:00' });
+    for (let i = 0; i < 6; i++) {
+      const res = await fetch('http://localhost:3002/api/reservas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body
+      });
+      if (res.status === 429) break;
+    }
+  });
+
+  it('POST /api/opiniones - rate limit tras muchas peticiones', async () => {
+    const body = JSON.stringify({ nombre: 'Test', comentario: 'Comentario de prueba largo' });
+    for (let i = 0; i < 4; i++) {
+      const res = await fetch('http://localhost:3002/api/opiniones', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body
+      });
+      if (res.status === 429) break;
+    }
+  });
+
+  it('POST /api/valoraciones - rate limit tras muchas peticiones', async () => {
+    const body = JSON.stringify({ nombre: 'Test', calificacion: 5, comentario: 'Comentario de prueba' });
+    for (let i = 0; i < 6; i++) {
+      const res = await fetch('http://localhost:3002/api/valoraciones', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body
+      });
+      if (res.status === 429) break;
+    }
+  });
+});
+
 describe('API - 404', () => {
   it('GET /api/ruta-inexistente - debe devolver 404', async () => {
     const res = await fetch('http://localhost:3002/api/ruta-inexistente');

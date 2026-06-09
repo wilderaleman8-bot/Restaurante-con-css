@@ -78,6 +78,20 @@ async function actualizarEstado(req, res) {
     return res.status(400).json({ error: 'Estado inválido' });
   }
 
+  const { data: pedido, error: fetchError } = await supabase
+    .from('pedidos')
+    .select('id, status, usuario_id')
+    .eq('id', id)
+    .single();
+
+  if (fetchError || !pedido) {
+    return res.status(404).json({ error: 'Pedido no encontrado' });
+  }
+
+  if (req.usuario.rol !== 'admin' && pedido.usuario_id !== req.usuario.id) {
+    return res.status(403).json({ error: 'No tienes permiso para actualizar este pedido' });
+  }
+
   const { data, error } = await supabase
     .from('pedidos')
     .update({ status })

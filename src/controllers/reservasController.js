@@ -22,6 +22,16 @@ async function crear(req, res) {
     return res.status(400).json({ error: 'Fecha inválida' });
   }
 
+  const { data: existing } = await supabase
+    .from('reservas')
+    .select('id')
+    .eq('fecha_reserva', fecha)
+    .limit(1);
+
+  if (existing && existing.length > 0) {
+    return res.status(409).json({ error: 'Ya existe una reserva en esa fecha y hora' });
+  }
+
   const { error } = await supabase.from('reservas').insert([{
     usuario_id,
     nombre: sanitizar(nombre),

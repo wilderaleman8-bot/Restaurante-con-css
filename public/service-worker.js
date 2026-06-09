@@ -1,11 +1,33 @@
-﻿const CACHE = 'sabores-ancestrales-v5';
+﻿const CACHE = 'sabores-ancestrales-v6';
 const STATIC_ASSETS = [
+  '/',
   '/css/style.css',
   '/js/app.js',
   '/imagenes/Logo.jpg',
   '/imagenes/hero.webp',
   '/offline.html',
-  '/manifest.json'
+  '/manifest.json',
+  '/404.html',
+  '/index.html',
+  '/menu.html',
+  '/informacion.html',
+  '/reservas.html',
+  '/opiniones.html',
+  '/valoracion.html',
+  '/login.html',
+  '/registro.html',
+  '/perfil.html',
+  '/terminos.html',
+  '/privacidad.html',
+  '/solicitar-reset.html',
+  '/resetear-password.html',
+  '/admin/index.html',
+  '/admin/pedidos.html',
+  '/admin/menu.html',
+  '/admin/reservas.html',
+  '/admin/opiniones.html',
+  '/admin/usuarios.html',
+  '/admin/reportes.html'
 ];
 
 self.addEventListener('install', event => {
@@ -28,7 +50,7 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   if (request.method !== 'GET') return;
   if (!request.url.startsWith(self.location.origin)) return;
-  if (request.url.includes('/api/') || request.url.includes('/uploads/')) return;
+  if (request.url.includes('/api/') || request.url.includes('/uploads/') || request.url.includes('/socket.io/')) return;
 
   const isPage = request.mode === 'navigate' || request.headers.get('Accept')?.includes('text/html');
 
@@ -46,7 +68,7 @@ self.addEventListener('fetch', event => {
     );
   } else {
     event.respondWith(
-      caches.match(request, { ignoreSearch: true })
+      caches.match(request)
         .then(cached => cached || fetch(request).then(res => {
           if (res.ok) {
             const clone = res.clone();

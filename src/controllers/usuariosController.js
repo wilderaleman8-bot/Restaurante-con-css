@@ -33,7 +33,7 @@ async function registro(req, res) {
     imagePath = result ? path.basename(result.compressed) : req.file.filename;
   }
 
-  const hashedPassword = await bcrypt.hash(password, 8);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const { data, error } = await supabase
     .from('usuarios')

@@ -132,7 +132,10 @@ async function buscarEstadoPedido(id) {
 function conectarSocketParaTracking() {
   if (typeof io === 'undefined') return;
   if (_socketInstance) return _socketInstance;
-  const socket = io(window.location.origin, { transports: ['websocket', 'polling'] });
+  const socket = io(window.location.origin, { transports: ['polling', 'websocket'] });
+  socket.on('connect_error', (err) => {
+    console.warn('Socket.IO connect_error:', err.message);
+  });
   socket.on('order-status', data => {
     const stepper = document.querySelector(`.order-stepper[data-pedido="${data.id}"]`);
     if (stepper) actualizarStepper(stepper, data.status);
@@ -142,6 +145,7 @@ function conectarSocketParaTracking() {
       if (s) actualizarStepper(s, data.status);
     }
   });
+  socket.on('new-valoracion', () => { cargarValoraciones(); });
   _socketInstance = socket;
   if (socket.connected && window._ultimoPedidoId) {
     sincronizarTicketConServidor();
@@ -427,7 +431,7 @@ function initCookieConsent() {
 // ===============================
 function registerSW() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js?v=3').catch(() => {});
+    navigator.serviceWorker.register('/service-worker.js?v=6').catch(() => {});
   }
 }
 
@@ -489,10 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   conectarSocketParaTracking();
 
-  if (typeof io !== 'undefined') {
-    const socket = io(window.location.origin, { transports: ['websocket', 'polling'] });
-    socket.on('new-valoracion', () => { cargarValoraciones(); });
-  }
+
 
   const menuToggle = document.getElementById('menu-toggle');
   const navLinks = document.getElementById('nav-links');
