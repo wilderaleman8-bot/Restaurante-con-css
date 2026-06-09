@@ -143,7 +143,9 @@ function conectarSocketParaTracking() {
     if (ticket) {
       const s = ticket.querySelector('.order-stepper');
       if (s) actualizarStepper(s, data.status);
+      guardarTicketEnLocalStorage(ticket);
     }
+    if (typeof cargarHistorialPedidos === 'function') cargarHistorialPedidos();
   });
   socket.on('new-valoracion', () => { cargarValoraciones(); });
   _socketInstance = socket;
@@ -153,6 +155,16 @@ function conectarSocketParaTracking() {
     socket.on('connect', sincronizarTicketConServidor);
   }
   return socket;
+}
+
+function guardarTicketEnLocalStorage(ticket) {
+  const data = localStorage.getItem('saboresUltimoTicket');
+  if (!data) return;
+  try {
+    const saved = JSON.parse(data);
+    saved.html = ticket.innerHTML;
+    localStorage.setItem('saboresUltimoTicket', JSON.stringify(saved));
+  } catch {}
 }
 
 async function sincronizarTicketConServidor() {
@@ -165,6 +177,7 @@ async function sincronizarTicketConServidor() {
     if (ticket) {
       const s = ticket.querySelector('.order-stepper');
       if (s) actualizarStepper(s, estado.status);
+      guardarTicketEnLocalStorage(ticket);
     }
   }
 }

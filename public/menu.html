@@ -1327,6 +1327,7 @@
               if (data.id === pedidoId) {
                 const stepper = ticketEl.querySelector('.order-stepper');
                 if (stepper) actualizarStepper(stepper, data.status);
+                guardarTicketEnLocalStorage(ticketEl);
               }
             });
           }
@@ -1338,6 +1339,9 @@
             id: pedidoId, html: ticketEl.innerHTML, total: totalConIVA,
             subtotal, iva, items: [...pedido]
           }));
+          if (typeof sincronizarTicketConServidor === 'function') {
+            setTimeout(sincronizarTicketConServidor, 500);
+          }
           pedido.length = 0; total = 0;
           actualizarPedido();
         }
