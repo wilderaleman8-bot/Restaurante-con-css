@@ -7,6 +7,13 @@ Sitio web completo para restaurante nicaragüense con menú interactivo, carrito
 ## Tecnologías
 
 ### Backend
+
+**Utils:**
+- `src/utils/pagination.js` — Helper `getPagination(req)` que extrae `page` (default 0) y `limit` (default 100, max 200) de `req.query`. Elimina ~80 líneas de boilerplate duplicado en 8 controladores.
+- `src/utils/validation.js` — Validaciones reutilizables (email, nombre).
+- `src/utils/compressImage.js` — Compresión y redimensionado de imágenes con Sharp.
+- `src/utils/cache.js` — Caché en memoria simple con TTL.
+
 | Paquete | Versión | Uso |
 |---------|---------|-----|
 | `express` | ^4.18.2 | Servidor HTTP |
@@ -72,7 +79,10 @@ restaurante-con-css/
 │   ├── services/
 │   │   └── email.js              # Nodemailer (Ethereal dev / SMTP real)
 │   └── utils/
-│       └── validation.js         # Validaciones reutilizables (email, nombre)
+│       ├── validation.js         # Validaciones reutilizables (email, nombre)
+│       ├── pagination.js         # Helper de paginación (getPagination)
+│       ├── compressImage.js      # Compresión/redimensión de imágenes con Sharp
+│       └── cache.js              # Caché en memoria simple
 ├── public/                       # Frontend (estático)
 │   ├── index.html                # Landing page
 │   ├── menu.html                 # Menú interactivo con carrito y pedido
@@ -111,6 +121,7 @@ restaurante-con-css/
 │   ├── menu/                     # Imágenes de platillos (subidas desde admin)
 │   └── profile-*.jpg             # Fotos de perfil
 ├── supabase_tables.sql           # Esquema completo de la base de datos
+├── eslint.config.js              # Configuración de ESLint (flat config, v10)
 ├── .env.example                  # Variables de entorno de ejemplo
 ├── package.json
 └── README.md
@@ -300,7 +311,7 @@ El servidor arranca en `http://localhost:3000`.
 ### Seguridad
 - **Helmet CSP** con `script-src-attr 'none'` — todos los inline event handlers (`onerror`, etc.) reemplazados por event delegation global en JS
 - Imágenes con error manejadas mediante `document.addEventListener('error', ...)` en lugar de `onerror="..."` en HTML
-- **Rate limiting** por endpoint: 100 req/15min en `/api/`, 5/min en login, 3/min en opiniones, 5/min en reservas y valoraciones
+- **Rate limiting** por endpoint: 500 req/15min en `/api/`, 5/min en login, 10/min en pedidos, 3/min en opiniones, 5/min en reservas y valoraciones, 3/hora en solicitudes de reseteo de contraseña
 - **Autorización** en cambio de estado de pedidos — el usuario solo puede modificar sus propios pedidos; admin puede modificar todos
 - **Detección de duplicados** en reservas — rechaza con 409 si ya existe una reserva en la misma fecha/hora
 - **bcrypt** con 10 rondas de salt (antes 8) para hash de contraseñas
@@ -371,6 +382,26 @@ npm start
 
 El servidor se recarga automáticamente al modificar archivos del backend. Los cambios en archivos estáticos (`public/`) solo requieren recargar el navegador.
 
+### ESLint
+
+```bash
+# Verificar errores de sintaxis y estilo
+npm run lint
+
+# Corregir automáticamente los problemas detectados
+npm run lint:fix
+```
+
+Configuración flat (`eslint.config.js`) con reglas para Node.js (backend) y navegador (frontend). Los warnings de variables no usadas son falsos positivos (funciones globales invocadas desde HTML).
+
+### Tests
+
+```bash
+npm test
+```
+
+Usa el runner nativo `node:test`. Abre un servidor en el puerto 3000 para probar los endpoints de la API.
+
 ---
 
 ## TODO / Mejoras pendientes
@@ -383,3 +414,13 @@ El servidor se recarga automáticamente al modificar archivos del backend. Los c
 - [ ] Cancelar pedido/reserva por parte del usuario
 - [ ] Dark mode
 - [ ] Galería de imágenes del restaurante
+
+### Completado recientemente
+- [x] ESLint flat config (`eslint.config.js`) con scripts `lint` / `lint:fix`
+- [x] Helper de paginación (`src/utils/pagination.js`) — refactorizados 8 controladores
+- [x] Rate limiters específicos: 10/min en `POST /api/pedidos`, 3/hora en `POST /api/password-reset/solicitar`
+- [x] Ruta `PATCH /api/usuarios/:id` → `PATCH /api/usuarios/me`
+- [x] Advertencia de `JWT_SECRET` faltante en producción
+- [x] Manejo silencioso de 401 en `cargarHistorialPedidos()`
+- [x] Reemplazo de inline event handlers (`onmouseover`/`onmouseout`) por CSS en `reservas.html`
+- [x] Horarios vencidos se desactivan al cargar página de reservas
