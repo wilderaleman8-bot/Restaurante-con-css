@@ -174,18 +174,18 @@ async function perfil(req, res) {
   res.json(data);
 }
 
-// PATCH /api/usuarios/:id - Actualiza nombre, email y/o foto de perfil. Regenera token.
+// PATCH /api/usuarios/me - Actualiza nombre, email y/o foto de perfil del usuario autenticado. Regenera token.
 async function actualizarPerfil(req, res) {
   const { nombre, email } = req.body;
   const userId = req.usuario.id;
 
   if (nombre !== undefined) {
-    const errorNombre = require('../utils/validation').validarNombre(nombre);
+    const errorNombre = validarNombre(nombre);
     if (errorNombre) return res.status(400).json({ error: errorNombre });
   }
 
   if (email !== undefined) {
-    const errorEmail = await require('../utils/validation').validarEmail(email);
+    const errorEmail = await validarEmail(email);
     if (errorEmail) return res.status(400).json({ error: errorEmail });
 
     const { data: existente } = await supabase
@@ -198,11 +198,11 @@ async function actualizarPerfil(req, res) {
   }
 
   const updates = {};
-  if (nombre !== undefined) updates.nombre = require('../utils/validation').sanitizar(nombre);
-  if (email !== undefined) updates.email = require('../utils/validation').sanitizar(email);
+  if (nombre !== undefined) updates.nombre = sanitizar(nombre);
+  if (email !== undefined) updates.email = sanitizar(email);
   if (req.file) {
-    const result = await require('../utils/compressImage').compressImage(req.file.path);
-    updates.image_path = result ? require('path').basename(result.compressed) : req.file.filename;
+    const result = await compressImage(req.file.path);
+    updates.image_path = result ? path.basename(result.compressed) : req.file.filename;
   }
 
   if (Object.keys(updates).length === 0) {

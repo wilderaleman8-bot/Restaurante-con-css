@@ -13,6 +13,7 @@ if (vapidPublic && vapidPrivate) {
 }
 
 // Almacén en memoria de suscripciones push (se pierde al reiniciar el servidor)
+// TODO: migrar subscriptions a una tabla en Supabase para persistencia entre reinicios
 const subscriptions = [];
 
 // POST /api/notificaciones/suscribir - Guarda o actualiza una suscripción push del cliente

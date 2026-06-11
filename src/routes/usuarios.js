@@ -8,6 +8,6 @@ router.post('/login', login);
 router.post('/logout', logout);
 router.get('/', verificarToken, listar);
 router.get('/me', verificarToken, perfil);
-router.patch('/:id', verificarToken, upload.single('image'), actualizarPerfil);
+router.patch('/me', verificarToken, upload.single('image'), actualizarPerfil);
 
 module.exports = router;

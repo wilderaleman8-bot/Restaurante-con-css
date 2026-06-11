@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const supabase = require('../lib/supabaseClient');
 
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+  console.error('ERROR: JWT_SECRET no está definido en producción. Usa un valor seguro en .env');
+}
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 
 // Genera un JWT con los datos del usuario y su token_version (para invalidar sesiones al hacer logout)
