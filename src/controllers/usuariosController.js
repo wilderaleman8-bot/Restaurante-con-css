@@ -43,7 +43,10 @@ async function registro(req, res) {
     .select('id, nombre, email, image_path, rol, token_version')
     .single();
 
-  if (error) return res.status(500).json({ error: error.message });
+  if (error) {
+    console.error('Error creando usuario:', error);
+    return res.status(500).json({ error: 'Error al crear el usuario' });
+  }
 
   const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
 
@@ -125,7 +128,10 @@ async function login(req, res) {
 // GET /api/usuarios - Lista usuarios (protegido)
 async function listar(req, res) {
   const { data, error } = await supabase.from('usuarios').select('id, nombre, email, created_at');
-  if (error) return res.status(500).json({ error: error.message });
+  if (error) {
+    console.error('Error listando usuarios:', error);
+    return res.status(500).json({ error: 'Error al obtener usuarios' });
+  }
   res.json(data);
 }
 
@@ -168,7 +174,10 @@ async function perfil(req, res) {
     .eq('id', req.usuario.id)
     .single();
 
-  if (error) return res.status(500).json({ error: error.message });
+  if (error) {
+    console.error('Error obteniendo perfil:', error);
+    return res.status(500).json({ error: 'Error al obtener el perfil' });
+  }
   if (!data) return res.status(404).json({ error: 'Usuario no encontrado' });
 
   res.json(data);
@@ -216,7 +225,10 @@ async function actualizarPerfil(req, res) {
     .select('id, nombre, email, image_path, rol')
     .single();
 
-  if (error) return res.status(500).json({ error: error.message });
+  if (error) {
+    console.error('Error actualizando perfil:', error);
+    return res.status(500).json({ error: 'Error al actualizar el perfil' });
+  }
 
   const token = generarToken({ ...data, token_version: req.usuario.token_version });
 

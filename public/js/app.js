@@ -621,13 +621,13 @@ async function registrar(formData) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const formLogin = document.querySelector("#login-form");
+  const formLogin = document.querySelector('#login-form');
   if (formLogin) {
     initFormValidation(formLogin, {
       email: { required: true, email: true, requiredMsg: 'Ingresa tu correo' },
       password: { required: true, minLength: 6, requiredMsg: 'Ingresa tu contraseña', minLengthMsg: 'Mínimo 6 caracteres' }
     });
-    formLogin.addEventListener("submit", e => {
+    formLogin.addEventListener('submit', e => {
       e.preventDefault();
       const email = e.target.email.value;
       const password = e.target.password.value;
@@ -635,7 +635,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const formRegistro = document.querySelector("#register-form");
+  const formRegistro = document.querySelector('#register-form');
   if (formRegistro) {
     initFormValidation(formRegistro, {
       nombre: { required: true, minLength: 3, requiredMsg: 'Ingresa tu nombre', minLengthMsg: 'Mínimo 3 caracteres' },
@@ -643,7 +643,7 @@ document.addEventListener('DOMContentLoaded', () => {
       password: { required: true, minLength: 6, requiredMsg: 'Crea una contraseña', minLengthMsg: 'Mínimo 6 caracteres' },
       confirm_password: { required: true, match: 'password', requiredMsg: 'Confirma tu contraseña', matchMsg: 'Las contraseñas no coinciden' }
     });
-    formRegistro.addEventListener("submit", async e => {
+    formRegistro.addEventListener('submit', async e => {
       e.preventDefault();
       const formData = new FormData(e.target);
       const usuario = await registrar(formData);
@@ -852,14 +852,14 @@ async function guardarValoracion(nombre, apellido, calificacion, comentario) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const formReserva = document.querySelector("#reserva-form");
+  const formReserva = document.querySelector('#reserva-form');
   if (formReserva) {
     initFormValidation(formReserva, {
       nombre: { required: true, minLength: 2, requiredMsg: 'Ingresa tu nombre' },
       apellido: { required: true, minLength: 2, requiredMsg: 'Ingresa tu apellido' },
       personas: { required: true, requiredMsg: 'Indica cuántas personas' }
     });
-    formReserva.addEventListener("submit", async e => {
+    formReserva.addEventListener('submit', async e => {
       e.preventDefault();
       const offset = -new Date().getTimezoneOffset();
       const signo = offset >= 0 ? '+' : '-';
@@ -896,13 +896,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const formOpinion = document.querySelector("#opinion-form");
+  const formOpinion = document.querySelector('#opinion-form');
   if (formOpinion) {
     initFormValidation(formOpinion, {
       nombre: { required: true, requiredMsg: 'Ingresa tu nombre' },
       comentario: { required: true, minLength: 10, requiredMsg: 'Escribe un comentario', minLengthMsg: 'Mínimo 10 caracteres' }
     });
-    formOpinion.addEventListener("submit", async e => {
+    formOpinion.addEventListener('submit', async e => {
       e.preventDefault();
       const result = await guardarOpinion(
         e.target.nombre.value,
@@ -917,13 +917,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const formValoracion = document.querySelector("#valoracion-form");
+  const formValoracion = document.querySelector('#valoracion-form');
   if (formValoracion) {
     initFormValidation(formValoracion, {
       nombre: { required: true, requiredMsg: 'Ingresa tu nombre' },
       comentario: { required: true, minLength: 10, requiredMsg: 'Escribe un comentario', minLengthMsg: 'Mínimo 10 caracteres' }
     });
-    formValoracion.addEventListener("submit", async e => {
+    formValoracion.addEventListener('submit', async e => {
       e.preventDefault();
       const result = await guardarValoracion(
         e.target.nombre.value,

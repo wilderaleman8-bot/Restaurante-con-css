@@ -159,12 +159,13 @@
           <div style="margin-top:20px;padding-top:16px;border-top:1px dashed #e0dbd5;">
             <p style="font-size:0.78rem;color:#999;margin:0;">Te esperamos en <strong style="color:var(--wood);">Sabores Ancestrales</strong><br>📍 Parque Masaya, Nicaragua</p>
           </div>
-          <button id="cerrar-confirmacion" style="margin-top:18px;background:var(--wood);color:#fff;border:none;padding:10px 28px;border-radius:999px;font-weight:600;font-size:0.85rem;cursor:pointer;transition:transform .2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">Cerrar</button>
+           <button id="cerrar-confirmacion" style="margin-top:18px;background:var(--wood);color:#fff;border:none;padding:10px 28px;border-radius:999px;font-weight:600;font-size:0.85rem;cursor:pointer;transition:transform .2s;">Cerrar</button>
         </div>
       </div>
       <style>
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scaleIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        #cerrar-confirmacion:hover { transform: scale(1.04) !important; }
       </style>
     </div>
   </section>
@@ -215,6 +216,7 @@
         const mm = String(hoy.getMonth() + 1).padStart(2, '0');
         const dd = String(hoy.getDate()).padStart(2, '0');
         fechaInput.min = `${yyyy}-${mm}-${dd}`;
+        fechaInput.value = `${yyyy}-${mm}-${dd}`;
         fechaInput.addEventListener('change', deshabilitarHorasPasadas);
         setTimeout(deshabilitarHorasPasadas, 100);
       }

@@ -1,6 +1,7 @@
 const supabase = require('../lib/supabaseClient');
 const { sanitizar } = require('../utils/validation');
 const cache = require('../utils/cache');
+const { getPagination } = require('../utils/pagination');
 
 // POST /api/opiniones - Crea una opinión con validación de longitud y sanitización XSS
 async function crear(req, res) {
@@ -39,10 +40,7 @@ async function crear(req, res) {
 
 // GET /api/opiniones - Lista opiniones paginadas con caché en memoria (60s)
 async function listar(req, res) {
-  const page = Math.max(0, parseInt(req.query.page) || 0);
-  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
-  const from = page * limit;
-  const to = from + limit - 1;
+  const { from, to, page, limit } = getPagination(req);
   const cacheKey = `opiniones:${page}:${limit}`;
 
   const cached = cache.get(cacheKey);

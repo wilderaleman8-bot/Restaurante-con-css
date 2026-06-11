@@ -28,7 +28,7 @@ function checkAuth() {
   if (!token) { redirectLogin(); return null; }
 
   const usuario = getUsuario();
-  let role = localStorage.getItem('saboresRole') || usuario?.rol || null;
+  const role = localStorage.getItem('saboresRole') || usuario?.rol || null;
 
   if (role === 'admin') {
     localStorage.setItem('saboresRole', 'admin');

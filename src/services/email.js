@@ -9,11 +9,11 @@ async function createTransporter() {
       secure: process.env.SMTP_SECURE === 'true',
       auth: {
         user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        pass: process.env.SMTP_PASS
       },
       connectionTimeout: 5000,
       greetingTimeout: 5000,
-      socketTimeout: 5000,
+      socketTimeout: 5000
     });
   }
 
@@ -25,8 +25,8 @@ async function createTransporter() {
     secure: false,
     auth: {
       user: testAccount.user,
-      pass: testAccount.pass,
-    },
+      pass: testAccount.pass
+    }
   });
 }
 

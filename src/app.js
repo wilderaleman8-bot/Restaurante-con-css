@@ -37,20 +37,20 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      connectSrc: ["'self'", "http://localhost:3000", "https://localhost:3000", "cdnjs.cloudflare.com", "cdn.jsdelivr.net", "cdn.socket.io", "ws:", "wss:"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com", "cdn.jsdelivr.net", "cdn.socket.io"],
-      styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
-      imgSrc: ["*", "data:"],
-      fontSrc: ["'self'", "data:", "fonts.gstatic.com"],
-    },
-  },
+      connectSrc: ["'self'", 'http://localhost:3000', 'https://localhost:3000', 'cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'cdn.socket.io', 'ws:', 'wss:'],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'cdn.socket.io'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+      imgSrc: ['*', 'data:'],
+      fontSrc: ["'self'", 'data:', 'fonts.gstatic.com']
+    }
+  }
 }));
 app.use(morgan('dev')); // Logging de peticiones HTTP
 
-// Rate limit: máximo 100 peticiones por 15 minutos en /api/
+// Rate limit: máximo 500 peticiones por 15 minutos en /api/
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Demasiadas peticiones. Intenta de nuevo en 15 minutos.' }
@@ -71,8 +71,8 @@ app.use('/api/usuarios/login', loginLimiter);
 const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
 const corsOrigins = corsOrigin.split(',').map(s => s.trim());
 app.use(cors({ credentials: true, origin: corsOrigins }));
-app.use(compression());                    // Comprime respuestas con gzip
-app.use(express.json());                   // Parsea JSON del cuerpo de la petición
+app.use(compression()); // Comprime respuestas con gzip
+app.use(express.json()); // Parsea JSON del cuerpo de la petición
 app.use(express.urlencoded({ extended: true }));
 app.use(require('cookie-parser')());
 

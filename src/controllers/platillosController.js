@@ -1,13 +1,11 @@
 const supabase = require('../lib/supabaseClient');
 const { sanitizar } = require('../utils/validation');
 const cache = require('../utils/cache');
+const { getPagination } = require('../utils/pagination');
 
 // GET /api/platillos - Lista platillos activos, paginados, con caché de 60s
 async function listar(req, res) {
-  const page = Math.max(0, parseInt(req.query.page) || 0);
-  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
-  const from = page * limit;
-  const to = from + limit - 1;
+  const { from, to, page, limit } = getPagination(req);
   const cacheKey = `platillos:${page}:${limit}`;
 
   const cached = cache.get(cacheKey);
@@ -32,10 +30,7 @@ async function listar(req, res) {
 
 // GET /api/platillos/admin - Lista todos los platillos (incluyendo inactivos, protegido)
 async function listarAdmin(req, res) {
-  const page = Math.max(0, parseInt(req.query.page) || 0);
-  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
-  const from = page * limit;
-  const to = from + limit - 1;
+  const { from, to } = getPagination(req);
 
   const { data, error } = await supabase
     .from('platillos')

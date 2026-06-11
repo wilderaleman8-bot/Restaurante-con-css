@@ -1,5 +1,6 @@
 const supabase = require('../lib/supabaseClient');
 const { enviarAUsuario } = require('./notificacionesController');
+const { getPagination } = require('../utils/pagination');
 
 // POST /api/pedidos - Crea un pedido con validación de datos y método de pago
 async function crear(req, res) {
@@ -43,17 +44,14 @@ async function crear(req, res) {
   if (io) io.emit('new-order', { id: data.id, total: req.body.total, metodo_pago: req.body.metodo_pago, status: 'pendiente' });
 
   // Envía notificación push al usuario si está suscripto
-  enviarAUsuario(usuario_id, '✅ Pedido confirmado', 'Tu pedido está en proceso. Te avisaremos cuando esté listo.', `/menu.html`);
+  enviarAUsuario(usuario_id, '✅ Pedido confirmado', 'Tu pedido está en proceso. Te avisaremos cuando esté listo.', '/menu.html');
 
   res.status(201).json({ message: 'Pedido creado correctamente', id: data.id, status: 'pendiente' });
 }
 
 // GET /api/pedidos - Lista pedidos con paginación. Admin ve todos, clientes solo los suyos.
 async function listar(req, res) {
-  const page = Math.max(0, parseInt(req.query.page) || 0);
-  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
-  const from = page * limit;
-  const to = from + limit - 1;
+  const { from, to } = getPagination(req);
 
   let query = supabase
     .from('pedidos')

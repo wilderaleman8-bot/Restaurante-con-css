@@ -1,12 +1,10 @@
 const supabase = require('../lib/supabaseClient');
 const { enviarAUsuario } = require('./notificacionesController');
+const { getPagination } = require('../utils/pagination');
 
 // GET /api/admin/pedidos - Lista todos los pedidos con datos del usuario (paginado)
 async function listarPedidos(req, res) {
-  const page = Math.max(0, parseInt(req.query.page) || 0);
-  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
-  const from = page * limit;
-  const to = from + limit - 1;
+  const { from, to } = getPagination(req);
 
   const { data, error, count } = await supabase
     .from('pedidos')
@@ -21,10 +19,7 @@ async function listarPedidos(req, res) {
 
 // GET /api/admin/reservas - Lista todas las reservas con datos del usuario (paginado)
 async function listarReservas(req, res) {
-  const page = Math.max(0, parseInt(req.query.page) || 0);
-  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
-  const from = page * limit;
-  const to = from + limit - 1;
+  const { from, to } = getPagination(req);
 
   const { data, error } = await supabase
     .from('reservas')
@@ -38,10 +33,7 @@ async function listarReservas(req, res) {
 
 // GET /api/admin/usuarios - Lista todos los usuarios (paginado, sin contraseñas)
 async function listarUsuarios(req, res) {
-  const page = Math.max(0, parseInt(req.query.page) || 0);
-  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
-  const from = page * limit;
-  const to = from + limit - 1;
+  const { from, to } = getPagination(req);
 
   const { data, error } = await supabase
     .from('usuarios')
@@ -108,10 +100,7 @@ async function listarValoracionesStats(req, res) {
 
 // GET /api/admin/opiniones - Lista todas las opiniones (paginado)
 async function listarOpiniones(req, res) {
-  const page = Math.max(0, parseInt(req.query.page) || 0);
-  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
-  const from = page * limit;
-  const to = from + limit - 1;
+  const { from, to } = getPagination(req);
 
   const { data, error } = await supabase
     .from('opiniones')
@@ -124,10 +113,7 @@ async function listarOpiniones(req, res) {
 
 // GET /api/admin/valoraciones/todas - Lista todas las valoraciones completas (paginado)
 async function listarValoracionesFull(req, res) {
-  const page = Math.max(0, parseInt(req.query.page) || 0);
-  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
-  const from = page * limit;
-  const to = from + limit - 1;
+  const { from, to } = getPagination(req);
 
   const { data, error } = await supabase
     .from('valoraciones')

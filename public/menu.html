@@ -1034,6 +1034,7 @@
       if (token) headers['Authorization'] = `Bearer ${token}`;
       try {
         const response = await fetch(`${backendUrl}/api/pedidos`, { headers });
+        if (response.status === 401) return;
         const pedidos = await response.json();
         if (!Array.isArray(pedidos)) return;
         const misPedidos = pedidos.filter(p => p.usuario_id === usuario.id);

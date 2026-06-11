@@ -1,5 +1,6 @@
 const supabase = require('../lib/supabaseClient');
 const { sanitizar } = require('../utils/validation');
+const { getPagination } = require('../utils/pagination');
 
 // POST /api/reservas - Crea una reserva, validando datos y evitando duplicados en misma fecha/hora
 async function crear(req, res) {
@@ -56,10 +57,7 @@ async function crear(req, res) {
 
 // GET /api/reservas - Lista reservas con paginación. Admin ve todas, clientes solo las suyas.
 async function listar(req, res) {
-  const page = Math.max(0, parseInt(req.query.page) || 0);
-  const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
-  const from = page * limit;
-  const to = from + limit - 1;
+  const { from, to } = getPagination(req);
 
   let query = supabase
     .from('reservas')
