@@ -1,4 +1,5 @@
 {
+  "_comment": "Manifest PWA para Sabores Ancestrales. Define nombre, iconos y comportamiento como standalone (sin barra del navegador).",
   "name": "Sabores Ancestrales",
   "short_name": "S. Ancestrales",
   "description": "Restaurante de comida tradicional nicaragüense. Platillos auténticos, ingredientes locales y recetas familiares.",

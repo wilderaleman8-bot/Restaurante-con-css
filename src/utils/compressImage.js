@@ -2,6 +2,7 @@ const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
 
+// Comprime la imagen a WebP (calidad 80, max 1200px) y elimina el original
 async function compressImage(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   if (!['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) return;
@@ -16,6 +17,7 @@ async function compressImage(filePath) {
       .webp({ quality: 80 })
       .toFile(outputPath);
 
+    // Elimina el archivo original para no ocupar espacio duplicado
     fs.unlinkSync(filePath);
 
     const relativePath = filePath.replace(/\\/g, '/');

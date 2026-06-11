@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { sendEmail } = require('../services/email');
 
+// POST /api/password-reset/solicitar - Genera un token de 1 hora y envía link por email
 async function solicitar(req, res) {
   const { email } = req.body;
 
@@ -16,6 +17,7 @@ async function solicitar(req, res) {
     .eq('email', email)
     .single();
 
+  // Siempre responde el mismo mensaje por seguridad (no revela si el email existe)
   if (userError || !usuario) {
     return res.status(200).json({ message: 'Si el email existe, recibirás un enlace de recuperación.' });
   }
@@ -77,6 +79,7 @@ async function solicitar(req, res) {
   res.json({ message: 'Si el email existe, recibirás un enlace de recuperación.' });
 }
 
+// POST /api/password-reset/verificar - Valida que un token sea válido, no usado y no expirado
 async function verificar(req, res) {
   const { token } = req.body;
 
@@ -105,6 +108,7 @@ async function verificar(req, res) {
   res.json({ message: 'Token válido', usuario_id: data.usuario_id });
 }
 
+// POST /api/password-reset/cambiar - Recibe token + nueva contraseña, actualiza en BD y marca token usado
 async function cambiar(req, res) {
   const { token, password } = req.body;
 

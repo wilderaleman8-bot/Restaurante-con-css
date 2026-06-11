@@ -1,6 +1,7 @@
 const supabase = require('../lib/supabaseClient');
 const { enviarAUsuario } = require('./notificacionesController');
 
+// GET /api/admin/pedidos - Lista todos los pedidos con datos del usuario (paginado)
 async function listarPedidos(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
   const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
@@ -18,6 +19,7 @@ async function listarPedidos(req, res) {
   res.json(data);
 }
 
+// GET /api/admin/reservas - Lista todas las reservas con datos del usuario (paginado)
 async function listarReservas(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
   const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
@@ -34,6 +36,7 @@ async function listarReservas(req, res) {
   res.json(data);
 }
 
+// GET /api/admin/usuarios - Lista todos los usuarios (paginado, sin contraseñas)
 async function listarUsuarios(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
   const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
@@ -50,6 +53,7 @@ async function listarUsuarios(req, res) {
   res.json(data);
 }
 
+// PATCH /api/admin/pedidos/:id - Admin cambia estado de un pedido y notifica al usuario
 async function actualizarPedido(req, res) {
   const { id } = req.params;
   const { status } = req.body;
@@ -83,6 +87,7 @@ async function actualizarPedido(req, res) {
   res.json({ message: 'Estado actualizado', id: data.id, status: data.status });
 }
 
+// GET /api/admin/valoraciones - Estadísticas: total, promedio y conteo por estrella
 async function listarValoracionesStats(req, res) {
   const { data, error } = await supabase
     .from('valoraciones')
@@ -101,6 +106,7 @@ async function listarValoracionesStats(req, res) {
   res.json({ total, promedio: parseFloat(promedio), conteo });
 }
 
+// GET /api/admin/opiniones - Lista todas las opiniones (paginado)
 async function listarOpiniones(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
   const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
@@ -116,6 +122,7 @@ async function listarOpiniones(req, res) {
   res.json(data);
 }
 
+// GET /api/admin/valoraciones/todas - Lista todas las valoraciones completas (paginado)
 async function listarValoracionesFull(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
   const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
@@ -131,6 +138,7 @@ async function listarValoracionesFull(req, res) {
   res.json(data);
 }
 
+// GET /api/admin/reportes - Genera stats: totales, ventas, platillos populares
 async function reportes(req, res) {
   const { data: pedidos, error } = await supabase
     .from('pedidos')
@@ -152,6 +160,7 @@ async function reportes(req, res) {
   const byStatus = { pendiente: 0, preparando: 0, servido: 0, cancelado: 0 };
   pedidos.forEach(o => { byStatus[o.status] = (byStatus[o.status] || 0) + 1; });
 
+  // Cuenta cuántas veces se ha pedido cada platillo
   const itemCount = {};
   pedidos.forEach(o => {
     if (Array.isArray(o.detalle)) {
@@ -178,6 +187,7 @@ async function reportes(req, res) {
   });
 }
 
+// PATCH /api/admin/usuarios/:id - Cambia el rol de un usuario (admin/cliente)
 async function actualizarUsuario(req, res) {
   const { id } = req.params;
   const { rol } = req.body;
@@ -199,6 +209,7 @@ async function actualizarUsuario(req, res) {
   res.json(data);
 }
 
+// DELETE /api/admin/opiniones/:id
 async function eliminarOpinion(req, res) {
   const { id } = req.params;
   const { error } = await supabase.from('opiniones').delete().eq('id', id);
@@ -206,6 +217,7 @@ async function eliminarOpinion(req, res) {
   res.json({ message: 'Opinión eliminada' });
 }
 
+// DELETE /api/admin/valoraciones/:id
 async function eliminarValoracion(req, res) {
   const { id } = req.params;
   const { error } = await supabase.from('valoraciones').delete().eq('id', id);
@@ -213,6 +225,7 @@ async function eliminarValoracion(req, res) {
   res.json({ message: 'Valoración eliminada' });
 }
 
+// DELETE /api/admin/reservas/:id
 async function eliminarReserva(req, res) {
   const { id } = req.params;
   const { error } = await supabase.from('reservas').delete().eq('id', id);
@@ -220,6 +233,7 @@ async function eliminarReserva(req, res) {
   res.json({ message: 'Reserva eliminada' });
 }
 
+// DELETE /api/admin/usuarios/:id
 async function eliminarUsuario(req, res) {
   const { id } = req.params;
   const { error } = await supabase.from('usuarios').delete().eq('id', id);

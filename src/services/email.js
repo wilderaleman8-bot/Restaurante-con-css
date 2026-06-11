@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 
+// Crea transporter SMTP con credenciales reales, o usa Ethereal (entorno de prueba) como fallback
 async function createTransporter() {
   if (process.env.SMTP_HOST) {
     return nodemailer.createTransport({
@@ -16,6 +17,7 @@ async function createTransporter() {
     });
   }
 
+  // Fallback a Ethereal (servicio de correos de prueba) si no hay config SMTP
   const testAccount = await nodemailer.createTestAccount();
   return nodemailer.createTransport({
     host: 'smtp.ethereal.email',
@@ -28,6 +30,7 @@ async function createTransporter() {
   });
 }
 
+// Envía un correo. Si usa Ethereal, imprime la URL de previsualización en consola.
 async function sendEmail({ to, subject, html }) {
   const transporter = await createTransporter();
   const from = process.env.SMTP_FROM || '"Sabores Ancestrales" <saboresancestrales@gmail.com>';

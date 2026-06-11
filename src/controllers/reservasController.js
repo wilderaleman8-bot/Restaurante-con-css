@@ -1,6 +1,7 @@
 const supabase = require('../lib/supabaseClient');
 const { sanitizar } = require('../utils/validation');
 
+// POST /api/reservas - Crea una reserva, validando datos y evitando duplicados en misma fecha/hora
 async function crear(req, res) {
   const { nombre, apellido, personas, fecha, mensaje, usuario_id } = req.body;
 
@@ -22,6 +23,7 @@ async function crear(req, res) {
     return res.status(400).json({ error: 'Fecha inválida' });
   }
 
+  // Evita crear dos reservas exactamente en el mismo horario
   const { data: existing } = await supabase
     .from('reservas')
     .select('id')
@@ -45,12 +47,14 @@ async function crear(req, res) {
     return res.status(500).json({ error: error.message });
   }
 
+  // Notifica en tiempo real a los admins via Socket.IO
   const io = req.app.get('io');
   if (io) io.emit('new-reservation', { nombre, apellido, personas: numPersonas, fecha });
 
   res.status(201).json({ message: 'Reserva guardada correctamente' });
 }
 
+// GET /api/reservas - Lista reservas con paginación. Admin ve todas, clientes solo las suyas.
 async function listar(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
   const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));

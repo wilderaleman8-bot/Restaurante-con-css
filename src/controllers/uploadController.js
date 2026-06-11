@@ -2,6 +2,7 @@ const path = require('path');
 const upload = require('../middlewares/upload');
 const { compressImage } = require('../utils/compressImage');
 
+// POST /api/upload - Sube una imagen de menú, la comprime a WebP y devuelve la URL pública
 function subirImagen(req, res) {
   upload.single('image')(req, res, async err => {
     if (err) {

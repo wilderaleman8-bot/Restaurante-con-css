@@ -1,4 +1,5 @@
-//Funcionamiento del test con: Npm test.
+// Ejecutar con: npm test
+// Tests de integración contra la API. El servidor se levanta en puerto 3002.
 
 const { describe, it, before, after } = require('node:test');
 const assert = require('node:assert');
@@ -6,6 +7,7 @@ const app = require('../app');
 
 let server;
 
+// Levanta servidor en puerto 3002 antes de todos los tests
 before(() => {
   server = app.listen(3002);
 });

@@ -1,5 +1,6 @@
 const dns = require('dns').promises;
 
+// Valida formato de email + verifica que el dominio tenga registros MX (exista y reciba correos)
 async function validarEmail(email) {
   if (typeof email !== 'string' || email.length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return 'Email inválido';
@@ -23,6 +24,7 @@ function validarNombre(nombre) {
   return null;
 }
 
+// Escapa caracteres HTML para prevenir XSS en texto ingresado por el usuario
 function sanitizar(str) {
   if (typeof str !== 'string') return str;
   return str

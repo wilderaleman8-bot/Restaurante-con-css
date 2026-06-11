@@ -2,6 +2,7 @@
 const BACKEND_URL = window.location.origin;
 const PUSH_PUBLIC_KEY = 'BAfknhirOkYpWfeUxGw2Jf1ZGQyaPnvEgnAXbgRV2qSAdrZCuCFJjxNHx1lgnLg_CBaVGb0QLpJ3vH8jnXij7Qo';
 
+// Recupera el objeto usuario desde localStorage (cualquier clave que exista)
 function getUsuario() {
   try {
     const stored = localStorage.getItem('usuario') || localStorage.getItem('saboresUser');
@@ -11,15 +12,18 @@ function getUsuario() {
   }
 }
 
+// Obtiene el JWT almacenado en localStorage
 function getToken() {
   return localStorage.getItem('saboresToken');
 }
 
+// Guarda o elimina el token JWT en localStorage
 function setToken(token) {
   if (token) localStorage.setItem('saboresToken', token);
   else localStorage.removeItem('saboresToken');
 }
 
+// Cierra sesión: notifica al backend, limpia localStorage y redirige al home
 function logout() {
   fetch(`${BACKEND_URL}/api/usuarios/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});
   localStorage.removeItem('usuario');

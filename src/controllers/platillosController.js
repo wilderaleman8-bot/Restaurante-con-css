@@ -2,6 +2,7 @@ const supabase = require('../lib/supabaseClient');
 const { sanitizar } = require('../utils/validation');
 const cache = require('../utils/cache');
 
+// GET /api/platillos - Lista platillos activos, paginados, con caché de 60s
 async function listar(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
   const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
@@ -29,6 +30,7 @@ async function listar(req, res) {
   res.json(data || []);
 }
 
+// GET /api/platillos/admin - Lista todos los platillos (incluyendo inactivos, protegido)
 async function listarAdmin(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
   const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
@@ -46,6 +48,7 @@ async function listarAdmin(req, res) {
   res.json(data);
 }
 
+// POST /api/platillos - Crea un nuevo platillo (admin)
 async function crear(req, res) {
   const { category, subcategory, name, description, price, currency, image } = req.body;
 
@@ -67,6 +70,7 @@ async function crear(req, res) {
   res.status(201).json(data);
 }
 
+// PUT /api/platillos/:id - Actualiza un platillo (admin). Invalida caché.
 async function actualizar(req, res) {
   const { id } = req.params;
   const { category, subcategory, name, description, price, currency, image, active, order } = req.body;
@@ -104,6 +108,7 @@ async function actualizar(req, res) {
   res.json(data);
 }
 
+// DELETE /api/platillos/:id - Elimina un platillo de la BD (admin)
 async function eliminar(req, res) {
   const { id } = req.params;
 
@@ -121,6 +126,7 @@ async function eliminar(req, res) {
   res.json({ message: 'Platillo eliminado correctamente', platillo: data });
 }
 
+// POST /api/platillos/seed - Inserta el menú por defecto. Solo funciona si la tabla está vacía.
 async function seed(req, res) {
   const menuData = {
     entradas: [

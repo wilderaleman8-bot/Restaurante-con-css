@@ -1,6 +1,7 @@
 const multer = require('multer');
 const path = require('path');
 
+// Configura multer: guarda en uploads/ o uploads/menu según la ruta, con nombre único tipo "profile-12345.jpg"
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = req.baseUrl === '/api/upload' ? 'uploads/menu' : 'uploads/';
@@ -15,7 +16,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 }, // Máximo 5 MB
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);

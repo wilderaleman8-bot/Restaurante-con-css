@@ -2,6 +2,7 @@ const supabase = require('../lib/supabaseClient');
 const { sanitizar } = require('../utils/validation');
 const cache = require('../utils/cache');
 
+// POST /api/opiniones - Crea una opinión con validación de longitud y sanitización XSS
 async function crear(req, res) {
   const { nombre, apellido, comentario, usuario_id } = req.body;
 
@@ -29,13 +30,14 @@ async function crear(req, res) {
     return res.status(500).json({ error: error.message });
   }
 
-  cache.clear('opiniones:');
+  cache.clear('opiniones:'); // Invalida caché para que el listado se refresque
   const io = req.app.get('io');
   if (io) io.emit('new-opinion', { id: newOpinion.id, nombre, apellido });
 
   res.status(201).json({ message: 'Opinión guardada correctamente' });
 }
 
+// GET /api/opiniones - Lista opiniones paginadas con caché en memoria (60s)
 async function listar(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
   const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));

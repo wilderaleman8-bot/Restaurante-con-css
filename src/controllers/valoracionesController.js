@@ -2,6 +2,7 @@ const supabase = require('../lib/supabaseClient');
 const { sanitizar } = require('../utils/validation');
 const cache = require('../utils/cache');
 
+// POST /api/valoraciones - Crea una valoración (1-5 estrellas) con validación y sanitización
 async function crear(req, res) {
   const { nombre, apellido, calificacion, comentario, usuario_id } = req.body;
 
@@ -23,13 +24,14 @@ async function crear(req, res) {
     return res.status(500).json({ error: error.message });
   }
 
-  cache.clear('valoraciones:');
+  cache.clear('valoraciones:'); // Refresca la caché de valoraciones
   const io = req.app.get('io');
   if (io) io.emit('new-valoracion', { id: newVal.id, calificacion });
 
   res.status(201).json({ message: 'Valoración guardada correctamente' });
 }
 
+// GET /api/valoraciones - Lista valoraciones paginadas con caché en memoria (60s)
 async function listar(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
   const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));

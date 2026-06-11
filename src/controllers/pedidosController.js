@@ -1,6 +1,7 @@
 const supabase = require('../lib/supabaseClient');
 const { enviarAUsuario } = require('./notificacionesController');
 
+// POST /api/pedidos - Crea un pedido con validación de datos y método de pago
 async function crear(req, res) {
   const { detalle, total, metodo_pago, card_last4, card_exp, card_brand, usuario_id } = req.body;
 
@@ -37,14 +38,17 @@ async function crear(req, res) {
     return res.status(500).json({ error: error.message });
   }
 
+  // Notifica en tiempo real a admin vía Socket.IO
   const io = req.app.get('io');
   if (io) io.emit('new-order', { id: data.id, total: req.body.total, metodo_pago: req.body.metodo_pago, status: 'pendiente' });
 
+  // Envía notificación push al usuario si está suscripto
   enviarAUsuario(usuario_id, '✅ Pedido confirmado', 'Tu pedido está en proceso. Te avisaremos cuando esté listo.', `/menu.html`);
 
   res.status(201).json({ message: 'Pedido creado correctamente', id: data.id, status: 'pendiente' });
 }
 
+// GET /api/pedidos - Lista pedidos con paginación. Admin ve todos, clientes solo los suyos.
 async function listar(req, res) {
   const page = Math.max(0, parseInt(req.query.page) || 0);
   const limit = Math.min(200, Math.max(1, parseInt(req.query.limit) || 100));
@@ -69,6 +73,7 @@ async function listar(req, res) {
   res.json(data);
 }
 
+// PATCH /api/pedidos/:id - Actualiza estado del pedido. Dispara notificaciones push y Socket.IO.
 async function actualizarEstado(req, res) {
   const { id } = req.params;
   const { status } = req.body;
@@ -88,6 +93,7 @@ async function actualizarEstado(req, res) {
     return res.status(404).json({ error: 'Pedido no encontrado' });
   }
 
+  // Solo el dueño del pedido o un admin pueden cambiar el estado
   if (req.usuario.rol !== 'admin' && pedido.usuario_id !== req.usuario.id) {
     return res.status(403).json({ error: 'No tienes permiso para actualizar este pedido' });
   }
@@ -117,6 +123,7 @@ async function actualizarEstado(req, res) {
   res.json({ message: 'Estado actualizado', id: data.id, status: data.status });
 }
 
+// GET /api/pedidos/:id - Obtiene estado de un pedido (endpoint público, sin token)
 async function obtenerEstado(req, res) {
   const { id } = req.params;
 

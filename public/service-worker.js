@@ -1,4 +1,7 @@
-﻿const CACHE = 'sabores-ancestrales-v6';
+﻿// Nombre del caché — incrementa la versión para forzar recarga de assets al hacer deploy
+const CACHE = 'sabores-ancestrales-v6';
+
+// Assets precacheados al instalar el Service Worker (toda la app offline-ready)
 const STATIC_ASSETS = [
   '/',
   '/css/style.css',
@@ -30,6 +33,7 @@ const STATIC_ASSETS = [
   '/admin/reportes.html'
 ];
 
+// Instalación: precargar todos los assets estáticos y activar inmediatamente
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE)
@@ -38,6 +42,7 @@ self.addEventListener('install', event => {
   );
 });
 
+// Activación: limpiar cachés viejos (de versiones anteriores) y tomar control de todas las pestañas
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
@@ -46,15 +51,19 @@ self.addEventListener('activate', event => {
   );
 });
 
+// Intercepta peticiones: strategy "Network First" para HTML (fallback offline.html),
+// "Cache First" para assets estáticos (CSS, JS, imágenes)
 self.addEventListener('fetch', event => {
   const { request } = event;
   if (request.method !== 'GET') return;
   if (!request.url.startsWith(self.location.origin)) return;
+  // No cachear llamadas API, subidas ni WebSockets
   if (request.url.includes('/api/') || request.url.includes('/uploads/') || request.url.includes('/socket.io/')) return;
 
   const isPage = request.mode === 'navigate' || request.headers.get('Accept')?.includes('text/html');
 
   if (isPage) {
+    // Network First: intenta red, si falla sirve offline.html
     event.respondWith(
       fetch(request)
         .then(res => {
@@ -67,6 +76,7 @@ self.addEventListener('fetch', event => {
         .catch(() => caches.match('/offline.html'))
     );
   } else {
+    // Cache First: busca en caché, si no está busca en red y guarda
     event.respondWith(
       caches.match(request)
         .then(cached => cached || fetch(request).then(res => {
@@ -81,10 +91,12 @@ self.addEventListener('fetch', event => {
   }
 });
 
+// Mensaje genérico (útil para comunicación page → SW)
 self.addEventListener('message', event => {
   event.waitUntil(Promise.resolve());
 });
 
+// Push notification: muestra notificación con los datos recibidos del servidor
 self.addEventListener('push', event => {
   let data = { titulo: 'Sabores Ancestrales', cuerpo: '', url: '/' };
   try {
@@ -100,6 +112,7 @@ self.addEventListener('push', event => {
   );
 });
 
+// Click en notificación: cierra la notificación y enfoca/abre la URL correspondiente
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   const url = event.notification.data?.url || '/';

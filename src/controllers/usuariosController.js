@@ -6,6 +6,7 @@ const { validarEmail, validarNombre, sanitizar } = require('../utils/validation'
 const { compressImage } = require('../utils/compressImage');
 const { sendEmail } = require('../services/email');
 
+// Configuración de cookie segura para el token JWT
 const COOKIE_OPTIONS = {
   httpOnly: true,
   sameSite: 'strict',
@@ -14,6 +15,7 @@ const COOKIE_OPTIONS = {
   path: '/'
 };
 
+// POST /api/usuarios/registro - Crea un nuevo usuario, comprime imagen si envía, envía email de bienvenida
 async function registro(req, res) {
   const { nombre, email, password } = req.body;
 
@@ -45,6 +47,7 @@ async function registro(req, res) {
 
   const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
 
+  // Envío asíncrono del email de bienvenida (no bloquea la respuesta)
   sendEmail({
     to: data.email,
     subject: '¡Bienvenido a Sabores Ancestrales!',
@@ -90,6 +93,7 @@ async function registro(req, res) {
   res.status(201).json({ message: 'Usuario creado correctamente', usuario: data, token });
 }
 
+// POST /api/usuarios/login - Autentica por email/password, devuelve JWT y setea cookie httpOnly
 async function login(req, res) {
   const { email, password } = req.body;
 
@@ -118,12 +122,14 @@ async function login(req, res) {
   res.json({ message: 'Login exitoso', usuario, token });
 }
 
+// GET /api/usuarios - Lista usuarios (protegido)
 async function listar(req, res) {
   const { data, error } = await supabase.from('usuarios').select('id, nombre, email, created_at');
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
 }
 
+// POST /api/usuarios/logout - Invalida el token incrementando token_version en BD y limpia cookie
 async function logout(req, res) {
   const header = req.headers.authorization;
   let token = null;
@@ -147,13 +153,14 @@ async function logout(req, res) {
           .eq('id', decoded.id);
       }
     } catch {
-      // token inválido o ya expirado
+      // token inválido o ya expirado - igual limpiamos cookie
     }
   }
   res.clearCookie('token', { path: '/' });
   res.json({ message: 'Sesión cerrada' });
 }
 
+// GET /api/usuarios/me - Devuelve datos del usuario autenticado
 async function perfil(req, res) {
   const { data, error } = await supabase
     .from('usuarios')
@@ -167,6 +174,7 @@ async function perfil(req, res) {
   res.json(data);
 }
 
+// PATCH /api/usuarios/:id - Actualiza nombre, email y/o foto de perfil. Regenera token.
 async function actualizarPerfil(req, res) {
   const { nombre, email } = req.body;
   const userId = req.usuario.id;
