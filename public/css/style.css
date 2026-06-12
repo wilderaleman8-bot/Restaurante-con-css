@@ -89,7 +89,7 @@ p{color:var(--muted)}
 
 /* Header / Nav */
 header{
-  background:linear-gradient(90deg, rgba(107,76,59,0.98), rgba(86,59,45,0.95));
+  background:linear-gradient(90deg, rgba(107,76,59,1), rgba(86,59,45,1));
   color:#fff;
   position:fixed;top:0;left:0;right:0;z-index:1000;
   box-shadow:0 3px 12px #1716164d;
@@ -119,7 +119,7 @@ header{
 .user-link:hover,
 .user-btn:hover{color:#f96a6a}
 .hero{
-  margin-top:72px;
+  margin-top:0;
   padding:0;
   text-align:center;
   color:white;
@@ -138,10 +138,10 @@ header{
 
 /* Overlay para mejorar contraste */
 .hero::before{
-  content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,0.32), rgba(0,0,0,0.32));z-index:0;
+  content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2));z-index:0;
 }
 
-.hero-content{position:relative;z-index:1;padding:70px 20px 120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:420px}
+.hero-content{position:relative;z-index:1;padding:70px 20px 120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:420px;background:rgba(0,0,0,0.15);-webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px)}
 .hero h1{font-family:var(--font-heading);font-size:48px;margin-bottom:12px;text-shadow:2px 3px 12px rgba(0,0,0,0.6);text-align:center;color:#fff;font-weight:700;letter-spacing:-0.5px}
 .hero p{color:#fff;max-width:700px;margin:0 auto 20px;font-size:18px;text-shadow:1px 2px 8px rgba(0,0,0,0.5);text-align:center}
 .hero .btn{display:inline-block;width:auto;max-width:360px;margin:50px auto 0;padding:14px 30px;background:var(--wood);color:white;border:none}
@@ -443,6 +443,7 @@ footer{background:linear-gradient(90deg, rgba(86,59,45,0.95), rgba(107,76,59,0.9
 @media (max-width:768px){
   .card-field-row{grid-template-columns:1fr}
   body{padding-top:80px} /* Espacio para el header fijo en móvil */
+  .hero{margin-top:-80px}
   #menu-toggle{display:block}
   .nav-links{display:none;position:absolute;top:70px;left:50%;transform:translateX(-50%);width:90%;max-width:320px;background:rgba(86,59,45,0.98);padding:20px;box-shadow:0 15px 35px rgba(0,0,0,0.3);border-radius:16px;flex-direction:column;gap:8px;z-index:1001;text-align:center}
   .nav-links.active{display:flex}

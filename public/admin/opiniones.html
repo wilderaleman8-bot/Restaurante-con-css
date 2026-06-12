@@ -24,6 +24,13 @@
     .tab-btn:hover:not(.active) { background: #f5ede6; }
     .comment-text { max-width: 300px; white-space: normal; word-break: break-word; }
     .stars { color: #f5a623; font-size: 1.1rem; letter-spacing: 2px; }
+    @media (max-width: 600px) {
+      .comment-text { max-width: 180px; }
+      .stars { font-size: 0.9rem; }
+    }
+    @media (max-width: 380px) {
+      .comment-text { max-width: 120px; }
+    }
   </style>
 </head>
 <body>

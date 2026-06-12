@@ -136,6 +136,9 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .user-card .uc-email {
       font-size: 0.8rem;
@@ -222,12 +225,12 @@
 
     @media (max-width: 768px) {
       .user-grid { grid-template-columns: 1fr; gap: 8px; }
-      .user-card { padding: 12px 14px; gap: 12px; }
+      .user-card { padding: 12px 14px; gap: 12px; flex-wrap: wrap; }
       .user-card .uc-avatar { width: 38px; height: 38px; font-size: 1rem; }
       .user-card .uc-name { font-size: 0.85rem; }
       .user-card .uc-email { font-size: 0.72rem; }
       .user-stats { gap: 6px; }
-      .user-stat { padding: 10px 12px; }
+      .user-stat { padding: 10px 12px; gap: 8px; }
       .user-stat .us-icon { width: 30px; height: 30px; font-size: 0.9rem; }
       .user-stat .us-num { font-size: 1.1rem; }
       .user-stat .us-label { font-size: 0.55rem; }
@@ -235,7 +238,22 @@
       .search-wrap input { padding: 10px 12px 10px 36px; font-size: 0.8rem; }
       .search-wrap .search-icon { left: 10px; font-size: 0.9rem; }
       .uc-actions { flex-direction: column; gap: 4px; }
-      .btn-role { padding: 4px 10px; font-size: 0.65rem; text-align: center; }
+      .btn-role { padding: 4px 10px; font-size: 0.65rem; text-align: center; white-space: normal; }
+    }
+    @media (max-width: 480px) {
+      .user-stats { grid-template-columns: 1fr 1fr; gap: 4px; }
+      .user-stat { padding: 8px 10px; gap: 6px; }
+      .user-stat .us-icon { width: 26px; height: 26px; font-size: 0.75rem; }
+      .user-stat .us-num { font-size: 0.95rem; }
+      .user-stat .us-label { font-size: 0.5rem; }
+      .user-card { padding: 10px 12px; gap: 8px; }
+      .user-card .uc-avatar { width: 32px; height: 32px; font-size: 0.85rem; }
+      .user-card .uc-name { font-size: 0.78rem; gap: 4px; }
+      .user-card .uc-email { font-size: 0.65rem; }
+      .search-wrap input { padding: 8px 10px 8px 32px; font-size: 0.75rem; border-radius: 8px; }
+      .search-wrap .search-icon { left: 8px; font-size: 0.8rem; }
+      .btn-role { font-size: 0.6rem; padding: 3px 8px; }
+      .role-badge { font-size: 0.55rem; padding: 2px 8px; }
     }
   </style>
 </head>

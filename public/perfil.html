@@ -192,7 +192,7 @@
             formData.append('email', email);
             if (avatarFile) formData.append('image', avatarFile);
 
-            const res = await fetch(`/api/usuarios/${user.id}`, {
+            const res = await fetch(`/api/usuarios/me`, {
               method: 'PATCH',
               headers: { 'Authorization': `Bearer ${getToken()}` },
               body: formData

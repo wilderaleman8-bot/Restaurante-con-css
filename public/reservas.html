@@ -195,7 +195,10 @@
       const horaBtns = document.querySelectorAll('.hora-btn input');
       if (!fechaInput) return;
       const hoy = new Date();
-      const hoyStr = hoy.toISOString().slice(0, 10);
+      const año = hoy.getFullYear();
+      const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+      const dia = String(hoy.getDate()).padStart(2, '0');
+      const hoyStr = `${año}-${mes}-${dia}`;
       const esHoy = fechaInput.value === hoyStr;
       horaBtns.forEach(input => {
         if (!esHoy) { input.disabled = false; input.closest('.hora-btn')?.querySelector('span')?.classList.remove('pasada'); return; }
