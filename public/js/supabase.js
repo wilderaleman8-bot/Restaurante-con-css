@@ -1,4 +1,4 @@
 const supabaseClient = supabase.createClient(
-  'https://dgdwpcrxrhxnsjpnfddw.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnZHdwY3J4cmh4bnNqcG5mZGR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMzM3MDYsImV4cCI6MjA5MjkwOTcwNn0.g_Val0wkG03XKmEMdomjpvBmv0keAEH11iVwuI1g2IM'
+  'https://epdsqmimadibqfucpozc.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwZHNxbWltYWRpYnFmdWNwb3pjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNjEzODMsImV4cCI6MjA5NzgzNzM4M30.shqD2TgPV8Z-1YWoPO38yC0kt1P59ifH2Ant74crYwg'
 );

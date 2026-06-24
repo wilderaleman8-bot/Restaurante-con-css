@@ -30,6 +30,9 @@ const fs = require('fs');
 
 const app = express();
 
+// ─── Confianza en proxy (Railway, Nginx, etc.) ──────────────────────
+app.set('trust proxy', 1);
+
 // ─── Middlewares globales ───────────────────────────────────────────
 
 // Helmet CSP: define qué orígenes y recursos puede cargar el navegador
