@@ -72,10 +72,16 @@ create table if not exists opiniones (
 create table if not exists valoraciones (
     id uuid primary key default gen_random_uuid(),
     usuario_id uuid references usuarios(id) on delete set null,
+    nombre text not null,
+    apellido text not null,
     calificacion int not null check (calificacion between 1 and 5),
     comentario text,
     created_at timestamptz default now()
 );
+
+-- Si la tabla ya existía sin nombre/apellido, agregarlos
+alter table valoraciones add column if not exists nombre text not null default '';
+alter table valoraciones add column if not exists apellido text not null default '';
 
 create table if not exists pedidos (
     id uuid primary key default gen_random_uuid(),
